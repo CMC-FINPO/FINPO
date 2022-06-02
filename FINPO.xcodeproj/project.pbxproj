@@ -1,0 +1,540 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 55;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A84962D89FDB101D3AF40A45 /* Pods_FINPO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CBBBC53683444A104C13159C /* Pods_FINPO.framework */; };
+		DD2EA46628487F730004D707 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2EA46528487F730004D707 /* AppDelegate.swift */; };
+		DD2EA46828487F730004D707 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2EA46728487F730004D707 /* SceneDelegate.swift */; };
+		DD2EA46A28487F730004D707 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2EA46928487F730004D707 /* ViewController.swift */; };
+		DD2EA46F28487F770004D707 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD2EA46E28487F770004D707 /* Assets.xcassets */; };
+		DD2EA47228487F770004D707 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DD2EA47028487F770004D707 /* LaunchScreen.storyboard */; };
+		DDAC8EAB284881C50092CB25 /* RxBlocking in Frameworks */ = {isa = PBXBuildFile; productRef = DDAC8EAA284881C50092CB25 /* RxBlocking */; };
+		DDAC8EAD284881C50092CB25 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = DDAC8EAC284881C50092CB25 /* RxCocoa */; };
+		DDAC8EAF284881C50092CB25 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = DDAC8EAE284881C50092CB25 /* RxRelay */; };
+		DDAC8EB1284881C50092CB25 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = DDAC8EB0284881C50092CB25 /* RxSwift */; };
+		DDAC8EB4284881D70092CB25 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = DDAC8EB3284881D70092CB25 /* KeychainAccess */; };
+		DDAC8EB7284881E90092CB25 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = DDAC8EB6284881E90092CB25 /* Kingfisher */; };
+		DDAC8EBA284881FE0092CB25 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = DDAC8EB9284881FE0092CB25 /* SnapKit */; };
+		DDAC8EBD284882130092CB25 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = DDAC8EBC284882130092CB25 /* Alamofire */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		270C28813D04C9316FCC87A8 /* Pods-FINPO.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FINPO.release.xcconfig"; path = "Target Support Files/Pods-FINPO/Pods-FINPO.release.xcconfig"; sourceTree = "<group>"; };
+		BFCA014EE683AACD32E6826C /* Pods-FINPO.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FINPO.debug.xcconfig"; path = "Target Support Files/Pods-FINPO/Pods-FINPO.debug.xcconfig"; sourceTree = "<group>"; };
+		CBBBC53683444A104C13159C /* Pods_FINPO.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FINPO.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		DD2EA46228487F730004D707 /* FINPO.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FINPO.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DD2EA46528487F730004D707 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		DD2EA46728487F730004D707 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		DD2EA46928487F730004D707 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		DD2EA46E28487F770004D707 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		DD2EA47128487F770004D707 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		DD2EA47328487F770004D707 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		DD2EA45F28487F730004D707 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DDAC8EBD284882130092CB25 /* Alamofire in Frameworks */,
+				DDAC8EAD284881C50092CB25 /* RxCocoa in Frameworks */,
+				DDAC8EBA284881FE0092CB25 /* SnapKit in Frameworks */,
+				A84962D89FDB101D3AF40A45 /* Pods_FINPO.framework in Frameworks */,
+				DDAC8EB7284881E90092CB25 /* Kingfisher in Frameworks */,
+				DDAC8EB4284881D70092CB25 /* KeychainAccess in Frameworks */,
+				DDAC8EB1284881C50092CB25 /* RxSwift in Frameworks */,
+				DDAC8EAF284881C50092CB25 /* RxRelay in Frameworks */,
+				DDAC8EAB284881C50092CB25 /* RxBlocking in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		31718119D93A97BDE60B464A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				CBBBC53683444A104C13159C /* Pods_FINPO.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		5013C2BEC30C08049C4D7B18 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				BFCA014EE683AACD32E6826C /* Pods-FINPO.debug.xcconfig */,
+				270C28813D04C9316FCC87A8 /* Pods-FINPO.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		DD2EA45928487F730004D707 = {
+			isa = PBXGroup;
+			children = (
+				DD2EA46428487F730004D707 /* FINPO */,
+				DD2EA46328487F730004D707 /* Products */,
+				5013C2BEC30C08049C4D7B18 /* Pods */,
+				31718119D93A97BDE60B464A /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		DD2EA46328487F730004D707 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DD2EA46228487F730004D707 /* FINPO.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DD2EA46428487F730004D707 /* FINPO */ = {
+			isa = PBXGroup;
+			children = (
+				DD2EA46528487F730004D707 /* AppDelegate.swift */,
+				DD2EA46728487F730004D707 /* SceneDelegate.swift */,
+				DD2EA46928487F730004D707 /* ViewController.swift */,
+				DD2EA46E28487F770004D707 /* Assets.xcassets */,
+				DD2EA47028487F770004D707 /* LaunchScreen.storyboard */,
+				DD2EA47328487F770004D707 /* Info.plist */,
+			);
+			path = FINPO;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		DD2EA46128487F730004D707 /* FINPO */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DD2EA47628487F770004D707 /* Build configuration list for PBXNativeTarget "FINPO" */;
+			buildPhases = (
+				7864191E476408BD3F2483CB /* [CP] Check Pods Manifest.lock */,
+				DD2EA45E28487F730004D707 /* Sources */,
+				DD2EA45F28487F730004D707 /* Frameworks */,
+				DD2EA46028487F730004D707 /* Resources */,
+				7DE69A9DFBB8A3003665DBCF /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FINPO;
+			packageProductDependencies = (
+				DDAC8EAA284881C50092CB25 /* RxBlocking */,
+				DDAC8EAC284881C50092CB25 /* RxCocoa */,
+				DDAC8EAE284881C50092CB25 /* RxRelay */,
+				DDAC8EB0284881C50092CB25 /* RxSwift */,
+				DDAC8EB3284881D70092CB25 /* KeychainAccess */,
+				DDAC8EB6284881E90092CB25 /* Kingfisher */,
+				DDAC8EB9284881FE0092CB25 /* SnapKit */,
+				DDAC8EBC284882130092CB25 /* Alamofire */,
+			);
+			productName = FINPO;
+			productReference = DD2EA46228487F730004D707 /* FINPO.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		DD2EA45A28487F730004D707 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1330;
+				LastUpgradeCheck = 1330;
+				TargetAttributes = {
+					DD2EA46128487F730004D707 = {
+						CreatedOnToolsVersion = 13.3.1;
+					};
+				};
+			};
+			buildConfigurationList = DD2EA45D28487F730004D707 /* Build configuration list for PBXProject "FINPO" */;
+			compatibilityVersion = "Xcode 13.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = DD2EA45928487F730004D707;
+			packageReferences = (
+				DDAC8EA9284881C50092CB25 /* XCRemoteSwiftPackageReference "RxSwift" */,
+				DDAC8EB2284881D70092CB25 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
+				DDAC8EB5284881E90092CB25 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				DDAC8EB8284881FE0092CB25 /* XCRemoteSwiftPackageReference "SnapKit" */,
+				DDAC8EBB284882130092CB25 /* XCRemoteSwiftPackageReference "Alamofire" */,
+			);
+			productRefGroup = DD2EA46328487F730004D707 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				DD2EA46128487F730004D707 /* FINPO */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		DD2EA46028487F730004D707 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DD2EA47228487F770004D707 /* LaunchScreen.storyboard in Resources */,
+				DD2EA46F28487F770004D707 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		7864191E476408BD3F2483CB /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-FINPO-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7DE69A9DFBB8A3003665DBCF /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-FINPO/Pods-FINPO-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-FINPO/Pods-FINPO-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FINPO/Pods-FINPO-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		DD2EA45E28487F730004D707 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DD2EA46A28487F730004D707 /* ViewController.swift in Sources */,
+				DD2EA46628487F730004D707 /* AppDelegate.swift in Sources */,
+				DD2EA46828487F730004D707 /* SceneDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		DD2EA47028487F770004D707 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				DD2EA47128487F770004D707 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		DD2EA47428487F770004D707 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		DD2EA47528487F770004D707 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		DD2EA47728487F770004D707 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BFCA014EE683AACD32E6826C /* Pods-FINPO.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6P7X76PR5Q;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FINPO/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = "";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = LeePaper.FINPO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		DD2EA47828487F770004D707 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 270C28813D04C9316FCC87A8 /* Pods-FINPO.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6P7X76PR5Q;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FINPO/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = "";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = LeePaper.FINPO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		DD2EA45D28487F730004D707 /* Build configuration list for PBXProject "FINPO" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DD2EA47428487F770004D707 /* Debug */,
+				DD2EA47528487F770004D707 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DD2EA47628487F770004D707 /* Build configuration list for PBXNativeTarget "FINPO" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DD2EA47728487F770004D707 /* Debug */,
+				DD2EA47828487F770004D707 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		DDAC8EA9284881C50092CB25 /* XCRemoteSwiftPackageReference "RxSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ReactiveX/RxSwift.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+		DDAC8EB2284881D70092CB25 /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		DDAC8EB5284881E90092CB25 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		DDAC8EB8284881FE0092CB25 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
+			requirement = {
+				branch = develop;
+				kind = branch;
+			};
+		};
+		DDAC8EBB284882130092CB25 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		DDAC8EAA284881C50092CB25 /* RxBlocking */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DDAC8EA9284881C50092CB25 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxBlocking;
+		};
+		DDAC8EAC284881C50092CB25 /* RxCocoa */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DDAC8EA9284881C50092CB25 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxCocoa;
+		};
+		DDAC8EAE284881C50092CB25 /* RxRelay */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DDAC8EA9284881C50092CB25 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxRelay;
+		};
+		DDAC8EB0284881C50092CB25 /* RxSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DDAC8EA9284881C50092CB25 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxSwift;
+		};
+		DDAC8EB3284881D70092CB25 /* KeychainAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DDAC8EB2284881D70092CB25 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
+		};
+		DDAC8EB6284881E90092CB25 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DDAC8EB5284881E90092CB25 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+		DDAC8EB9284881FE0092CB25 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DDAC8EB8284881FE0092CB25 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+		DDAC8EBC284882130092CB25 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DDAC8EBB284882130092CB25 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = DD2EA45A28487F730004D707 /* Project object */;
+}
