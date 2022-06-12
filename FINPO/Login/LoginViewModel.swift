@@ -23,8 +23,11 @@ import RxKakaoSDKUser
 class LoginViewModel {
     
     let disposeBag = DisposeBag()
-    var user = User()
-    
+    var user = User.instance
+    var mainRegion: [MainRegion] = [MainRegion](repeating: MainRegion.init(id: -1, name: "빈값"), count: 5)
+    var subRegion: [SubRegion] = []
+    var interested: [MainInterest] = []
+        
     var accessToken = ""
     
     let input = INPUT()
@@ -38,6 +41,10 @@ class LoginViewModel {
         let birthObserver = PublishRelay<String>()
         let genderObserver = PublishRelay<Gender>()
         let emailObserver = PublishRelay<String>()
+//        let subRegionTapped = PublishRelay<IndexPath>()
+        let subRegionTapped = PublishRelay<Int>()
+        let forUserInterestObserver = PublishRelay<Int>() //유저의 상위 카테고리 저장 (탭 될때)
+        let interestButtonTapped = PublishRelay<Void>()
     }
     
     struct OUTPUT {
@@ -45,8 +52,16 @@ class LoginViewModel {
         var isNicknameValid = PublishRelay<Bool>()
         var genderValid: Driver<Gender> = PublishRelay<Gender>().asDriver(onErrorJustReturn: .none)
         var isEmailValid = PublishRelay<Bool>()
+        //MARK: LoginBasicInfoVC Button
         var buttonValid:Driver<Bool> = PublishRelay<Bool>().asDriver(onErrorJustReturn: false)
-        
+        var mainRegionUpdate = PublishRelay<[MainRegion]>()
+        var subRegionUpdate = PublishRelay<[SubRegion]>()
+        var createRegionButton = PublishRelay<String>()
+        var regionButtonValid: Driver<Bool> = PublishRelay<Bool>().asDriver(onErrorJustReturn: false)
+        var interestingNameOutput = PublishRelay<[MainInterest]>()
+        var forUserInterestOutput = PublishRelay<[Int]>()
+//        var interestButtonValid = PublishRelay<Bool>()
+        var interestButtonValid: Driver<Bool> = PublishRelay<Bool>().asDriver(onErrorJustReturn: false)
         var errorValue = PublishRelay<Error>()
     }
     
@@ -109,7 +124,27 @@ class LoginViewModel {
             self.user.email = email
         }).disposed(by: disposeBag)
         
-                
+        input.forUserInterestObserver
+            .subscribe(onNext: { id in
+                if (self.user.category.contains(id)) {
+                    print("중복된 값")
+                } else {
+                    self.user.category.append(id)
+                    print("중복 전 \(self.user.category)")
+                }
+            }).disposed(by: disposeBag)
+        
+//        input.interestButtonTapped
+//            .subscribe(onNext: {
+//                if(self.user.category.count > 0) {
+//                    print("asdkjalksdjl")
+//                    self.output.interestButtonValid.accept(true)
+//                } else {
+//                    print("펄스펄스")
+//                    self.output.interestButtonValid.accept(false)
+//                }
+//            }).disposed(by: disposeBag)
+                        
         ///OUTPUT
         output.genderValid = input.genderObserver.asDriver(onErrorJustReturn: .none)
         
@@ -128,25 +163,59 @@ class LoginViewModel {
                     self.output.errorValue.accept(error)
                 }
             }).disposed(by: disposeBag)
-        
-        //input.nickNameObserver.asDriver(onErrorJustReturn: "")
-        //input.emailObserver.asDriver(onErrorJustReturn: "")
-        //TODO: 버튼 활성화 조건 맞추기
+                
         output.buttonValid = Driver.combineLatest(input.nameObserver.asDriver(onErrorJustReturn: ""),
                                                   output.isNicknameValid.asDriver(onErrorJustReturn: false),
                                                   input.birthObserver.asDriver(onErrorJustReturn: ""),
                                                   input.genderObserver.asDriver(onErrorJustReturn: .none),
                                                   output.isEmailValid.asDriver(onErrorJustReturn: false),
                                                   resultSelector: { (a, b, c, d, e) in
-            if a != "" && b != false  && c != "" && d != .none && e != false {
+        if a != "" && b != false  && c != "" && d != .none && e != false {
                 return true
             }
             return false
         }).asDriver(onErrorJustReturn: false)
+        
+        input.subRegionTapped
+//            .distinctUntilChanged()
+            .debounce(RxTimeInterval.microseconds(5), scheduler: MainScheduler.instance)
+            .subscribe(onNext: { indexPath in
+                if((indexPath == 0) || (indexPath == 100) || (indexPath == 200)) {
+                    self.output.createRegionButton.accept("\(self.subRegion[indexPath].name)")
+                    for i in indexPath+1...(indexPath + self.subRegion.count) {
+                        self.user.region.append(self.subRegion[i-indexPath-1].id)
+                    }
+                } else {
+                    self.output.createRegionButton.accept("\(self.mainRegion[self.subRegion[indexPath].id / 100].name) " + "\(self.subRegion[indexPath].name)")
+                }
+                
+                if (self.user.region.contains(self.subRegion[indexPath].id)) {
+                    self.output.errorValue.accept(viewModelError.alreadyExistElement)
+                } else {
+                    self.user.region.append(self.subRegion[indexPath].id)
+                    print("viewmodel \(self.user.region)")
+                }
+            }).disposed(by: disposeBag)
+        
+        output.regionButtonValid = output.createRegionButton
+            .map { !$0.contains("👀") }
+            .asDriver(onErrorJustReturn: false)
+        
+        output.interestButtonValid = input.interestButtonTapped
+            .map { _ in
+                if(self.user.category.count > 0) {
+                    print("dlaklsdjlaksdjlaksjdlaks")
+                    return true
+                } else {
+                    print("akjsdlakjsdlakj")
+                    return false }
+            }
+            .asDriver(onErrorJustReturn: false)
    
+        
     }
     
-    //유저 정보 입력받기 전 kakao api server에서 accesstoken get
+    ///유저 정보 입력받기 전 kakao api server에서 accesstoken get
     private func kakaoLogin() -> Observable<Bool> {
         return Observable.create { observer in
             if (UserApi.isKakaoTalkLoginAvailable()) {
@@ -241,8 +310,10 @@ class LoginViewModel {
                                 print("email check api 성공, 이메일 겹침여부 \(result)!")
                                 if result == true { //중복일 때
                                     observer.onNext(true)
+                                    
                                 } else {
                                     observer.onNext(false) //중복 아닐 때
+//                                    observer.onNext(true) //MARK: TEST 중복 아닐 때
                                 }
                                 
                             }
@@ -257,4 +328,101 @@ class LoginViewModel {
 
     }
     
+    func getMainRegionDataToTableView() {
+        let url = "https://dev.finpo.kr/region/name"
+        
+        DispatchQueue.main.async {
+            AF.request(url).responseJSON { (response) in
+                switch response.result {
+                case .success(let res):
+                    do {
+                        // 반환값을 Data 타입으로 전환
+                        let jsonData = try JSONSerialization.data(withJSONObject: res, options: .prettyPrinted)
+                        var json = try JSONDecoder().decode(MainRegionAPIResponse.self, from: jsonData)
+                                                
+                        for _ in 0..<json.data.count {
+                            json.data.sort {
+                                $0.id < $1.id
+                            }
+                        }
+                        self.mainRegion = json.data
+                        self.output.mainRegionUpdate.accept(self.mainRegion)
+                    } catch(let err) {
+                        print(err.localizedDescription)
+                    }
+                case .failure(let err):
+                    print(err.localizedDescription)
+                }
+            }
+        }
+
+    }
+    
+    func getSubRegionDataToTableView(_ parentId: Int = 0) {
+        let searchMainRegionNum = (parentId % 100) * 100
+        let url = "https://dev.finpo.kr/region/name?parentId=\(searchMainRegionNum)"
+
+        DispatchQueue.main.async {
+            AF.request(url).responseJSON { (response) in
+                switch response.result {
+                case .success(let res):
+                    do {
+                        // 반환값을 Data 타입으로 전환
+//                        let jsonData = try JSONSerialization.data(withJSONObject: res, options: .prettyPrinted)
+                        let jsonData = try JSONSerialization.data(withJSONObject: res, options: [])
+                        var json = try JSONDecoder().decode(SubRegionAPIRsponse.self, from: jsonData)
+                        json.data.append(SubRegion(id: parentId, name: "\(self.mainRegion[parentId].name) 전체"))
+                        for _ in 0..<json.data.count {
+                            json.data.sort {
+                                $0.id < $1.id
+                            }
+                        }
+                        self.subRegion = json.data                        
+                        self.output.subRegionUpdate.accept(self.subRegion)
+                    } catch(let err) {
+                        print(err.localizedDescription)
+                    }
+                case .failure(let err):
+                    print(err.localizedDescription)
+                }
+            }
+        }
+
+    }
+    
+    func getInterestCVMenuData() {
+        let url = "https://dev.finpo.kr/policy/category/name"
+
+        DispatchQueue.main.async {
+            AF.request(url).responseJSON { (response) in
+                switch response.result {
+                case .success(let data):
+                    do {
+                        let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
+                        var json = try JSONDecoder().decode(InterestingAPIResponse.self, from: jsonData)
+                        for _ in 0..<json.data.count {
+                            json.data.sort {
+                                $0.id < $1.id
+                            }
+                        }
+                        self.interested = json.data //[(id: 1, name: "일자리"), (id:2,...)
+                        self.output.interestingNameOutput.accept(self.interested)
+                    } catch(let err) {
+                        print(err.localizedDescription)
+                        self.output.errorValue.accept(err)
+                    }
+                case .failure(let error):
+                    print(error)
+                    self.output.errorValue.accept(error)
+                }
+            }
+        }
+    }
+    
+    
+    
+}
+
+enum viewModelError: Error {
+    case alreadyExistElement
 }
