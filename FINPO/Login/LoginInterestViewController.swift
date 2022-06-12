@@ -142,7 +142,9 @@ class LoginInterestViewController: UIViewController, UICollectionViewDelegate {
     fileprivate func setInputBind() {
         rx.viewWillAppear.take(1).asDriver { _ in return .never()}
             .drive(onNext: { [weak self] _ in
-                self?.viewModel.getInterestCVMenuData()
+                guard let self = self else { return }
+                self.titleLabel.text = "\(self.viewModel.user.nickname)님의\n관심 분야를 선택해주세요"
+                self.viewModel.getInterestCVMenuData()
             }).disposed(by: disposeBag)
         
         interestCollectionView.rx.itemSelected
@@ -160,7 +162,10 @@ class LoginInterestViewController: UIViewController, UICollectionViewDelegate {
                 let vc = LoginSemiCompleteViewController()
                 self?.navigationController?.pushViewController(vc, animated: true)
             }).disposed(by: disposeBag)
-                
+                        
+        confirmButton.rx.tap
+            .bind(to: viewModel.input.interestButtonTapped)
+            .disposed(by: disposeBag)
     }
     
     fileprivate func setOutputBind() {

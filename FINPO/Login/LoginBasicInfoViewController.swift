@@ -29,13 +29,13 @@ class LoginBasicInfoViewController: UIViewController {
         nameTextField.addBottomBorder(color: UIColor.systemGray.withAlphaComponent(0.3).cgColor)
         nickNameTextField.addBottomBorder(color: UIColor.systemGray.withAlphaComponent(0.3).cgColor)
         birthTextField.addBottomBorder(color: UIColor.systemGray.withAlphaComponent(0.3).cgColor)
-        emailTextField.addBottomBorder(color: UIColor.systemGray.withAlphaComponent(0.3).cgColor)
+//        emailTextField.addBottomBorder(color: UIColor.systemGray.withAlphaComponent(0.3).cgColor)
     }
     
     private var progressBar: UIProgressView = {
         let progressBar = UIProgressView()
-        progressBar.trackTintColor = .lightGray.withAlphaComponent(0.5)
-        progressBar.progressTintColor = .systemPurple
+        progressBar.trackTintColor = UIColor(hexString: "C4C4C5", alpha: 1)
+        progressBar.progressTintColor = UIColor(hexString: "5B43EF", alpha: 1)
         progressBar.progress = 2/6
         progressBar.clipsToBounds = true
         return progressBar
@@ -72,6 +72,7 @@ class LoginBasicInfoViewController: UIViewController {
         tf.font = .systemFont(ofSize: 20, weight: .bold)
         tf.borderStyle = .none
         tf.textColor = UIColor.black
+        tf.becomeFirstResponder()
         return tf
     }()
     
@@ -147,35 +148,35 @@ class LoginBasicInfoViewController: UIViewController {
         return button
     }()
     
-    private var emailLabel: UILabel = {
-        let label = UILabel()
-        label.text = "이메일 주소"
-        label.textAlignment = .center
-        label.font = .systemFont(ofSize: 15, weight: .medium)
-        return label
-    }()
-    
-    private var emailTextField: UITextField = {
-        let tf = UITextField()
-        tf.textAlignment = .left
-        tf.borderStyle = .none
-        tf.font = .systemFont(ofSize: 20, weight: .bold)
-        tf.textColor = .black
-        return tf
-    }()
-    
-    private var emailAlertLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .red
-        label.font = .systemFont(ofSize: 12, weight: .light)
-        return label
-    }()
+//    private var emailLabel: UILabel = {
+//        let label = UILabel()
+//        label.text = "이메일 주소"
+//        label.textAlignment = .center
+//        label.font = .systemFont(ofSize: 15, weight: .medium)
+//        return label
+//    }()
+//
+//    private var emailTextField: UITextField = {
+//        let tf = UITextField()
+//        tf.textAlignment = .left
+//        tf.borderStyle = .none
+//        tf.font = .systemFont(ofSize: 20, weight: .bold)
+//        tf.textColor = .black
+//        return tf
+//    }()
+//
+//    private var emailAlertLabel: UILabel = {
+//        let label = UILabel()
+//        label.textColor = .red
+//        label.font = .systemFont(ofSize: 12, weight: .light)
+//        return label
+//    }()
     
     private var confirmButton: UIButton = {
         let button = UIButton()
         button.setTitle("다음", for: .normal)
-        button.titleLabel?.textColor = .white
-        button.backgroundColor = UIColor.rgb(red: 76, green: 73, blue: 233)
+        button.titleLabel?.textColor = UIColor(hexString: "616161")
+        button.backgroundColor = UIColor(hexString: "F0F0F0")
         button.layer.cornerRadius = 20
         button.isEnabled = false
         button.layer.masksToBounds = true
@@ -185,9 +186,9 @@ class LoginBasicInfoViewController: UIViewController {
     fileprivate func setAttribute() {
         navigationController?.navigationBar.topItem?.backButtonTitle = ""
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
-        nameTextField.becomeFirstResponder()
-        confirmButton.setBackgroundColor(UIColor.rgb(red: 76, green: 73, blue: 233), for: .normal)
-        confirmButton.setBackgroundColor(.lightGray.withAlphaComponent(0.6), for: .disabled)
+        [nameTextField, nickNameTextField, birthTextField].forEach {
+            $0.delegate = self
+        }
     }
     
     fileprivate func setLayout() {
@@ -275,24 +276,24 @@ class LoginBasicInfoViewController: UIViewController {
             $0.height.equalTo(50)
         }
         
-        view.addSubview(emailLabel)
-        emailLabel.snp.makeConstraints {
-            $0.top.equalTo(genderStackView.snp.bottom).offset(30)
-            $0.leading.equalToSuperview().inset(15)
-        }
-        
-        view.addSubview(emailTextField)
-        emailTextField.snp.makeConstraints {
-            $0.top.equalTo(emailLabel.snp.bottom).offset(10)
-            $0.leading.trailing.equalToSuperview().inset(15)
-        }
-        
-        view.addSubview(emailAlertLabel)
-        emailAlertLabel.snp.makeConstraints {
-            $0.top.equalTo(emailTextField.snp.bottom).offset(5)
-            $0.leading.equalToSuperview().inset(15)
-        }
-        
+//        view.addSubview(emailLabel)
+//        emailLabel.snp.makeConstraints {
+//            $0.top.equalTo(genderStackView.snp.bottom).offset(30)
+//            $0.leading.equalToSuperview().inset(15)
+//        }
+//
+//        view.addSubview(emailTextField)
+//        emailTextField.snp.makeConstraints {
+//            $0.top.equalTo(emailLabel.snp.bottom).offset(10)
+//            $0.leading.trailing.equalToSuperview().inset(15)
+//        }
+//
+//        view.addSubview(emailAlertLabel)
+//        emailAlertLabel.snp.makeConstraints {
+//            $0.top.equalTo(emailTextField.snp.bottom).offset(5)
+//            $0.leading.equalToSuperview().inset(15)
+//        }
+//
         view.addSubview(confirmButton)
         confirmButton.snp.makeConstraints {
             $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-30)
@@ -303,6 +304,14 @@ class LoginBasicInfoViewController: UIViewController {
     }
     
     fileprivate func setInputBind() {
+        
+        rx.viewWillAppear.take(1).asDriver { _ in return .never()}
+            .drive(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                self.nameTextField.text = self.viewModel.user.nickname
+//                self.viewModel.input.nameObserver.accept(self.viewModel.user.nickname)
+            }).disposed(by: disposeBag)
+        
         nameTextField.rx.controlEvent([.editingDidEnd])
             .map { self.nameTextField.text ?? "" }
             .bind(to: viewModel.input.nameObserver)
@@ -328,14 +337,27 @@ class LoginBasicInfoViewController: UIViewController {
             .bind(to: viewModel.input.genderObserver)
             .disposed(by: disposeBag)
         
-        emailTextField.rx.controlEvent([.editingDidEnd])
-            .map { self.emailTextField.text ?? "" }
-            .bind(to: viewModel.input.emailObserver)
-            .disposed(by: disposeBag)
+//        emailTextField.rx.controlEvent([.editingDidEnd])
+//            .map { self.emailTextField.text ?? "" }
+//            .bind(to: viewModel.input.emailObserver)
+//            .disposed(by: disposeBag)
+        
+        confirmButton.rx.tap.asDriver(onErrorJustReturn: ())
+            .drive(onNext: { [weak self] in
+                let vc = LoginRegionViewController()
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }).disposed(by: disposeBag)
         
     }
     
     fileprivate func setOutputBind() {
+        
+//        viewModel.input.nickNameObserver
+//            .asDriver(onErrorJustReturn: "")
+//            .drive(onNext: { [weak self] str in
+//                self?.nameTextField.text = str
+//            }).disposed(by: disposeBag)
+        
         viewModel.output.isNicknameValid
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: { [weak self] valid in
@@ -376,33 +398,59 @@ class LoginBasicInfoViewController: UIViewController {
                 }
             }).disposed(by: disposeBag)
         
-        viewModel.output.isEmailValid
-            .asDriver(onErrorJustReturn: false)
-            .drive(onNext: { [weak self] valid in
-                if !valid { //TEST
-                    self?.emailTextField.setRight()
-                    self?.emailLabel.textColor = .red
-                    self?.emailTextField.addBottomBorder(color: UIColor.red.cgColor)
-                    self?.emailAlertLabel.text = "중복된 이메일입니다"
-                    self?.emailAlertLabel.textColor = .red
-                } else {
-                    self?.emailTextField.setErrorRight()
-                    self?.emailLabel.textColor = .black
-                    self?.emailTextField.addBottomBorder(color: UIColor.systemGray.withAlphaComponent(0.2).cgColor)
-                    self?.emailAlertLabel.text = ""
-                    self?.emailAlertLabel.textColor = .black
-                }
-            }).disposed(by: disposeBag)
+//        viewModel.output.isEmailValid
+//            .asDriver(onErrorJustReturn: false)
+//            .drive(onNext: { [weak self] valid in
+//                if !valid { //TEST
+//                    self?.emailTextField.setRight()
+//                    self?.emailLabel.textColor = .red
+//                    self?.emailTextField.addBottomBorder(color: UIColor.red.cgColor)
+//                    self?.emailAlertLabel.text = "중복된 이메일입니다"
+//                    self?.emailAlertLabel.textColor = .red
+//                } else {
+//                    self?.emailTextField.setErrorRight()
+//                    self?.emailLabel.textColor = .black
+//                    self?.emailTextField.addBottomBorder(color: UIColor.systemGray.withAlphaComponent(0.2).cgColor)
+//                    self?.emailAlertLabel.text = ""
+//                    self?.emailAlertLabel.textColor = .black
+//                }
+//            }).disposed(by: disposeBag)
+        
+//        viewModel.input.nameObserver
+//            .asObservable()
+//            .observe(on: MainScheduler.instance)
+//            .subscribe(onNext: { [weak self] str in
+//                guard let self = self else { return }
+//                self.nameTextField.text = str
+//            })
+//            .disposed(by: disposeBag)
         
         viewModel.output.buttonValid
             .drive(onNext: { [weak self] valid in
                 if valid {
+                    print("방출된 이벤트 받음 -> 버튼 색상 변경 됨")
                     self?.confirmButton.isEnabled = true
-//                    self?.confirmButton.backgroundColor = UIColor.rgb(red: 76, green: 73, blue: 233)
+                    self?.confirmButton.backgroundColor = UIColor(hexString: "5B43EF")
+                    self?.confirmButton.setTitleColor(UIColor(hexString: "FFFFFF"), for: .normal)
+                } else {
+                    print("방출 이벤트 false!!!!!!")
+                    self?.confirmButton.isEnabled = false
+                    self?.confirmButton.backgroundColor = UIColor(hexString: "F0F0F0")
+                    self?.confirmButton.setTitleColor(UIColor(hexString: "616161"), for: .normal)
                 }
             }).disposed(by: disposeBag)
         
-        
     }
         
+}
+
+extension LoginBasicInfoViewController: UITextFieldDelegate {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
 }

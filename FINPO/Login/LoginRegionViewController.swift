@@ -187,8 +187,10 @@ class LoginRegionViewController: UIViewController, TTGTextTagCollectionViewDeleg
         rx.viewWillAppear.take(1).asDriver { _ in
             return .never()}
         .drive(onNext: { [weak self] _ in
-            self?.viewModel.getMainRegionDataToTableView()
-            self?.viewModel.getSubRegionDataToTableView(0)}) //default: Seoul
+            guard let self = self else { return }
+            self.titleLabel.text = "\(self.viewModel.user.nickname)님이 거주하고 있는\n지역은 어디인가요?"
+            self.viewModel.getMainRegionDataToTableView()
+            self.viewModel.getSubRegionDataToTableView(0)}) //default: Seoul
         .disposed(by: disposeBag)
         
         confirmButton.rx.tap
