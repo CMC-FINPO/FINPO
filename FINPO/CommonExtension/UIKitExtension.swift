@@ -8,6 +8,39 @@
 import Foundation
 import UIKit
 
+extension UILabel {
+    @IBInspectable var borderColor: UIColor {
+        get {
+            let color = self.layer.borderColor ?? UIColor.clear.cgColor
+            return UIColor(cgColor: color)
+        }
+        
+        set {
+            self.layer.borderColor = newValue.cgColor
+        }
+    }
+    
+    @IBInspectable var borderWidth: CGFloat {
+        get {
+            return self.layer.borderWidth
+        }
+        
+        set {
+            self.layer.borderWidth = newValue
+        }
+    }
+    
+    @IBInspectable var cornerRadius: CGFloat {
+        get {
+            return self.layer.cornerRadius
+        }
+        
+        set {
+            self.layer.cornerRadius = newValue
+        }
+    }
+}
+
 extension UIImageView {
     func downloaded(from url: URL, contentMode mode: ContentMode = .scaleAspectFit) {
         contentMode = mode
@@ -89,6 +122,22 @@ extension UIViewController {
     }
 }
 
+extension UIView {
+    func addRightImage(image: UIImage) {
+        let wrapperView = UIView.init(frame: CGRect.init(x: 0, y: 0, width: bounds.height, height: bounds.height))
+        let imageView = UIImageView(frame: CGRect.init(x: 0, y: 0, width: 21, height: 20))
+        
+        imageView.image = UIImage(named: "delete_point")
+        imageView.contentMode = .scaleAspectFit
+//        imageView.tintColor = UIColor(hexString: "")
+        wrapperView.addSubview(imageView)
+        imageView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+        
+    }
+}
+
 extension UITextField {
     func addBottomBorder(color: CGColor){
         let bottomLine = CALayer()
@@ -117,7 +166,7 @@ extension UITextField {
         let wrapperView = UIView.init(frame: CGRect.init(x: 0, y: 0, width: bounds.height, height: bounds.height))
         let imageView = UIImageView(frame: CGRect.init(x: 0, y: 0, width: 21, height: 20))
         
-        imageView.image = UIImage(named: "tfAlert")
+        imageView.image = UIImage(named: "_error")
         imageView.contentMode = .scaleAspectFit
         imageView.tintColor = UIColor.rgb(red: 146, green: 206, blue: 242)
         wrapperView.addSubview(imageView)
@@ -131,7 +180,7 @@ extension UITextField {
     
     func setRight() {
         let clearButton = UIButton(type: .custom)
-        clearButton.setImage(UIImage(named: "tfCancel")!, for: .normal)
+        clearButton.setImage(UIImage(named: "check")!, for: .normal)
         clearButton.tintColor = UIColor.rgb(red: 146, green: 206, blue: 242)
         clearButton.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
         clearButton.addTarget(self, action: #selector(UITextField.clear), for: .touchUpInside)
