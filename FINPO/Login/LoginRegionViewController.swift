@@ -10,10 +10,10 @@ import UIKit
 import RxSwift
 import RxCocoa
 import SnapKit
-import TTGTags
+import CoreMIDI
 
 
-class LoginRegionViewController: UIViewController, TTGTextTagCollectionViewDelegate {
+class LoginRegionViewController: UIViewController {
 
     var user = User.instance
     
@@ -21,8 +21,8 @@ class LoginRegionViewController: UIViewController, TTGTextTagCollectionViewDeleg
     let viewModel = LoginViewModel()
     
     var setStr = [String]()
-    var selectedIndexPath: IndexPath? = nil
-    
+    var isSelected: Bool = false
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -59,18 +59,23 @@ class LoginRegionViewController: UIViewController, TTGTextTagCollectionViewDeleg
         return label
     }()
     
-    private var tagCollectionView: TTGTextTagCollectionView = {
-        let cv = TTGTextTagCollectionView()
+    private var tagCollectionView: UICollectionView = {
+        let flow = UICollectionViewFlowLayout()
+        let cv = UICollectionView(frame: .init(x: 0, y: 0, width: 100, height: 100), collectionViewLayout: flow)
         cv.backgroundColor = .white
-        cv.alignment = .center
-
+//        cv.alignment = .left
+//        cv.selectionLimit = 1
+        cv.showsVerticalScrollIndicator = false
+        cv.showsHorizontalScrollIndicator = false
+        cv.layer.masksToBounds = true
+        cv.layer.cornerRadius = 3
         return cv
     }()
 
     private var mainRegionTableView: UITableView = {
         let tv = UITableView()
         tv.rowHeight = CGFloat(60)
-        tv.backgroundColor = UIColor(hexString: "F9F9F9", alpha: 1)
+        tv.backgroundColor = UIColor(hexString: "F9F9F9")
         tv.bounces = false
         return tv
     }()
@@ -78,7 +83,7 @@ class LoginRegionViewController: UIViewController, TTGTextTagCollectionViewDeleg
     private var localRegionTableView: UITableView = {
         let tv = UITableView()
         tv.rowHeight = CGFloat(40)
-        tv.backgroundColor = UIColor(hexString: "F9F9F9", alpha: 1)
+        tv.backgroundColor = UIColor(hexString: "F9F9F9")
         tv.bounces = false
         return tv
     }()
@@ -89,25 +94,50 @@ class LoginRegionViewController: UIViewController, TTGTextTagCollectionViewDeleg
         button.setTitle("선택 완료", for: .normal)
         button.setTitleColor(UIColor(hexString: "616161"), for: .normal)
         button.backgroundColor = UIColor(hexString: "F0F0F0")
-        button.layer.cornerRadius = 20
+        button.layer.cornerRadius = 5
         button.isEnabled = false
         button.layer.masksToBounds = true
         return button
     }()
     
-    
     fileprivate func setAttribute() {
+        navigationController?.navigationBar.topItem?.backButtonTitle = ""
         mainRegionTableView.tag = 1
         mainRegionTableView.register(MainRegionTableViewCell.self, forCellReuseIdentifier: "cell")
         
-        
         localRegionTableView.tag = 2
         localRegionTableView.register(SubRegionTableViewCell.self, forCellReuseIdentifier: "cell")
-        
+
         tagCollectionView.delegate = self
-                
-//        confirmButton.setBackgroundColor(UIColor(hexString: ""), for: .normal)
-//        confirmButton.setBackgroundColor(.lightGray.withAlphaComponent(0.6), for: .disabled)
+        tagCollectionView.register(TagCollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+        self.createDefaultTag()
+
+    }
+    
+    fileprivate func createDefaultTag() {
+        let dummyLabel = UILabel().then {
+            $0.font = .systemFont(ofSize: 16)
+            $0.text = "어디 사시나요..?👀"
+            $0.sizeToFit()
+        }
+        let size = dummyLabel.frame.size
+        
+        let views = UIView(frame: CGRect(x: 5, y: 5, width: size.width, height: size.height))
+        views.layer.borderWidth = 1
+        views.layer.borderColor = UIColor(hexString: "A2A2A2").cgColor
+        views.bounds = views.frame.insetBy(dx: -5, dy: -5)
+        views.layer.cornerRadius = 3
+        let titleLabel = UILabel()
+        titleLabel.font = UIFont(name: "AppleSDGothicNeo-SemiBold", size: 16)
+        titleLabel.textColor = UIColor(hexString: "A2A2A2")
+        titleLabel.text = "어디 사시나요..?👀"
+        self.tagCollectionView.addSubview(views)
+        views.addSubview(titleLabel)
+        titleLabel.snp.makeConstraints {
+            $0.center.equalToSuperview()
+            $0.height.equalTo(size.height)
+            $0.width.equalTo(size.width)
+        }
     }
     
     fileprivate func setLayout() {
@@ -138,6 +168,7 @@ class LoginRegionViewController: UIViewController, TTGTextTagCollectionViewDeleg
         tagCollectionView.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(30)
             $0.leading.trailing.equalToSuperview().inset(15)
+            $0.width.equalToSuperview().inset(10)
             $0.height.equalTo(70)
 //            TODO: 나중에 지역 선택 많이 했을 때, height 조절되게 하기
         }
@@ -147,7 +178,6 @@ class LoginRegionViewController: UIViewController, TTGTextTagCollectionViewDeleg
             $0.top.equalTo(tagCollectionView.snp.bottom).offset(30)
             $0.leading.equalToSuperview().inset(15)
             $0.width.equalTo(100)
-//            $0.height.equalTo(200)
             $0.height.equalTo(view.frame.size.height/2)
         }
         
@@ -176,11 +206,38 @@ class LoginRegionViewController: UIViewController, TTGTextTagCollectionViewDeleg
             }).disposed(by: disposeBag)
         
         localRegionTableView.rx.itemSelected
-            .take(1)
+//            .take(1)
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] indexPath in
 //                let cell = self?.localRegionTableView.cellForRow(at: indexPath) as? SubRegionTableViewCell
-                self?.viewModel.input.subRegionTapped.accept(indexPath.row)
+                if(self?.isSelected == false) {
+                    self?.viewModel.input.subRegionTapped.accept(indexPath.row)
+                    self?.tagCollectionView.subviews[0].removeFromSuperview()
+                    self?.viewModel.input.regeionButtonObserver.accept(true)
+                    self?.isSelected = true
+                } else {
+                    self?.isSelected = true
+                }
+            }).disposed(by: disposeBag)
+        
+        tagCollectionView.rx.itemSelected
+            .subscribe(onNext:{ [weak self] indexPath in                
+//                self?.tagCollectionView.deleteItems(at: [indexPath])
+                if(self?.isSelected == true) {
+                    let cell = self?.tagCollectionView.cellForItem(at: indexPath)
+                    cell?.removeFromSuperview()
+                    self?.createDefaultTag()
+                    self?.setStr.removeAll()
+                    self?.viewModel.user.region.removeAll()
+                    self?.isSelected = false
+                    self?.viewModel.input.regeionButtonObserver.accept(false)
+                    print("기본 텍스트 표시할 카운트\(self?.setStr.count)")
+                    print("인덱스 \(indexPath.row)")
+                    print("테이블뷰 뷰컨 \(self?.viewModel.user.region)")
+                } else {
+                    self?.isSelected = false
+                }
+
             }).disposed(by: disposeBag)
                 
         ///viewWillAppear -> tableview 통신 및 초기화
@@ -200,7 +257,7 @@ class LoginRegionViewController: UIViewController, TTGTextTagCollectionViewDeleg
                 vc.modalPresentationStyle = .fullScreen
                 self?.navigationController?.pushViewController(vc, animated: true)
             }).disposed(by: disposeBag)
-            
+        
     }
     
     fileprivate func setOutputBind() {
@@ -222,36 +279,24 @@ class LoginRegionViewController: UIViewController, TTGTextTagCollectionViewDeleg
                 cell.subRegionLabel.text = element.name
             }.disposed(by: disposeBag)
         
-        
-        //TODO: Refactoring
-        viewModel.output.createRegionButton
+        viewModel.output.unionedReion
             .asObservable()
-//            .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
-            .bind(onNext: { [weak self] str in
-                if (self?.setStr.contains(str) != false) {
+            .bind(to: tagCollectionView.rx.items(cellIdentifier: "cell", cellType: TagCollectionViewCell.self)) { [weak self]
+                (index: Int, element: UniouRegion , cell) in
+                if (self?.setStr.contains(element.unionRegionName) != false) {
                     return
-                } else {
-                    self?.setStr.append(str)
-                    let content = TTGTextTagStringContent.init(text: str)
-                    content.textColor = UIColor.rgb(red: 119, green: 98, blue: 235)
-                    content.textFont = UIFont(name: "AppleSDGothicNeo-SemiBold", size: 18)!
-                    
-                    let normalStyle = TTGTextTagStyle.init()
-                    normalStyle.backgroundColor = UIColor.rgb(red: 247, green: 246, blue: 253)
-                    normalStyle.borderColor = UIColor.rgb(red: 119, green: 98, blue: 235)
-                    normalStyle.borderWidth = 1
-                    normalStyle.cornerRadius = 3
-                    normalStyle.extraSpace = CGSize(width: 35, height: 20)
-                                                        
-                    let tag = TTGTextTag.init()
-                    tag.content = content
-                    tag.style = normalStyle
-                    
-                    self?.tagCollectionView.addTag(tag)
-                    self?.tagCollectionView.reload()
                 }
-            }).disposed(by: disposeBag)
+                else {
+                    cell.setLayout()
+                    self?.setStr.append(element.unionRegionName)
+                    cell.tagLabel.text = element.unionRegionName
+                    cell.layer.borderColor = UIColor(hexString: "5B43EF").cgColor
+                    cell.layer.borderWidth = 1
+                    cell.layer.cornerRadius = 3
+//                    cell.bounds = cell.frame.insetBy(dx: 0, dy: -)
+                }
+            }.disposed(by: disposeBag)
         
         viewModel.output.regionButtonValid
             .asDriver(onErrorJustReturn: false)
@@ -267,29 +312,21 @@ class LoginRegionViewController: UIViewController, TTGTextTagCollectionViewDeleg
                     self?.confirmButton.backgroundColor = UIColor(hexString: "F0F0F0")
                 }
             }).disposed(by: disposeBag)
-        
-    }
-    
-    func textTagCollectionView(_ textTagCollectionView: TTGTextTagCollectionView!, didTap tag: TTGTextTag!, at index: UInt) {
-        textTagCollectionView.removeTag(tag)
-        
-        localRegionTableView.rx.itemSelected
-            .take(1)
-//            .distinctUntilChanged()
-            .subscribe(onNext: { [weak self] indexPath in
-                textTagCollectionView.removeTag(tag)
-//                self?.viewModel.output.createRegionButton.accept("어디 사시나요...?👀")
-                self?.viewModel.input.subRegionTapped.accept(indexPath.row)
-            }).disposed(by: disposeBag)
-        
-        self.setStr.remove(at: Int(index))
-        ///전체선택 시 index 관리를 위해 클리어
-        viewModel.user.region.removeAll()
-//        viewModel.user.region.remove(at: Int(index))
-        print("뷰컨 중복체크 스트링\(self.setStr)")
-        print("인덱스 \(index)")
-        print("테이블뷰 뷰컨 \(viewModel.user.region)")
     }
 
+}
+
+extension LoginRegionViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+
+        let dummyLabel = UILabel().then {
+            $0.font = .systemFont(ofSize: 16)
+            $0.text = "길이 측정용 "
+            $0.sizeToFit()
+        }
+        let size = dummyLabel.frame.size
+
+        return CGSize(width: size.width+12, height: size.height+15)
+    }
 }
 
