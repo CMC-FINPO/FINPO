@@ -19,6 +19,11 @@ import KakaoSDKAuth
 import RxKakaoSDKAuth
 import RxKakaoSDKUser
 
+//추가지역 선택 시 사용될 행위
+enum RegionActionType {
+    case add(region: UniouRegion)
+    case delete(index: Int)
+}
 
 class LoginViewModel {
     
@@ -27,7 +32,8 @@ class LoginViewModel {
     var mainRegion: [MainRegion] = [MainRegion](repeating: MainRegion.init(id: -1, name: "빈값"), count: 5)
     var subRegion: [SubRegion] = []
     var interested: [MainInterest] = []
-        
+    var unionRegion: [UniouRegion] = []
+    var addedRegionCheck: [String] = []
     var accessToken = ""
     
     let input = INPUT()
@@ -41,15 +47,18 @@ class LoginViewModel {
         let birthObserver = PublishRelay<String>()
         let genderObserver = PublishRelay<Gender>()
         let emailObserver = PublishRelay<String>()
-//        let subRegionTapped = PublishRelay<IndexPath>()
         let subRegionTapped = PublishRelay<Int>()
+        let regeionButtonObserver = PublishRelay<Bool>()
         let forUserInterestObserver = PublishRelay<Int>() //유저의 상위 카테고리 저장 (탭 될때)
         let interestButtonTapped = PublishRelay<Void>()
         let semiSignupConfirmButtonTapped = PublishRelay<Void>()
+        let deleteTagObserver = PublishRelay<Int>()
+        
     }
     
     struct OUTPUT {
         var goKakaoSignUp = PublishRelay<Bool>()
+        var isNameValid = PublishRelay<Bool>()
         var isNicknameValid = PublishRelay<Bool>()
         var genderValid: Driver<Gender> = PublishRelay<Gender>().asDriver(onErrorJustReturn: .none)
         var isEmailValid = PublishRelay<Bool>()
@@ -57,7 +66,10 @@ class LoginViewModel {
         var buttonValid:Driver<Bool> = PublishRelay<Bool>().asDriver(onErrorJustReturn: false)
         var mainRegionUpdate = PublishRelay<[MainRegion]>()
         var subRegionUpdate = PublishRelay<[SubRegion]>()
-        var createRegionButton = PublishRelay<String>()
+//        var createRegionButton = PublishRelay<String>()
+//        var createRegionButton = PublishRelay<UniouRegion>()
+        var regionButton = PublishRelay<RegionActionType>()
+        var unionedReion = PublishRelay<[UniouRegion]>()
         var regionButtonValid: Driver<Bool> = PublishRelay<Bool>().asDriver(onErrorJustReturn: false)
         var interestingNameOutput = PublishRelay<[MainInterest]>()
         var forUserInterestOutput = PublishRelay<[Int]>()
@@ -87,7 +99,12 @@ class LoginViewModel {
             }).disposed(by: disposeBag)
         
         input.nameObserver.subscribe(onNext: { name in
-            self.user.name = name
+            if(name.count > 14) {
+                self.output.isNameValid.accept(false)
+            } else {
+                self.output.isNameValid.accept(true)
+                self.user.name = name
+            }
         }).disposed(by: disposeBag)
         
         input.nickNameObserver.subscribe(onNext: { nickName in
@@ -137,7 +154,12 @@ class LoginViewModel {
                     print("중복 전 \(self.user.category)")
                 }
             }).disposed(by: disposeBag)
-
+        
+        input.deleteTagObserver
+            .subscribe(onNext: {
+                [weak self] indexPath in
+                self?.output.regionButton.accept(.delete(index: indexPath))
+            }).disposed(by: disposeBag)
                         
         ///OUTPUT
         output.genderValid = input.genderObserver.asDriver(onErrorJustReturn: .none)
@@ -158,12 +180,12 @@ class LoginViewModel {
 //                }
 //            }).disposed(by: disposeBag)
                 
-        output.buttonValid = Driver.combineLatest(input.nameObserver.asDriver(onErrorRecover: { _ in return .never()}),
+        output.buttonValid = Driver.combineLatest(output.isNameValid.asDriver(onErrorJustReturn: false),
                                                   output.isNicknameValid.asDriver(onErrorJustReturn: false),
                                                   input.birthObserver.asDriver(onErrorJustReturn: "errorTest"),
                                                   input.genderObserver.asDriver(onErrorJustReturn: .none),
                                                   resultSelector: { (a, b, c, d) in
-        if a != "" && b != true  && c != "" && d != .none {
+        if a != false && b != true  && c != "" && d != .none {
                 print("버튼 색 변경조건 완료 -> true 방출")
                 return true
             }
@@ -174,25 +196,40 @@ class LoginViewModel {
 //            .distinctUntilChanged()
             .debounce(RxTimeInterval.microseconds(5), scheduler: MainScheduler.instance)
             .subscribe(onNext: { indexPath in
+                //전체 지역 선택 시
                 if((indexPath == 0) || (indexPath == 100) || (indexPath == 200)) {
-                    self.output.createRegionButton.accept("\(self.subRegion[indexPath].name)")
                     for i in indexPath+1...(indexPath + self.subRegion.count) {
                         self.user.region.append(self.subRegion[i-indexPath-1].id)
                     }
-                } else {
-                    self.output.createRegionButton.accept("\(self.mainRegion[self.subRegion[indexPath].id / 100].name) " + "\(self.subRegion[indexPath].name)")
+                    let union = UniouRegion.init(unionRegionName: "\(self.subRegion[indexPath].name)")
+                    self.output.unionedReion.accept([union])
+                    self.output.regionButton.accept(.add(region: union))
                 }
-                
+                //구 선택 시
+                else {
+                    let union = UniouRegion.init(unionRegionName: "\(self.mainRegion[self.subRegion[indexPath].id / 100].name) " + "\(self.subRegion[indexPath].name)")
+                    //메인 거주 지역
+                    self.output.unionedReion.accept([union])
+                    //추가 거주 지역
+                    self.output.regionButton.accept(.add(region: union))
+                }
+                //main 거주지역
                 if (self.user.region.contains(self.subRegion[indexPath].id)) {
                     self.output.errorValue.accept(viewModelError.alreadyExistElement)
                 } else {
                     self.user.region.append(self.subRegion[indexPath].id)
-                    print("viewmodel \(self.user.region)")
+                    print("viewmodel user selected region \(self.user.region)")
+                }
+                //추가 관심지역
+                if(self.user.interestRegion.contains(self.subRegion[indexPath].id)) {
+                    self.output.errorValue.accept(viewModelError.alreadyExistAccount)
+                } else {
+                    self.user.interestRegion.append(self.subRegion[indexPath].id)
                 }
             }).disposed(by: disposeBag)
         
-        output.regionButtonValid = output.createRegionButton
-            .map { !$0.contains("👀") }
+        output.regionButtonValid = input.regeionButtonObserver
+            .map { $0 }
             .asDriver(onErrorJustReturn: false)
         
         output.interestButtonValid = input.interestButtonTapped
@@ -235,11 +272,14 @@ class LoginViewModel {
                             } else { ///회원정보 가져오기 성공 시
                                 self.input.nickNameObserver.accept(user?.kakaoAccount?.profile?.nickname ?? "")
                                 self.user.profileImg = user?.kakaoAccount?.profile?.profileImageUrl
+                                
+                                //TODO: get data using accessToken, refreshToken check here
+//                                PredictAPI.predictWithAuth()
                                 observer.onNext(true)
                             }
                         }
                         self.user.accessTokenFromKAKAO = oauthToken.accessToken
-                    
+                        
                         print("카카오 엑세스 토큰 from kakao api server: \(self.user.accessTokenFromKAKAO)")
                     }, onError: { (error) in
                         print("error occured: \(error)")
@@ -249,6 +289,7 @@ class LoginViewModel {
             return Disposables.create()
         }
     }
+
     
     private func checkNicknameValid() -> Observable<Bool> {
         return Observable.create { observer in
@@ -261,31 +302,32 @@ class LoginViewModel {
             let header: HTTPHeaders = [
                 "Content-Type": "application/json;charset=UTF-8"
             ]
-            
-            AF.request(url, method: .get, parameters: parameter, encoding: URLEncoding.default, headers: header)
-                .validate(statusCode: 200..<300)
-                .response { response in
-                    print(response)
-                    switch response.result {
-                    case .success(let data):
-                        if let data = data {
-                            do {
-                                let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-                                let result = json?["data"] as? Bool ?? false
-                                if result {
-                                    print("중복된 닉네임")
-                                    observer.onNext(true)
-                                } else {
-                                    print("중복되지 않은 닉네임")
-                                    observer.onNext(false)
+            DispatchQueue.main.async {
+                AF.request(url, method: .get, parameters: parameter, encoding: URLEncoding.default, headers: header)
+                    .validate(statusCode: 200..<300)
+                    .response { response in
+                        print(response)
+                        switch response.result {
+                        case .success(let data):
+                            if let data = data {
+                                do {
+                                    let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                                    let result = json?["data"] as? Bool ?? false
+                                    if result {
+                                        print("중복된 닉네임")
+                                        observer.onNext(true)
+                                    } else {
+                                        print("중복되지 않은 닉네임")
+                                        observer.onNext(false)
+                                    }
                                 }
                             }
+                        case .failure(let error):
+                            print("에러발생!!!")
+                            observer.onError(error)
                         }
-                    case .failure(let error):
-                        print("에러발생!!!")
-                        observer.onError(error)
                     }
-                }
+            }
             return Disposables.create()
         }
     }
@@ -471,8 +513,14 @@ class LoginViewModel {
                             let jsonData = json?["data"] as? [String: Any]
                             let accessToken = jsonData?["accessToken"] as? String
                             let refreshToken = jsonData?["refreshToken"] as? String
-                            self.user.accessTokenFromKAKAO = accessToken ?? ""
-                            self.user.refreshToken = refreshToken ?? ""
+//                            let accessTokenExpiresIn = jsonData?["accessTokenExpiresIn"] as? Date
+                            let accessTokenExpiresIn = jsonData?["accessTokenExpiresIn"] as? String
+                            self.user.accessTokenFromKAKAO = accessToken ?? ""//필요없을듯
+                            self.user.refreshToken = refreshToken ?? ""//필요없을듯
+                            UserDefaults.standard.set(self.user.accessTokenFromKAKAO, forKey: "accessToken")
+                            UserDefaults.standard.set(self.user.refreshToken, forKey: "refreshToken")
+                            UserDefaults.standard.set(accessTokenExpiresIn, forKey: "accessTokenExpiresIn")
+//                            _ = MyAuthenticationCredential(accessToken: accessToken ?? "", refreshToken: refreshToken ?? "", expiredAt: accessTokenExpiresIn ?? Date())
                             observer.onNext(self.user)
                         }
                     } catch { print("알 수 없는 에러 발생") }
