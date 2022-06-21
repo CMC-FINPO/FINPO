@@ -10,6 +10,7 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
+import Alamofire
 
 class LoginInterestViewController: UIViewController, UICollectionViewDelegate {
     
@@ -49,7 +50,7 @@ class LoginInterestViewController: UIViewController, UICollectionViewDelegate {
         label.text = "핀포님의 \n관심 분야를 선택해주세요"
         label.numberOfLines = 2
         label.textColor = .black
-        label.font =  UIFont(name: "AppleSDGothicNeo-SemiBold", size: 27)
+        label.font = UIFont(name: "AppleSDGothicNeo-SemiBold", size: 27)
         return label
     }()
     
@@ -64,10 +65,9 @@ class LoginInterestViewController: UIViewController, UICollectionViewDelegate {
     private var interestCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        layout.minimumLineSpacing = 0.5
-        layout.minimumInteritemSpacing = 0.5
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.allowsMultipleSelection = true
+        cv.isScrollEnabled = false
         return cv
     }()
     
@@ -77,13 +77,14 @@ class LoginInterestViewController: UIViewController, UICollectionViewDelegate {
         button.setTitle("선택 완료", for: .normal)
         button.setTitleColor(UIColor(hexString: "616161"), for: .normal)
         button.backgroundColor = UIColor(hexString: "F0F0F0")
-        button.layer.cornerRadius = 20
+        button.layer.cornerRadius = 5
         button.isEnabled = false
         button.layer.masksToBounds = true
         return button
     }()
     
     fileprivate func setAttribute() {
+        navigationController?.navigationBar.topItem?.backButtonTitle = ""
         let attributedText = NSMutableAttributedString(string: subtitleLabel.text!)
         attributedText.addAttribute(.foregroundColor, value: UIColor(hexString: "494949"), range: (subtitleLabel.text! as NSString).range(of: "관심 분야"))
         attributedText.addAttribute(.foregroundColor, value: UIColor(hexString: "5B43EF"), range: (subtitleLabel.text! as NSString).range(of: "(복수 선택 가능)"))
@@ -156,15 +157,27 @@ class LoginInterestViewController: UIViewController, UICollectionViewDelegate {
                 cell?.id = indexPath.row+1
             }).disposed(by: disposeBag)
         
-        confirmButton.rx.tap
-            .asDriver(onErrorJustReturn: ())
-            .drive(onNext: { [weak self] in
-                let vc = LoginSemiCompleteViewController()
-                self?.navigationController?.pushViewController(vc, animated: true)
-            }).disposed(by: disposeBag)
+//        confirmButton.rx.tap
+//            .asDriver(onErrorJustReturn: ())
+//            .drive(onNext: { [weak self] in
+//                guard let self = self else { return }
+//                ///여기서 회원가입 진행
+//                //일단 user data check
+//                print("저장된 엑세스 토큰\(self.viewModel.user.accessTokenFromKAKAO)")
+//                print("여태 저장된 유저 정보 \(self.viewModel.user.name)")
+//                print("여태 저장된 유저 정보 \(self.viewModel.user.nickname)")
+//                print("여태 저장된 유저 정보 \(self.viewModel.user.birth)")
+//                print("여태 저장된 유저 정보 \(self.viewModel.user.gender)")
+//                print("여태 저장된 유저 정보 \(self.viewModel.user.region)")
+//                print("여태 저장된 유저 정보 \(self.viewModel.user.category)")
+//
+//                //TODO: push 부분 회원가입 성공 시로 바꿀 것
+//                let vc = LoginSemiCompleteViewController()
+//                self.navigationController?.pushViewController(vc, animated: true)
+//            }).disposed(by: disposeBag)
                         
         confirmButton.rx.tap
-            .bind(to: viewModel.input.interestButtonTapped)
+            .bind(to: viewModel.input.semiSignupConfirmButtonTapped)
             .disposed(by: disposeBag)
     }
     
@@ -175,6 +188,8 @@ class LoginInterestViewController: UIViewController, UICollectionViewDelegate {
             .bind(to: interestCollectionView.rx.items(cellIdentifier: "cell")) { (index: Int, element: MainInterest, cell: InterestCollectionViewCell) in
                 cell.setup()
                 cell.titleLabel.text = element.name
+                cell.imageView.image = UIImage(named: "MainInterest\(index)")
+                cell.layer.frame.size = CGSize(width: 168, height: 143)
             }.disposed(by: disposeBag)
         
         viewModel.output.interestButtonValid
@@ -192,14 +207,50 @@ class LoginInterestViewController: UIViewController, UICollectionViewDelegate {
                     self?.confirmButton.backgroundColor = UIColor(hexString: "F0F0F0")
                 }
             }).disposed(by: disposeBag)
-    }
+        
+        ///세미 회원가입 확인
+        viewModel.output.isSemiSignupComplete
+//            .asDriver(onErrorJustReturn: false)
+            .asSignal()
+            .emit(onNext: { [weak self] value in
+                guard let self = self else { return }
+                User.instance = value
+                print("세미회원가입 최종 유저 정보: \(User.instance.name)")
+                print("세미회원가입 최종 유저 정보: \(User.instance.nickname)")
+                print("세미회원가입 최종 유저 정보: \(User.instance.birth)")
+                print("세미회원가입 최종 유저 정보: \(User.instance.gender)")
+                print("세미회원가입 최종 유저 정보: \(User.instance.region)")
+                print("세미회원가입 최종 유저 정보: \(User.instance.category)")
+                print("세미회원가입 최종 유저 정보: \(User.instance.accessTokenFromSocial)")
+                print("세미회원가입 최종 유저 정보: \(User.instance.refreshToken)")
+                
+                let vc = LoginSemiCompleteViewController()
+                self.navigationController?.pushViewController(vc, animated: true)
+                
+            }).disposed(by: disposeBag)
+                           
+        viewModel.output.errorValue.asSignal()
+            .emit(onNext: { [weak self] error in
+                guard let self = self else { return }
+                let ac = UIAlertController(title: "에러", message: "이미 가입된 회원입니다.", preferredStyle: .alert)
+                ac.addAction(UIAlertAction(title: "확인", style: .cancel, handler: nil))
+                self.present(ac, animated: true)
+            }).disposed(by: disposeBag)
     
+    }
 }
 
 extension LoginInterestViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width: CGFloat = (collectionView.frame.width / 2) - 0.5
-              
+        let width: CGFloat = (collectionView.frame.width / 2) - 0.5              
         return CGSize(width: width, height: width)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return -22
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 1
     }
 }

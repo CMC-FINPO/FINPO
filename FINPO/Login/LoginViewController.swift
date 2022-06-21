@@ -13,11 +13,15 @@ import KakaoSDKUser
 import RxSwift
 import RxCocoa
 import Then
+import GoogleSignIn
+
 
 class LoginViewController: UIViewController {
     let user = User.instance
     let disposeBag = DisposeBag()
     let viewModel = LoginViewModel()
+    
+    let googleSiginInConfig = GIDConfiguration.init(clientID: "845892149030-nb47tiirkmtqmgs34f7klha903pip0g2.apps.googleusercontent.com")
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,6 +58,12 @@ class LoginViewController: UIViewController {
         button.setImage(UIImage(named: "button=apple"), for: .normal)
         return button
     }()
+    
+    private var googleSignUpButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "button=google"), for: .normal)
+        return button
+    }()
 
     private func setAttribute() {
         view.backgroundColor = .white
@@ -78,7 +88,7 @@ class LoginViewController: UIViewController {
         
         view.addSubview(kakaoSignUpButton)
         kakaoSignUpButton.snp.makeConstraints {
-            $0.top.equalTo(imageView.snp.bottom).offset(147)
+            $0.top.equalTo(imageView.snp.bottom).offset(100)
             $0.leading.trailing.equalToSuperview().inset(21)
             $0.height.equalTo(55)
         }
@@ -86,6 +96,13 @@ class LoginViewController: UIViewController {
         view.addSubview(appleSignUpButton)
         appleSignUpButton.snp.makeConstraints {
             $0.top.equalTo(kakaoSignUpButton.snp.bottom).offset(20)
+            $0.leading.trailing.equalToSuperview().inset(21)
+            $0.height.equalTo(55)
+        }
+        
+        view.addSubview(googleSignUpButton)
+        googleSignUpButton.snp.makeConstraints {
+            $0.top.equalTo(appleSignUpButton.snp.bottom).offset(20)
             $0.leading.trailing.equalToSuperview().inset(21)
             $0.height.equalTo(55)
         }
@@ -99,8 +116,26 @@ class LoginViewController: UIViewController {
         
         //KAKAO
         kakaoSignUpButton.rx.tap
+            .take(1)
             .bind(to: viewModel.input.kakaoSignUpObserver)
             .disposed(by: disposeBag)
+        
+        //Google
+//        googleSignUpButton.rx.tap
+//            .take(1)
+//            .bind(to: viewModel.input.googleSignUpObserver)
+//            .disposed(by: disposeBag)
+        
+        googleSignUpButton.rx.tap
+            .bind { [weak self] in
+                guard let self = self else { return }
+                GIDSignIn.sharedInstance.signIn(with: self.googleSiginInConfig, presenting: self) { user, error in
+                    guard error == nil else { return }
+                    guard let user = user else { return }
+                    self.viewModel.input.googleSignUpObserver.accept(user)
+                }
+            }.disposed(by: disposeBag)
+        
     }
     
     private func setOutputBind() {
@@ -109,7 +144,7 @@ class LoginViewController: UIViewController {
             .drive(onNext: { [weak self] valid in
                 if valid {
                     let accesstoken = UserDefaults.standard.object(forKey: "accessToken") as? String
-                    if(accesstoken == self?.user.accessTokenFromKAKAO) {
+                    if(accesstoken == self?.user.accessTokenFromSocial) {
                         let vc = HomeTapViewController()
                         self?.present(vc, animated: true)
                         return
@@ -119,6 +154,22 @@ class LoginViewController: UIViewController {
                 }
             })
             .disposed(by: disposeBag)
+        
+        viewModel.output.goGoogleSignUp
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: { [weak self] valid in
+                if valid {
+                    let accessToken = UserDefaults.standard.object(forKey: "accessToken") as? String
+                    //TODO: 여기 accessToken 비교부분 비교 대상이 이상함(소셜토큰과 유저디폴트 토큰은 다름)
+                    if(accessToken == self?.user.accessTokenFromSocial) {
+                        let vc = HomeTapViewController()
+                        self?.present(vc, animated: true, completion: nil)
+                        return
+                    }
+                    let vc = LoginDetailViewController()
+                    self?.navigationController?.pushViewController(vc, animated: true)
+                }
+            }).disposed(by: disposeBag)
         
         //error
         viewModel.output.errorValue.asSignal()

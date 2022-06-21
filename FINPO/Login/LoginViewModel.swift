@@ -18,11 +18,18 @@ import RxKakaoSDKCommon
 import KakaoSDKAuth
 import RxKakaoSDKAuth
 import RxKakaoSDKUser
+import GoogleSignIn
 
 //추가지역 선택 시 사용될 행위
 enum RegionActionType {
     case add(region: UniouRegion)
     case delete(index: Int)
+}
+
+enum SocialLoginType {
+    case kakao
+    case google
+    case apple
 }
 
 class LoginViewModel {
@@ -35,13 +42,14 @@ class LoginViewModel {
     var unionRegion: [UniouRegion] = []
     var addedRegionCheck: [String] = []
     var accessToken = ""
+    static var socialType: String = ""
     
     let input = INPUT()
     var output = OUTPUT()
     
     struct INPUT {
         let kakaoSignUpObserver = PublishRelay<Void>()
-        
+        let googleSignUpObserver = PublishRelay<GIDGoogleUser>()
         let nameObserver = PublishRelay<String>()
         let nickNameObserver = PublishRelay<String>()
         let birthObserver = PublishRelay<String>()
@@ -58,6 +66,7 @@ class LoginViewModel {
     
     struct OUTPUT {
         var goKakaoSignUp = PublishRelay<Bool>()
+        var goGoogleSignUp = PublishRelay<Bool>()
         var isNameValid = PublishRelay<Bool>()
         var isNicknameValid = PublishRelay<Bool>()
         var genderValid: Driver<Gender> = PublishRelay<Gender>().asDriver(onErrorJustReturn: .none)
@@ -91,6 +100,20 @@ class LoginViewModel {
                 case .next(let validation):
                     print("주입되었음")
                     self.output.goKakaoSignUp.accept(validation)
+                case .completed:
+                    break
+                case .error(let error):
+                    self.output.errorValue.accept(error)
+                }
+            }).disposed(by: disposeBag)
+        
+        input.googleSignUpObserver
+            .flatMap { user in self.googleLogin(user: user) }
+            .subscribe({ valid in
+                switch valid {
+                case .next(let validation):
+                    print("구글 로그인 성공 시")
+                    self.output.goGoogleSignUp.accept(validation)
                 case .completed:
                     break
                 case .error(let error):
@@ -256,7 +279,6 @@ class LoginViewModel {
                 }
             }).disposed(by: disposeBag)
         
-        
     }
     
     ///유저 정보 입력받기 전 kakao api server에서 accesstoken get
@@ -272,19 +294,37 @@ class LoginViewModel {
                             } else { ///회원정보 가져오기 성공 시
                                 self.input.nickNameObserver.accept(user?.kakaoAccount?.profile?.nickname ?? "")
                                 self.user.profileImg = user?.kakaoAccount?.profile?.profileImageUrl
-                                
+                                LoginViewModel.socialType = "kakao"
                                 //TODO: get data using accessToken, refreshToken check here
 //                                PredictAPI.predictWithAuth()
                                 observer.onNext(true)
                             }
                         }
-                        self.user.accessTokenFromKAKAO = oauthToken.accessToken
+                        self.user.accessTokenFromSocial = oauthToken.accessToken
                         
-                        print("카카오 엑세스 토큰 from kakao api server: \(self.user.accessTokenFromKAKAO)")
+                        print("카카오 엑세스 토큰 from kakao api server: \(self.user.accessTokenFromSocial)")
                     }, onError: { (error) in
                         print("error occured: \(error)")
                         observer.onError(error)
                     }).disposed(by: self.disposeBag)
+            }
+            return Disposables.create()
+        }
+    }
+    
+    private func googleLogin(user: GIDGoogleUser) -> Observable<Bool> {
+        return Observable.create { observer in
+            user.authentication.do { authentication, error in
+                guard error == nil else { return }
+                guard let authentication = authentication else { return }
+                self.user.accessTokenFromSocial = authentication.accessToken
+                
+                self.user.profileImg = user.profile?.imageURL(withDimension: 200)
+                
+                self.input.nickNameObserver.accept(user.profile?.name ?? "")
+                LoginViewModel.socialType = "google"
+                print("구글 로그인 성공! 액세스 토큰: \(authentication.accessToken)")
+                observer.onNext(true)
             }
             return Disposables.create()
         }
@@ -481,11 +521,14 @@ class LoginViewModel {
     
     func semiSignup() -> Observable<User> {
         return Observable.create { observer in
-            let url = "https://dev.finpo.kr/oauth/register/kakao"
+            var url = "https://dev.finpo.kr/oauth/register/".appending(LoginViewModel.socialType)
+            print("소셜타입: \(LoginViewModel.socialType)")
+            print(url)
             let parameter = self.user.toDic()
+            print(parameter)
             let header: HTTPHeaders = [
                 "Content-Type":"application/x-www-form-urlencoded;charset=UTF-8;boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm",
-                "Authorization":"Bearer ".appending((self.user.accessTokenFromKAKAO))
+                "Authorization":"Bearer ".appending((self.user.accessTokenFromSocial))
             ]
             
             AF.upload(multipartFormData: { (multipart) in
@@ -515,9 +558,9 @@ class LoginViewModel {
                             let refreshToken = jsonData?["refreshToken"] as? String
 //                            let accessTokenExpiresIn = jsonData?["accessTokenExpiresIn"] as? Date
                             let accessTokenExpiresIn = jsonData?["accessTokenExpiresIn"] as? String
-                            self.user.accessTokenFromKAKAO = accessToken ?? ""//필요없을듯
+                            self.user.accessTokenFromSocial = accessToken ?? ""//필요없을듯
                             self.user.refreshToken = refreshToken ?? ""//필요없을듯
-                            UserDefaults.standard.set(self.user.accessTokenFromKAKAO, forKey: "accessToken")
+                            UserDefaults.standard.set(self.user.accessTokenFromSocial, forKey: "accessToken")
                             UserDefaults.standard.set(self.user.refreshToken, forKey: "refreshToken")
                             UserDefaults.standard.set(accessTokenExpiresIn, forKey: "accessTokenExpiresIn")
 //                            _ = MyAuthenticationCredential(accessToken: accessToken ?? "", refreshToken: refreshToken ?? "", expiredAt: accessTokenExpiresIn ?? Date())
