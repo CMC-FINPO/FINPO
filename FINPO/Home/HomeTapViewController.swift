@@ -10,6 +10,17 @@ import UIKit
 
 class HomeTapViewController: UITabBarController {
     
+    private var homeViewController: UIViewController = {
+        let vc = UINavigationController(rootViewController: HomeViewController())
+        let tabBarItem = UITabBarItem(
+            title: "홈",
+            image: UIImage(named: "home_inactive"),
+            selectedImage: UIImage(named: "home_active")
+        )
+        vc.tabBarItem = tabBarItem
+        return vc
+    }()
+    
     private var myPageViewController: UIViewController = {
         let vc = UINavigationController(rootViewController: MyPageViewController())
         let tabBarItem = UITabBarItem(
@@ -23,7 +34,7 @@ class HomeTapViewController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewControllers = [myPageViewController]
+        viewControllers = [homeViewController, myPageViewController]
     }
 
 }
