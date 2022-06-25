@@ -41,7 +41,6 @@ class LoginViewModel {
     var interested: [MainInterest] = []
     var unionRegion: [UniouRegion] = []
     var addedRegionCheck: [String] = []
-    var accessToken = ""
     static var socialType: String = ""
     
     let input = INPUT()
@@ -86,12 +85,12 @@ class LoginViewModel {
         var interestButtonValid: Driver<Bool> = PublishRelay<Bool>().asDriver(onErrorJustReturn: false)
 //        var isSemiSignupComplete = PublishRelay<Bool>()
         var isSemiSignupComplete = PublishRelay<User>()
-        
+        var getStatus = PublishRelay<[UserStatus]>()
+        var getPurpose = PublishRelay<[UserPurpose]>()
         var errorValue = PublishRelay<Error>()
     }
     
-    init() {
-        
+    init() {        
         ///INPUT
         input.kakaoSignUpObserver
             .flatMap { self.kakaoLogin() }
@@ -131,7 +130,9 @@ class LoginViewModel {
         }).disposed(by: disposeBag)
         
         input.nickNameObserver.subscribe(onNext: { nickName in
+            print("닉네임 옵저버에 저장됨")
             self.user.nickname = nickName
+            print("저장된 닉네임: \(self.user.nickname)")
         }).disposed(by: disposeBag)
         
         //check nickname validation
@@ -300,6 +301,7 @@ class LoginViewModel {
                                 observer.onNext(true)
                             }
                         }
+                        //소셜 액세스 토큰
                         self.user.accessTokenFromSocial = oauthToken.accessToken
                         
                         print("카카오 엑세스 토큰 from kakao api server: \(self.user.accessTokenFromSocial)")
@@ -317,13 +319,16 @@ class LoginViewModel {
             user.authentication.do { authentication, error in
                 guard error == nil else { return }
                 guard let authentication = authentication else { return }
+                //소셜 액세스 토큰
                 self.user.accessTokenFromSocial = authentication.accessToken
                 
                 self.user.profileImg = user.profile?.imageURL(withDimension: 200)
                 
                 self.input.nickNameObserver.accept(user.profile?.name ?? "")
+                print("구글 유저 이름: \(user.profile?.name ?? "")")
                 LoginViewModel.socialType = "google"
                 print("구글 로그인 성공! 액세스 토큰: \(authentication.accessToken)")
+                UserDefaults.standard.setValue(authentication.accessToken, forKey: "SocialAccessToken")
                 observer.onNext(true)
             }
             return Disposables.create()
@@ -557,12 +562,20 @@ class LoginViewModel {
                             let accessToken = jsonData?["accessToken"] as? String
                             let refreshToken = jsonData?["refreshToken"] as? String
 //                            let accessTokenExpiresIn = jsonData?["accessTokenExpiresIn"] as? Date
-                            let accessTokenExpiresIn = jsonData?["accessTokenExpiresIn"] as? String
-                            self.user.accessTokenFromSocial = accessToken ?? ""//필요없을듯
+                            let accessTokenExpiresIn = jsonData?["accessTokenExpiresIn"] as? Int ?? Int()
+                            print("accessTokenExpiresIn 값: \(accessTokenExpiresIn)")
+                            let accessTokenExpireDate = Date(milliseconds: Int64(accessTokenExpiresIn) )
+                            print("accessTokenExpireDate 값: \(accessTokenExpireDate)")
+                            //accessTokenExpireDate 값: 1970-01-01 00:00:00 +0000
+//                            let dateFormatter = DateFormatter()
+                            
+                            //API 액세스 토큰
+                            self.user.accessToken = accessToken ?? ""
+//                            self.user.accessTokenFromSocial = accessToken ?? ""//필요없을듯
                             self.user.refreshToken = refreshToken ?? ""//필요없을듯
-                            UserDefaults.standard.set(self.user.accessTokenFromSocial, forKey: "accessToken")
+                            UserDefaults.standard.set(self.user.accessToken, forKey: "accessToken")
                             UserDefaults.standard.set(self.user.refreshToken, forKey: "refreshToken")
-                            UserDefaults.standard.set(accessTokenExpiresIn, forKey: "accessTokenExpiresIn")
+                            UserDefaults.standard.set(accessTokenExpireDate, forKey: "accessTokenExpiresIn")
 //                            _ = MyAuthenticationCredential(accessToken: accessToken ?? "", refreshToken: refreshToken ?? "", expiredAt: accessTokenExpiresIn ?? Date())
                             observer.onNext(self.user)
                         }
@@ -575,6 +588,70 @@ class LoginViewModel {
             }
             return Disposables.create()
         }
+    }
+    
+    func getStatus() {
+        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+        let url = "https://dev.finpo.kr/user/status/name"
+        let header: HTTPHeaders = [
+            "Content-Type": "application/json;charset=UTF-8",
+            "Authorization":"Bearer ".appending(accessToken)
+        ]
+        
+        AF.request(url, method: .get, encoding: JSONEncoding.default, headers: header)
+            .validate()
+            .responseJSON { (response) in
+                switch response.result {
+                case .success(let statusData):
+                    do {
+                        let jsonData = try JSONSerialization.data(withJSONObject: statusData, options: [])
+                        var json = try JSONDecoder().decode(UserStatusAPIResponse.self, from: jsonData)
+                        print("스태이터스 리스폰스 성공")
+                        for _ in 0..<json.data.count {
+                            json.data.sort {
+                                $0.id < $1.id
+                            }
+                        }
+                        self.output.getStatus.accept(json.data)
+                    } catch(let err) {
+                        print(err.localizedDescription)
+                    }                    
+                case .failure(let error):
+                    self.output.errorValue.accept(error)
+                }
+            }
+    }
+    
+    func getPurpose() {
+        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+        let url = "https://dev.finpo.kr/user/purpose/name"
+        let header: HTTPHeaders = [
+            "Content-Type": "application/json;charset=UTF-8",
+            "Authorization":"Bearer ".appending(accessToken)
+        ]
+        
+        AF.request(url, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: header)
+            .validate()
+            .responseJSON { (response) in
+                switch response.result {
+                case .success(let purposeData):
+                    do {
+                        let jsonData = try JSONSerialization.data(withJSONObject: purposeData, options: [])
+                        var json = try JSONDecoder().decode(UserPurposeAPIResponse.self, from: jsonData)
+                        print("유저 이용목적 리스폰스 성공")
+                        for _ in 0..<json.data.count {
+                            json.data.sort {
+                                $0.id < $1.id
+                            }
+                        }
+                        self.output.getPurpose.accept(json.data)
+                    } catch (let err) {
+                        print(err.localizedDescription)
+                    }
+                case .failure(let error):
+                    self.output.errorValue.accept(error)
+                }
+            }
     }
     
     
