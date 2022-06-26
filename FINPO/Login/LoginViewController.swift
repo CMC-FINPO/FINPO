@@ -14,7 +14,7 @@ import RxSwift
 import RxCocoa
 import Then
 import GoogleSignIn
-
+import KakaoSDKAuth
 
 class LoginViewController: UIViewController {
     let user = User.instance
@@ -111,20 +111,13 @@ class LoginViewController: UIViewController {
     }
     
     private func setInputBind() {
-        //TODO: apple Sign in Rx extension
-        //appleSignUpButton.rx.tap
-        
+        //TODO: 로그아웃 후 재 로그인 했을 때, HomeVC로 이동
+                                
         //KAKAO
         kakaoSignUpButton.rx.tap
             .take(1)
             .bind(to: viewModel.input.kakaoSignUpObserver)
             .disposed(by: disposeBag)
-        
-        //Google
-//        googleSignUpButton.rx.tap
-//            .take(1)
-//            .bind(to: viewModel.input.googleSignUpObserver)
-//            .disposed(by: disposeBag)
         
         googleSignUpButton.rx.tap
             .bind { [weak self] in
@@ -143,11 +136,10 @@ class LoginViewController: UIViewController {
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: { [weak self] valid in
                 if valid {
-                    let accesstoken = UserDefaults.standard.object(forKey: "accessToken") as? String
-                    if(accesstoken == self?.user.accessTokenFromSocial) {
+                    if(AuthApi.hasToken()) {
                         let vc = HomeTapViewController()
+                        vc.modalPresentationStyle = .fullScreen
                         self?.present(vc, animated: true)
-                        return
                     }
                     let vc = LoginDetailViewController()
                     self?.navigationController?.pushViewController(vc, animated: true)
@@ -171,6 +163,16 @@ class LoginViewController: UIViewController {
                 }
             }).disposed(by: disposeBag)
         
+        viewModel.output.goAppleSignUp
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: { [weak self] valid in
+                guard let self = self else { return }
+                if valid {
+                    let vc = LoginDetailViewController()
+                    self.navigationController?.pushViewController(vc, animated: true)
+                }
+            }).disposed(by: disposeBag)
+        
         //error
         viewModel.output.errorValue.asSignal()
             .emit(onNext: { [weak self] error in
@@ -181,26 +183,61 @@ class LoginViewController: UIViewController {
     }
     
     @objc private func appleSignUpButtonPressed() {
-        //TODO: move to nextVC
+        let appleIDProvider = ASAuthorizationAppleIDProvider()
+        let request = appleIDProvider.createRequest()
+        request.requestedScopes = [.fullName, .email]
+
+        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+        authorizationController.delegate = self
+        authorizationController.presentationContextProvider = self
+        authorizationController.performRequests()
     }
-    
-//    private func setUserInfo() {
-//        UserApi.shared.me { user, error in
-//            if let error = error {
-//                print(error)
-//            }
-//            else {
-//                print("me() access")
-//                //do something
-//                _ = user
-//                print("\(user?.kakaoAccount?.profile?.nickname)")
-//                if let url = user?.kakaoAccount?.profile?.profileImageUrl,
-//                   let data = try? Data(contentsOf: url) {
-//                    print(data)
-//                }
-//            }
-//        }
-//    }
 
 }
 
+extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        return self.view.window!
+    }
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        switch authorization.credential {
+        case let appleIDCredential as ASAuthorizationAppleIDCredential:
+            //Create an account in system
+            let userIdentifier = appleIDCredential.user
+            let nickName = appleIDCredential.fullName?.nickname
+            let email = appleIDCredential.email
+            
+            if let authorizationCode = appleIDCredential.authorizationCode,
+               let identifyToken = appleIDCredential.identityToken,
+               let authString = String(data: authorizationCode, encoding: .utf8),
+               let tokenString = String(data: identifyToken, encoding: .utf8) {
+                
+                print("authorizationCode: \(authorizationCode)")
+                print("identifyToken: \(identifyToken)")
+                print("authString: \(authString)")
+                print("tokenString: \(tokenString)")
+                UserDefaults.standard.setValue("apple", forKey: "socialType")
+                LoginViewModel.socialType = "apple"
+                viewModel.input.nickNameObserver.accept(nickName ?? "")
+                viewModel.user.accessTokenFromSocial = tokenString
+                if(userIdentifier != "") {
+                    viewModel.input.appleSignUpObserver.accept(())
+                }
+            }
+        case let passwordCredential as ASPasswordCredential:
+            let userName = passwordCredential.user
+            let password = passwordCredential.password
+            
+            print("username: \(userName)")
+            print("password: \(password)")
+            
+        default:
+            break
+        }
+    }
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        print("애플 로그인 실패: \(error.localizedDescription)")
+    }
+}

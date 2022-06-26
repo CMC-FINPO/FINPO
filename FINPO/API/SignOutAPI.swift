@@ -72,4 +72,33 @@ struct SignOutAPI {
                 }
             }
     }
+    
+    static func signoutWithAuthApple(accessToken: String, completion: @escaping (Result<Bool, Error>) -> Void) {
+        var valid: Bool = false
+        let url = "https://dev.finpo.kr/user/me"
+        let header: HTTPHeaders = [
+            "Content-Type": "application/json;charset=UTF-8",
+            "Authorization": "Bearer ".appending(accessToken)
+        ]
+        
+        AF.request(url, method: .delete, parameters: nil, encoding: URLEncoding.default, headers: header)
+            .validate()
+            .response { response in
+                switch response.result {
+                case .success(let data):
+                    if let data = data {
+                        do {
+                            let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                            let result = json?["data"] as? Bool ?? false
+                            print("서버 계정 삭제 성공여부: \(result)")
+                            valid = result
+                            completion(.success(valid))
+                        }
+                    }
+                case .failure(let error):
+                    completion(.failure(error))
+                    break
+                }
+            }
+    }
 }
