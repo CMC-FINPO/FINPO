@@ -77,10 +77,10 @@ class HomeTableViewCell: UITableViewCell {
         
         bookMarkButton.snp.makeConstraints {
             $0.top.equalTo(regionLabel.snp.top)
-            $0.leading.equalTo(regionLabel.snp.trailing).offset(5)
-            $0.trailing.equalToSuperview().inset(14)
+//            $0.leading.equalTo(regionLabel.snp.trailing).offset(5)
+            $0.trailing.equalToSuperview().inset(10)
             $0.height.equalTo(25)
-            $0.height.equalTo(26)
+            $0.width.equalTo(26)
         }
     }
 }

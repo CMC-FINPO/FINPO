@@ -23,7 +23,7 @@ class HomeViewModel {
     var output = OUTPUT()
     
     var dataSource = [Contents]()
-    var currentPage = 0
+    var currentPage = -1
     
     struct INPUT {
         let textFieldObserver = PublishRelay<String>()
@@ -42,22 +42,23 @@ class HomeViewModel {
     init() {
         ///INPUT
         input.loadMoreObserver
+            .debug()
             .subscribe(onNext: { _ in
-                self.input.currentPage.accept(self.currentPage + 1)
+                print("테이블 load more Oberver 이벤트 방출......")
+                self.currentPage += 1
+                self.input.currentPage.accept(self.currentPage)
             }).disposed(by: disposeBag)
         
         //테이블 끝 이벤트와 현재 textField 최신값을 가져오기
         _ = Observable.combineLatest(
-            input.loadMoreObserver.asObservable(),
             input.currentPage.asObservable(),
             input.textFieldObserver.asObservable())
-            .flatMap { _, page, text in
+            .flatMap { page, text in
                 SearchPolicyAPI.searchPolicyAPI(title: text, at: page)}
             .subscribe(onNext: { policyDat in
                 self.output.policyResult.accept(Action.loadMore(Contents(content: policyDat.data!.content)))
             }).disposed(by: disposeBag)
-           
-        
+                   
         ///OUTPUT
         input.textFieldObserver
             .debounce(RxTimeInterval.microseconds(10), scheduler: MainScheduler.instance)
