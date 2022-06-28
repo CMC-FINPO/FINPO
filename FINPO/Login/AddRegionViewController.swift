@@ -32,10 +32,9 @@ class AddRegionViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
 
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
@@ -47,9 +46,7 @@ class AddRegionViewController: UIViewController {
         mainRegionTableView.reloadData()
         localRegionTableView.reloadData()
     }
-    
-    
-    
+
     private var progressBar: UIProgressView = {
         let progressBar = UIProgressView()
         progressBar.trackTintColor = UIColor(hexString: "C4C4C5", alpha: 1)
@@ -88,7 +85,6 @@ class AddRegionViewController: UIViewController {
         cv.showsHorizontalScrollIndicator = false
         cv.layer.masksToBounds = true
         cv.layer.cornerRadius = 3
-        
         return cv
     }()
     
@@ -278,7 +274,16 @@ class AddRegionViewController: UIViewController {
                     self.isSelected = true
                 }
                 print("선택된 관심 지역 리스트 \(self.viewModel.user.interestRegion)")
-                self.viewModel.input.deleteTagObserver.accept(indexPath.item)
+//                self.viewModel.input.deleteTagObserver.accept(indexPath.item)
+                self.viewModel.input.deleteTagObserver.accept(indexPath.row)
+            }).disposed(by: disposeBag)
+        
+        confirmButton.rx.tap
+            .asDriver()
+            .drive(onNext: { [weak self] _ in
+                let vc = LoginSuccessViewController()
+                vc.modalPresentationStyle = .fullScreen
+                self?.navigationController?.pushViewController(vc, animated: true)
             }).disposed(by: disposeBag)
         
     }

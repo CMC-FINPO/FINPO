@@ -41,12 +41,16 @@ class LoginViewModel {
     var interested: [MainInterest] = []
     var unionRegion: [UniouRegion] = []
     var addedRegionCheck: [String] = []
+    var purposeBag: [Int] = []
+    static var isMainRegionSelected: Bool = false
+    static var isInterestRegionSelected: Bool = false
     static var socialType: String = ""
     
     let input = INPUT()
     var output = OUTPUT()
     
     struct INPUT {
+        let appleSignUpObserver = PublishRelay<Void>()
         let kakaoSignUpObserver = PublishRelay<Void>()
         let googleSignUpObserver = PublishRelay<GIDGoogleUser>()
         let nameObserver = PublishRelay<String>()
@@ -60,10 +64,13 @@ class LoginViewModel {
         let interestButtonTapped = PublishRelay<Void>()
         let semiSignupConfirmButtonTapped = PublishRelay<Void>()
         let deleteTagObserver = PublishRelay<Int>()
-        
+        let statusButtonTapped = PublishRelay<Int>()
+        let purposeButtonTapped = PublishRelay<Bool>()
+        let statusPurposeButtonTapped = PublishRelay<Void>()
     }
     
     struct OUTPUT {
+        var goAppleSignUp = PublishRelay<Bool>()
         var goKakaoSignUp = PublishRelay<Bool>()
         var goGoogleSignUp = PublishRelay<Bool>()
         var isNameValid = PublishRelay<Bool>()
@@ -87,11 +94,19 @@ class LoginViewModel {
         var isSemiSignupComplete = PublishRelay<User>()
         var getStatus = PublishRelay<[UserStatus]>()
         var getPurpose = PublishRelay<[UserPurpose]>()
+        var statusPurposeButtonValid: Driver<Bool> = PublishRelay<Bool>().asDriver(onErrorJustReturn: false)
+
         var errorValue = PublishRelay<Error>()
     }
     
     init() {        
         ///INPUT
+        
+        input.appleSignUpObserver
+            .subscribe(onNext: { [weak self] in
+                self?.output.goAppleSignUp.accept(true)
+            }).disposed(by: disposeBag)
+        
         input.kakaoSignUpObserver
             .flatMap { self.kakaoLogin() }
             .subscribe({ valid in
@@ -183,7 +198,22 @@ class LoginViewModel {
             .subscribe(onNext: {
                 [weak self] indexPath in
                 self?.output.regionButton.accept(.delete(index: indexPath))
+                self?.user.interestRegion.remove(at: indexPath)
+                print("삭제 후 갱신된 추가 관심지역 리스트: \(self?.user.interestRegion)")
             }).disposed(by: disposeBag)
+        
+        input.statusButtonTapped
+            .subscribe(onNext: { [weak self] int in
+                self?.user.status = int
+            }).disposed(by: disposeBag)
+        
+        input.statusPurposeButtonTapped
+            .flatMap { self.setStatusPurposeToUser() }
+            .subscribe(onNext: { _ in
+                print("유저 현재 상태 업데이트 성공!")
+            }).disposed(by: disposeBag)
+        
+        
                         
         ///OUTPUT
         output.genderValid = input.genderObserver.asDriver(onErrorJustReturn: .none)
@@ -234,22 +264,26 @@ class LoginViewModel {
                     let union = UniouRegion.init(unionRegionName: "\(self.mainRegion[self.subRegion[indexPath].id / 100].name) " + "\(self.subRegion[indexPath].name)")
                     //메인 거주 지역
                     self.output.unionedReion.accept([union])
-                    //추가 거주 지역
+                    //추가 관심 지역
                     self.output.regionButton.accept(.add(region: union))
                 }
-                //main 거주지역
-                if (self.user.region.contains(self.subRegion[indexPath].id)) {
-                    self.output.errorValue.accept(viewModelError.alreadyExistElement)
-                } else {
-                    self.user.region.append(self.subRegion[indexPath].id)
-                    print("viewmodel user selected region \(self.user.region)")
-                }
+                
                 //추가 관심지역
                 if(self.user.interestRegion.contains(self.subRegion[indexPath].id)) {
                     self.output.errorValue.accept(viewModelError.alreadyExistAccount)
-                } else {
+                } else if(self.user.region.count >= 1) {
                     self.user.interestRegion.append(self.subRegion[indexPath].id)
                 }
+                
+                //main 거주지역
+                if (self.user.region.contains(self.subRegion[indexPath].id)) {
+                    self.output.errorValue.accept(viewModelError.alreadyExistElement)
+                } else if(!LoginViewModel.isMainRegionSelected) {
+                    self.user.region.append(self.subRegion[indexPath].id)
+                    LoginViewModel.isMainRegionSelected = true
+                    print("viewmodel user selected region \(self.user.region)")
+                }
+
             }).disposed(by: disposeBag)
         
         output.regionButtonValid = input.regeionButtonObserver
@@ -280,6 +314,16 @@ class LoginViewModel {
                 }
             }).disposed(by: disposeBag)
         
+        output.statusPurposeButtonValid = Driver.combineLatest(
+            input.statusButtonTapped.asDriver(onErrorJustReturn: 0),
+            input.purposeButtonTapped.asDriver(onErrorJustReturn: false),
+            resultSelector: { status, purpose  in
+                if(status != 0 && purpose != false) {
+                    return true
+                } else { return false }
+            })
+            
+        
     }
     
     ///유저 정보 입력받기 전 kakao api server에서 accesstoken get
@@ -295,6 +339,7 @@ class LoginViewModel {
                             } else { ///회원정보 가져오기 성공 시
                                 self.input.nickNameObserver.accept(user?.kakaoAccount?.profile?.nickname ?? "")
                                 self.user.profileImg = user?.kakaoAccount?.profile?.profileImageUrl
+                                UserDefaults.standard.setValue("kakao", forKey: "socialType")
                                 LoginViewModel.socialType = "kakao"
                                 //TODO: get data using accessToken, refreshToken check here
 //                                PredictAPI.predictWithAuth()
@@ -326,6 +371,7 @@ class LoginViewModel {
                 
                 self.input.nickNameObserver.accept(user.profile?.name ?? "")
                 print("구글 유저 이름: \(user.profile?.name ?? "")")
+                UserDefaults.standard.setValue("google", forKey: "socialType")
                 LoginViewModel.socialType = "google"
                 print("구글 로그인 성공! 액세스 토큰: \(authentication.accessToken)")
                 UserDefaults.standard.setValue(authentication.accessToken, forKey: "SocialAccessToken")
@@ -526,8 +572,9 @@ class LoginViewModel {
     
     func semiSignup() -> Observable<User> {
         return Observable.create { observer in
-            var url = "https://dev.finpo.kr/oauth/register/".appending(LoginViewModel.socialType)
-            print("소셜타입: \(LoginViewModel.socialType)")
+            let socialType = UserDefaults.standard.string(forKey: "socialType") ?? ""
+            let url = "https://dev.finpo.kr/oauth/register/".appending(socialType)
+            print("소셜타입: \(socialType)")
             print(url)
             let parameter = self.user.toDic()
             print(parameter)
@@ -615,7 +662,7 @@ class LoginViewModel {
                         self.output.getStatus.accept(json.data)
                     } catch(let err) {
                         print(err.localizedDescription)
-                    }                    
+                    }
                 case .failure(let error):
                     self.output.errorValue.accept(error)
                 }
@@ -652,6 +699,44 @@ class LoginViewModel {
                     self.output.errorValue.accept(error)
                 }
             }
+    }
+    
+    func setStatusPurposeToUser() -> Observable<Bool> {
+        return Observable.create { [weak self] observer in
+            guard let self = self else { return Disposables.create() }
+            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            let url = "https://dev.finpo.kr/user/me"
+            let header: HTTPHeaders = [
+                "Content-Type": "application/json;charset=UTF-8",
+                "Authorization":"Bearer ".appending(accessToken)
+            ]
+            let parameter: Parameters = [
+                "statusId": String(self.user.status),
+                "purposeIds": self.purposeBag
+            ]
+            
+            AF.request(url, method: .put, parameters: parameter, encoding: JSONEncoding.default, headers: header)
+                .validate()
+                .response { (response) in
+                    switch response.result {
+                    case .success(let data):
+                        if let data = data {
+                            do {
+                                let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                                let result = json?["data"] as? [String: Any]
+                                let statusId = result?["statusId"] as? Int
+                                print("스테이터스 Id: \(statusId)")
+                                self.user.status = statusId ?? Int()
+                                print(self.user.status)
+                                observer.onNext(true)
+                            }
+                        }
+                    case .failure(let err):
+                        observer.onError(err)
+                    }
+                }
+            return Disposables.create()
+        }
     }
     
     
