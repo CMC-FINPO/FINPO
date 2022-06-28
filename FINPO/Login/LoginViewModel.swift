@@ -42,6 +42,8 @@ class LoginViewModel {
     var unionRegion: [UniouRegion] = []
     var addedRegionCheck: [String] = []
     var purposeBag: [Int] = []
+    var selectedInterestRegion: [Int] = []
+    
     static var isMainRegionSelected: Bool = false
     static var isInterestRegionSelected: Bool = false
     static var socialType: String = ""
@@ -67,6 +69,7 @@ class LoginViewModel {
         let statusButtonTapped = PublishRelay<Int>()
         let purposeButtonTapped = PublishRelay<Bool>()
         let statusPurposeButtonTapped = PublishRelay<Void>()
+        let interestRegionDataSetObserver = PublishRelay<Void>()
     }
     
     struct OUTPUT {
@@ -198,8 +201,10 @@ class LoginViewModel {
             .subscribe(onNext: {
                 [weak self] indexPath in
                 self?.output.regionButton.accept(.delete(index: indexPath))
-                self?.user.interestRegion.remove(at: indexPath)
-                print("삭제 후 갱신된 추가 관심지역 리스트: \(self?.user.interestRegion)")
+                self?.selectedInterestRegion.remove(at: indexPath)
+                print("삭제 후 갱신된 추가 관심지역 리스트: \(self?.selectedInterestRegion)")
+//                self?.user.interestRegion.remove(at: indexPath)
+//                print("삭제 후 갱신된 추가 관심지역 리스트: \(self?.user.interestRegion)")
             }).disposed(by: disposeBag)
         
         input.statusButtonTapped
@@ -213,7 +218,11 @@ class LoginViewModel {
                 print("유저 현재 상태 업데이트 성공!")
             }).disposed(by: disposeBag)
         
-        
+        input.interestRegionDataSetObserver
+            .subscribe(onNext: { [weak self] _ in
+                self?.user.interestRegion = self?.selectedInterestRegion ?? [Int]()
+                print("최종 선택된 추가 관심 지역: \(self?.user.interestRegion)")
+            }).disposed(by: disposeBag)
                         
         ///OUTPUT
         output.genderValid = input.genderObserver.asDriver(onErrorJustReturn: .none)
@@ -272,7 +281,9 @@ class LoginViewModel {
                 if(self.user.interestRegion.contains(self.subRegion[indexPath].id)) {
                     self.output.errorValue.accept(viewModelError.alreadyExistAccount)
                 } else if(self.user.region.count >= 1) {
-                    self.user.interestRegion.append(self.subRegion[indexPath].id)
+                    self.selectedInterestRegion.append(self.subRegion[indexPath].id)
+                    print("관심지역 추가 됨: \(self.selectedInterestRegion)")
+//                    self.user.interestRegion.append(self.subRegion[indexPath].id)
                 }
                 
                 //main 거주지역
@@ -322,8 +333,7 @@ class LoginViewModel {
                     return true
                 } else { return false }
             })
-            
-        
+              
     }
     
     ///유저 정보 입력받기 전 kakao api server에서 accesstoken get

@@ -281,6 +281,7 @@ class AddRegionViewController: UIViewController {
         confirmButton.rx.tap
             .asDriver()
             .drive(onNext: { [weak self] _ in
+                self?.viewModel.input.interestRegionDataSetObserver.accept(())
                 let vc = LoginSuccessViewController()
                 vc.modalPresentationStyle = .fullScreen
                 self?.navigationController?.pushViewController(vc, animated: true)
