@@ -17,26 +17,45 @@ class HomeViewModel {
         case loadMore(Contents)
     }
     
+    enum SortAction {
+        case latest
+        case popular
+    }
+    
+    enum TagLoadAction {
+        case isFirstLoad([DataDetail])
+        case delete(at: Int)
+        case add([DataDetail])
+    }
+    
     let disposeBag = DisposeBag()
     
     var input = INPUT()
     var output = OUTPUT()
     
     var dataSource = [Contents]()
-    var currentPage = -1
+    var currentPage = 0
+    var currentText = ""
     
     struct INPUT {
         let textFieldObserver = PublishRelay<String>()
-//        let loadObserver = PublishRelay<Void>()
         let loadMoreObserver = PublishRelay<Void>()
-//        let currentPage = BehaviorRelay<Int>(value: 0)
         let currentPage = PublishRelay<Int>()
+        let sortActionObserver = PublishRelay<SortAction>()
+        
+        let isFirstLoadObserver = PublishRelay<Void>()
+        let tagLoadActionObserver = PublishRelay<TagLoadAction>()
+        
+
+        var deleteTagObserver = PublishRelay<Int>()
+        
     }
     
     struct OUTPUT {
         var textFieldResult = PublishRelay<Contents>()
-        
         var policyResult = PublishRelay<Action>()
+        var isFirstLoadOutput = PublishRelay<MyRegionList>()
+        var regionButtonTapped = PublishRelay<RegionActionType>()
     }
     
     init() {
@@ -49,34 +68,61 @@ class HomeViewModel {
                 self.input.currentPage.accept(self.currentPage)
             }).disposed(by: disposeBag)
         
-        //테이블 끝 이벤트와 현재 textField 최신값을 가져오기
-        _ = Observable.combineLatest(
-            input.currentPage.asObservable(),
-            input.textFieldObserver.asObservable())
-            .flatMap { page, text in
-                SearchPolicyAPI.searchPolicyAPI(title: text, at: page)}
-            .subscribe(onNext: { policyDat in
-                self.output.policyResult.accept(Action.loadMore(Contents(content: policyDat.data!.content)))
+        input.isFirstLoadObserver
+            .flatMap { CallMyRegionAPI.callMyRegion() }
+            .subscribe(onNext: { list in
+//                self.output.isFirstLoadOutput.accept(list)
+                self.input.tagLoadActionObserver.accept(.isFirstLoad(list.data))
             }).disposed(by: disposeBag)
-                   
+        
+        input.deleteTagObserver
+            .subscribe(onNext: { index in
+                self.output.regionButtonTapped.accept(RegionActionType.delete(index: index))
+            }).disposed(by: disposeBag)
+        
         ///OUTPUT
-        input.textFieldObserver
-            .debounce(RxTimeInterval.microseconds(10), scheduler: MainScheduler.instance)
-            .flatMap { SearchPolicyAPI.searchPolicyAPI(title: $0) }
-            .subscribe(onNext: { policyDat in
-//                self.output.textFieldResult.accept(Contents(content: policyDat.data!.content))
-                /// 맨 처음 로드 값 넣어주기
-                self.currentPage = 0
-//                self.input.currentPage.accept(0)
-                self.output.policyResult.accept(Action.load([Contents(content: policyDat.data!.content)]))
-            }).disposed(by: disposeBag)
+                
+        //정렬했을 때 -> Page 0 불러오기
+        _ = Observable.combineLatest(
+            input.sortActionObserver.asObservable(),
+            input.textFieldObserver.asObservable())
+//        .take(1)
+        .flatMap({ (action, text) -> Observable<SearchPolicyResponse> in
+            switch action {
+            case .latest:
+                self.currentText = text
+                return SearchPolicyAPI.searchPolicyAPI(title: text)
+            case .popular:
+                self.currentText = text
+                return SearchPolicyAPI.searchPolicyAsPopular(title: text)
+            }
+        })
+        .subscribe(onNext: { policyData in
+            self.output.policyResult.accept(Action.load([Contents(content: policyData.data!.content)]))
+        }).disposed(by: disposeBag)
+        
+        //스크롤 내렸을 때 loadMore 하기
+        _ = Observable.combineLatest(
+            input.loadMoreObserver.asObservable(),
+            input.currentPage.asObservable(),
+//            input.textFieldObserver.asObservable(),
+            input.sortActionObserver.asObservable())
+        .flatMap({ (_, page, action) -> Observable<SearchPolicyResponse> in
+            switch action {
+            case .latest:
+                print("스크롤 한 뒤 현재 페이지: \(page)")
+                print("스크롤 한 뒤 현재 페이지: \(self.currentText)")
+                return SearchPolicyAPI.searchPolicyAPI(title: self.currentText, at: page)
+            case .popular:
+                print("스크롤 한 뒤 현재 페이지: \(page)")
+                return SearchPolicyAPI.searchPolicyAsPopular(title: self.currentText, at: page)
+            }
+        })
+        .subscribe(onNext: { addedData in
+            self.output.policyResult.accept(Action.loadMore(Contents(content: addedData.data!.content)))
+        }).disposed(by: disposeBag)
         
         
-        
-//        self.output.textFieldResult
-//            .subscribe(onNext: { policy in
-//                self.output.policyResult.accept(Action.load([policy]))
-//            }).disposed(by: disposeBag)
         
     }
 }
