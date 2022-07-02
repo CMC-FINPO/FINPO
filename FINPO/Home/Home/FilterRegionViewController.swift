@@ -12,10 +12,15 @@ import RxCocoa
 import SnapKit
 
 class FilterRegionViewController: UIViewController {
+    let vc = FilterViewController()
     
     let disposeBag = DisposeBag()
-    let viewModel = HomeViewModel()
+//    let viewModel = HomeViewModel.instance
+    var viewModel = HomeViewModel()
     let tableViewModel = LoginViewModel()
+    var isSelected: Bool = true
+    static var isFirstLoad = true
+    static var filteredDataList = [DataDetail]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -60,7 +65,9 @@ class FilterRegionViewController: UIViewController {
             self.dimmedView.alpha = 0
         } completion: { _ in
             // once done, dismiss without animation
+            NotificationCenter.default.post(name: NSNotification.Name("DismissDetailView"), object: nil, userInfo: nil)
             self.dismiss(animated: false)
+
         }
     }
     
@@ -119,6 +126,33 @@ class FilterRegionViewController: UIViewController {
         currentContainerHeight = height
     }
     
+    fileprivate func createDefaultTag() {
+        let dummyLabel = UILabel().then {
+            $0.font = .systemFont(ofSize: 14)
+            $0.text = "선택한 곳이 없어요..😅"
+            $0.sizeToFit()
+        }
+        let size = dummyLabel.frame.size
+        
+        let views = UIView(frame: CGRect(x: 5, y: 5, width: size.width, height: size.height))
+        views.layer.borderWidth = 1
+        views.layer.borderColor = UIColor(hexString: "A2A2A2").cgColor
+        views.bounds = views.frame.insetBy(dx: -5, dy: -5)
+        views.layer.cornerRadius = 3
+        let titleLabel = UILabel()
+        titleLabel.font = UIFont(name: "AppleSDGothicNeo-SemiBold", size: 14)
+        titleLabel.textColor = UIColor(hexString: "A2A2A2")
+        titleLabel.text = "선택한 곳이 없어요..😅"
+
+        self.regionTagCollectionView.addSubview(views)
+        views.addSubview(titleLabel)
+        titleLabel.snp.makeConstraints {
+            $0.center.equalToSuperview()
+            $0.height.equalTo(size.height)
+            $0.width.equalTo(size.width)
+        }
+    }
+    
     var containerViewHeightConstraint: NSLayoutConstraint?
     var containerViewBottomConstraint: NSLayoutConstraint?
     
@@ -136,6 +170,20 @@ class FilterRegionViewController: UIViewController {
         view.backgroundColor = .black
         view.alpha = maxDimmedAlpha
         return view
+    }()
+    
+    private var regionCenterLabel: UILabel = {
+        let label = UILabel()
+        label.text = "지역 선택"
+        label.textColor = UIColor(hexString: "000000")
+        label.font = UIFont(name: "AppleSDGothicNeo-Semibold", size: 18)
+        return label
+    }()
+    
+    private var separatorLineView: UIView = {
+        let separator = UIView()
+        separator.backgroundColor = UIColor.systemGray.withAlphaComponent(0.3)
+        return separator
     }()
     
     private var regionTitleLabel: UILabel = {
@@ -178,6 +226,18 @@ class FilterRegionViewController: UIViewController {
         tv.layoutIfNeeded()
         return tv
     }()
+    
+    private var confirmButton: UIButton = {
+        let button = UIButton()
+        button.titleLabel?.font = UIFont(name: "AppleSDGothicNeo-SemiBold", size: 18)
+        button.setTitle("선택 완료", for: .normal)
+        button.setTitleColor(UIColor(hexString: "616161"), for: .normal)
+        button.backgroundColor = UIColor(hexString: "F0F0F0")
+        button.layer.cornerRadius = 5
+        button.isEnabled = false
+        button.layer.masksToBounds = true
+        return button
+    }()
 
     let defaultHeight: CGFloat = 600
     let dismissibleHeight: CGFloat = 300
@@ -186,6 +246,7 @@ class FilterRegionViewController: UIViewController {
     var currentContainerHeight: CGFloat = 600
     
     fileprivate func setAttribute() {
+        
         regionTagCollectionView.delegate = self
         regionTagCollectionView.register(TagCollectionViewCell.self, forCellWithReuseIdentifier: "regionTagCollectionViewCell")
         
@@ -221,9 +282,22 @@ class FilterRegionViewController: UIViewController {
         containerViewHeightConstraint?.isActive = true
         containerViewBottomConstraint?.isActive = true
         
+        containerView.addSubview(regionCenterLabel)
+        regionCenterLabel.snp.makeConstraints {
+            $0.top.equalTo(containerView.safeAreaLayoutGuide.snp.top).offset(15)
+            $0.centerX.equalToSuperview()
+        }
+        
+        containerView.addSubview(separatorLineView)
+        separatorLineView.snp.makeConstraints {
+            $0.top.equalTo(regionCenterLabel.snp.bottom).offset(16)
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(1)
+        }
+        
         containerView.addSubview(regionTitleLabel)
         regionTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(containerView.safeAreaLayoutGuide.snp.top).offset(15)
+            $0.top.equalTo(separatorLineView.snp.bottom).offset(15)
             $0.leading.equalToSuperview().inset(21)
         }
         
@@ -240,7 +314,8 @@ class FilterRegionViewController: UIViewController {
             $0.top.equalTo(regionTagCollectionView.snp.bottom).offset(30)
             $0.leading.equalToSuperview().inset(15)
             $0.width.equalTo(100)
-            $0.height.equalTo(180)
+            $0.bottom.equalTo(containerView.safeAreaLayoutGuide.snp.bottom).offset(-90)
+//            $0.height.equalTo(180)
         }
         
         containerView.addSubview(localRegionTableView)
@@ -248,7 +323,14 @@ class FilterRegionViewController: UIViewController {
             $0.top.equalTo(mainRegionTableView.snp.top)
             $0.leading.equalTo(mainRegionTableView.snp.trailing)
             $0.trailing.equalToSuperview().inset(15)
-            $0.bottom.equalTo(containerView.safeAreaLayoutGuide.snp.bottom).offset(-30)
+            $0.bottom.equalTo(containerView.safeAreaLayoutGuide.snp.bottom).offset(-90)
+        }
+        
+        containerView.addSubview(confirmButton)
+        confirmButton.snp.makeConstraints {
+            $0.bottom.equalTo(containerView.safeAreaLayoutGuide.snp.bottom).offset(-10)
+            $0.leading.trailing.equalToSuperview().inset(21)
+            $0.height.equalTo(55)
         }
         
     }
@@ -256,9 +338,55 @@ class FilterRegionViewController: UIViewController {
         rx.viewWillAppear.take(1).asDriver { _ in return .never()}
             .drive(onNext: { [weak self] _ in
                 guard let self = self else { return }
-                self.viewModel.input.isFirstLoadObserver.accept(())
+                if FilterRegionViewController.isFirstLoad {
+                    self.viewModel.input.isFirstLoadObserver.accept(())
+                } else {
+                    self.viewModel.input.tagLoadActionObserver.accept(.isFirstLoad(FilterRegionViewController.filteredDataList))
+                }
                 self.tableViewModel.getMainRegionDataToTableView()
                 self.tableViewModel.getSubRegionDataToTableView(0)
+                self.viewModel.input.addMainRegionIndexObserver.accept(0)
+            }).disposed(by: disposeBag)
+        
+        mainRegionTableView.rx.itemSelected
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] indexPath in
+                self?.tableViewModel.getSubRegionDataToTableView(indexPath.row)
+                self?.viewModel.input.addMainRegionIndexObserver.accept(indexPath.row)
+                print("메인 지역 인덱스 방출: \(indexPath.row)")
+            }).disposed(by: disposeBag)
+        
+        localRegionTableView.rx.itemSelected
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] indexPath in
+                guard let self = self else { return }
+                if self.isSelected == false {
+                    self.regionTagCollectionView.subviews[(self.regionTagCollectionView.subviews.count)-1].removeFromSuperview()
+                    self.isSelected = true
+                }
+                print("localRegion 이벤트 방출")
+                FilterViewController.isEdited = true
+                self.viewModel.input.confirmButtonValid.accept(true)
+                self.viewModel.input.addTagObserver.accept(indexPath.row)
+
+            }).disposed(by: disposeBag)
+        
+        regionTagCollectionView.rx.itemSelected
+            .subscribe(onNext: { [weak self] indexPath in
+                guard let self = self else { return }
+                if self.regionTagCollectionView.visibleCells.count <= 1 {
+                    self.createDefaultTag()
+                    self.isSelected = false
+                    self.viewModel.input.confirmButtonValid.accept(false)
+                }
+                self.viewModel.input.deleteTagObserver.accept(indexPath.row)
+            }).disposed(by: disposeBag)
+        
+        confirmButton.rx.tap
+            .asDriver()
+            .drive(onNext: { [weak self] _ in
+                self?.animateDismissView()
+//                FilterRegionViewController.filteredDataList.removeAll()
             }).disposed(by: disposeBag)
     }
     
@@ -267,23 +395,39 @@ class FilterRegionViewController: UIViewController {
             .scan(into: [DataDetail]()) { DataDetail, action in
                 switch action {
                 case .isFirstLoad(let datalist):
-                    for i in 0..<datalist.count {
-                        DataDetail.append(datalist[i])
+                    if FilterRegionViewController.isFirstLoad {
+                        for i in 0..<datalist.count {
+                            DataDetail.append(datalist[i])
+                        }
+                        FilterRegionViewController.isFirstLoad = false
+                    } else {
+                        for i in 0..<datalist.count {
+                            DataDetail.append(datalist[i])
+                        }
                     }
                 case .delete(let index):
-                    break
+                    DataDetail.remove(at: index)
                 case .add(let datalist):
-                    break
+                    print("이벤트 받음: \(datalist.region.name)")
+                    DataDetail.append(datalist)
                 }
             }
             .asObservable()
+            .observe(on: MainScheduler.instance)
             .bind(to: regionTagCollectionView.rx.items(cellIdentifier: "regionTagCollectionViewCell", cellType: TagCollectionViewCell.self)) {
                 (index: Int, element: DataDetail, cell) in
                 cell.setLayout()
-                cell.tagLabel.text = (element.region.parent?.name ?? "") + ( element.region.name)
+//                cell.tagLabel.text = (element.region.parent?.name ?? "") + ( element.region.name)
+                if (element.region.id == 0 || element.region.id == 100 || element.region.id == 200) {
+                    cell.tagLabel.text = (element.region.name)
+                } else {
+                    cell.tagLabel.text = (element.region.parent?.name ?? "") + ( element.region.name)
+                }
                 cell.layer.borderColor = UIColor(hexString: "5B43EF").cgColor
                 cell.layer.borderWidth = 1
                 cell.layer.cornerRadius = 3
+                //여기서 최근 regionId, subregion title 저장
+                
             }.disposed(by: disposeBag)
         
         tableViewModel.output.mainRegionUpdate
@@ -305,6 +449,20 @@ class FilterRegionViewController: UIViewController {
                 cell.layoutMargins = UIEdgeInsets.zero
                 cell.separatorInset = UIEdgeInsets.zero
             }.disposed(by: disposeBag)
+        
+        viewModel.output.confirmButtonValidOutput
+            .drive(onNext: { [weak self] valid in
+                guard let self = self else { return }
+                if valid {
+                    self.confirmButton.isEnabled = valid
+                    self.confirmButton.backgroundColor = UIColor(hexString: "5B43EF")
+                    self.confirmButton.setTitleColor(UIColor(hexString: "FFFFFF"), for: .normal)
+                } else {
+                    self.confirmButton.isEnabled = valid
+                    self.confirmButton.backgroundColor = UIColor(hexString: "F0F0F0")
+                    self.confirmButton.setTitleColor(UIColor(hexString: "616161"), for: .normal)
+                }
+            }).disposed(by: disposeBag)
     }
 }
 

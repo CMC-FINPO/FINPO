@@ -12,10 +12,18 @@ import RxCocoa
 import SnapKit
 
 class FilterViewController: UIViewController, UIViewControllerTransitioningDelegate {
-    
+
     let disposeBag = DisposeBag()
     let viewModel = HomeViewModel()
-
+    
+    var selectedCategory = [Int]()
+    var selectedRegion = [Int]()
+    
+    static var isFirstLoad = true
+    static var isEdited = false
+    static var selectedCategories: [Int] = [Int]()
+    static var selectedRegions: [Int] = [Int]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -23,6 +31,33 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         setLayout()
         setInputBind()
         setOutputBind()
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.didDismissDetailNotification(_:)),
+            name: NSNotification.Name("DismissDetailView"),
+            object: nil
+        )
+        
+    }
+    
+    @objc func didDismissDetailNotification(_ notification: Notification) {
+        self.viewModel.input.tagLoadActionObserver.accept(.isFirstLoad(FilterRegionViewController.filteredDataList))
+        self.viewModel.input.categoryObserver.accept(())
+}
+    
+    override func viewWillAppear(_ animated: Bool) {
+        self.tabBarController?.tabBar.isHidden = true
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        self.tabBarController?.tabBar.isHidden = false
+
+//        FilterViewController.isEdited = false
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+//        FilterViewController.isFirstLoad = true
     }
     
     private lazy var backdropView: UIView = {
@@ -75,6 +110,90 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         return view
     }()
     
+    private var separatorLineView: UIView = {
+        let separator = UIView()
+        separator.backgroundColor = UIColor.systemGray.withAlphaComponent(0.3)
+        return separator
+    }()
+    
+    private var jobTitleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "일자리"
+        label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
+        label.textColor = UIColor(hexString: "000000")
+        return label
+    }()
+    
+    private var jobCategoryCollectionView: UICollectionView = {
+        let flow = LeftAlignedCollectionViewFlowLayout()
+        flow.minimumLineSpacing = 3
+        flow.minimumInteritemSpacing = 10
+        flow.sectionInset = UIEdgeInsets(top: 5, left: 2, bottom: 5, right: 2)
+        
+        let cv = UICollectionView(frame: .init(x: 0, y: 0, width: 100, height: 100), collectionViewLayout: flow)
+        cv.showsVerticalScrollIndicator = false
+        cv.showsHorizontalScrollIndicator = false
+        cv.allowsMultipleSelection = true
+        return cv
+    }()
+    
+    private var educationTitleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "교육 문화"
+        label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
+        label.textColor = UIColor(hexString: "000000")
+        return label
+    }()
+    
+    private var educationCategoryCollectionView: UICollectionView = {
+        let flow = LeftAlignedCollectionViewFlowLayout()
+        flow.minimumLineSpacing = 3
+        flow.minimumInteritemSpacing = 10
+        flow.sectionInset = UIEdgeInsets(top: 5, left: 2, bottom: 5, right: 2)
+        
+        let cv = UICollectionView(frame: .init(x: 0, y: 0, width: 100, height: 100), collectionViewLayout: flow)
+        cv.showsVerticalScrollIndicator = false
+        cv.showsHorizontalScrollIndicator = false
+        cv.allowsMultipleSelection = true
+        return cv
+    }()
+    
+    private var participationTitleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "참여 공간"
+        label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
+        label.textColor = UIColor(hexString: "000000")
+        return label
+    }()
+    
+    private var participationCategoryCollectionView: UICollectionView = {
+//        let flow = LeftAlignedCollectionViewFlowLayout()
+        let flow = UICollectionViewFlowLayout()
+        flow.minimumLineSpacing = 3
+//        flow.minimumInteritemSpacing = 20
+        flow.sectionInset = UIEdgeInsets(top: 5, left: 2, bottom: 5, right: 2)
+        
+        let cv = UICollectionView(frame: .init(x: 0, y: 0, width: 100, height: 100), collectionViewLayout: flow)
+        cv.showsVerticalScrollIndicator = false
+        cv.showsHorizontalScrollIndicator = false
+        cv.allowsMultipleSelection = true
+        return cv
+    }()
+    
+    private var confirmButton: UIButton = {
+        let button = UIButton()
+        button.titleLabel?.font = UIFont(name: "AppleSDGothicNeo-SemiBold", size: 18)
+        button.setTitle("선택 완료", for: .normal)
+        button.setTitleColor(UIColor(hexString: "616161"), for: .normal)
+        button.backgroundColor = UIColor(hexString: "F0F0F0")
+        button.layer.cornerRadius = 5
+        //카테고리, 지역 테스트용
+        button.isEnabled = true
+//        button.isEnabled = false
+        button.layer.masksToBounds = true
+        return button
+    }()
+    
     fileprivate func setAttribute() {
         view.backgroundColor = .white
         
@@ -95,11 +214,20 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         //region 선택 view
         let gesture = UITapGestureRecognizer(target: self, action: #selector(presentFilterView))
         guideForAddRegionView.addGestureRecognizer(gesture)
+        
+        //카테고리 Collection view
+        jobCategoryCollectionView.register(FilterCollectionViewCell.self, forCellWithReuseIdentifier: "jobCategoryCollectionView")
+        
+        educationCategoryCollectionView.register(FilterCollectionViewCell.self, forCellWithReuseIdentifier: "educationCategoryCollectionView")
+
+        participationCategoryCollectionView.register(FilterCollectionViewCell.self, forCellWithReuseIdentifier: "participationCategoryCollectionView")
     }
                                              
     @objc fileprivate func presentFilterView() {
         let vc = FilterRegionViewController()
+//        vc.hidesBottomBarWhenPushed = true
         vc.modalPresentationStyle = .overCurrentContext
+//        FilterViewController.isEdited = true
         self.present(vc, animated: false)
     }
     
@@ -107,8 +235,7 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         
     }
     
-    fileprivate func setLayout() {
-        
+    fileprivate func setLayout() {  
         view.addSubview(regionTitleLabel)
         regionTitleLabel.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(15)
@@ -131,13 +258,77 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
             $0.height.equalTo(55)
         }
         
+        view.addSubview(separatorLineView)
+        separatorLineView.snp.makeConstraints {
+            $0.top.equalTo(guideForAddRegionView.snp.bottom).offset(20)
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(1)
+        }
+        
+        view.addSubview(jobTitleLabel)
+        jobTitleLabel.snp.makeConstraints {
+            $0.top.equalTo(separatorLineView.snp.bottom).offset(20)
+            $0.leading.equalTo(guideForAddRegionView.snp.leading)
+        }
+        
+        view.addSubview(jobCategoryCollectionView)
+        jobCategoryCollectionView.snp.makeConstraints {
+            $0.top.equalTo(jobTitleLabel.snp.bottom).offset(10)
+            $0.leading.equalTo(jobTitleLabel.snp.leading)
+            $0.trailing.equalToSuperview().inset(69)
+            $0.height.equalTo(50)
+        }
+        
+        view.addSubview(educationTitleLabel)
+        educationTitleLabel.snp.makeConstraints {
+            $0.top.equalTo(jobCategoryCollectionView.snp.bottom).offset(20)
+            $0.leading.equalTo(jobTitleLabel.snp.leading)
+        }
+        
+        view.addSubview(educationCategoryCollectionView)
+        educationCategoryCollectionView.snp.makeConstraints {
+            $0.top.equalTo(educationTitleLabel.snp.bottom).offset(10)
+            $0.leading.equalTo(educationTitleLabel.snp.leading)
+            $0.trailing.equalToSuperview().inset(186)
+            $0.height.equalTo(50)
+        }
+        
+        view.addSubview(participationTitleLabel)
+        participationTitleLabel.snp.makeConstraints {
+            $0.top.equalTo(educationCategoryCollectionView.snp.bottom).offset(20)
+            $0.leading.equalTo(jobTitleLabel.snp.leading)
+        }
+        
+        view.addSubview(participationCategoryCollectionView)
+        participationCategoryCollectionView.snp.makeConstraints {
+            $0.top.equalTo(participationTitleLabel.snp.bottom).offset(10)
+            $0.leading.equalTo(jobTitleLabel.snp.leading)
+            $0.trailing.equalToSuperview().inset(109)
+            $0.height.equalTo(50)
+        }
+        
+        view.addSubview(confirmButton)
+        confirmButton.snp.makeConstraints {
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-30)
+            $0.leading.trailing.equalToSuperview().inset(15)
+            $0.height.equalTo(50)
+        }
+        
     }
     
     fileprivate func setInputBind() {
-        rx.viewWillAppear.take(1).asDriver { _ in return .never()}
+        rx.viewWillAppear.asDriver { _ in return .never()}
             .drive(onNext: { [weak self] _ in
                 guard let self = self else { return }
-                self.viewModel.input.isFirstLoadObserver.accept(())
+                if FilterViewController.isFirstLoad { //맨처음 True
+                    self.viewModel.input.isFirstLoadObserver.accept(())
+                } else {
+                    //두번째부턴 FilterRegionVC의 filteredDataList로만 관리
+                    print("다시 로드될 때 !!!")
+                    self.viewModel.input.tagLoadActionObserver.accept(.isFirstLoad(FilterRegionViewController.filteredDataList))
+                }
+                
+                self.viewModel.input.categoryObserver.accept(())
             }).disposed(by: disposeBag)
         
         regionTagCollectionView.rx.itemSelected
@@ -145,8 +336,98 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
                 guard let self = self else { return }
                 if self.regionTagCollectionView.visibleCells.count <= 1 {
                     self.createDefaultTag()
+                    self.viewModel.input.confirmButtonValid.accept(false)
                 }
-                
+                self.viewModel.input.deleteTagObserver.accept(indexPath.row)
+            }).disposed(by: disposeBag)
+        
+        
+        ///일자리 - idx 0,1,2 -> 5,6,7
+        jobCategoryCollectionView.rx.itemSelected
+            .subscribe(onNext: { [weak self] indexPath in
+                guard let self = self else { return }
+                if indexPath.row == 0 {
+                    self.selectedCategory.append(5)
+                } else if indexPath.row == 1 {
+                    self.selectedCategory.append(6)
+                } else {
+                    self.selectedCategory.append(7)
+                }
+            }).disposed(by: disposeBag)
+        
+        jobCategoryCollectionView.rx.itemDeselected
+            .subscribe(onNext: { [weak self] indexPath in
+                guard let self = self else { return }
+                if indexPath.row == 0 {
+                    self.selectedCategory = self.selectedCategory.filter { $0 != 5}
+                } else if indexPath.row == 1 {
+                    self.selectedCategory = self.selectedCategory.filter { $0 != 6}
+                } else {
+                    self.selectedCategory = self.selectedCategory.filter { $0 != 7}
+                }
+            }).disposed(by: disposeBag)
+        
+        ///교육 문화
+        educationCategoryCollectionView.rx.itemSelected
+            .subscribe(onNext: { [weak self] indexPath in
+                guard let self = self else { return }
+                if indexPath.row == 0 {
+                    self.selectedCategory.append(10)
+                } else {
+                    self.selectedCategory.append(11)
+                }
+            }).disposed(by: disposeBag)
+        
+        educationCategoryCollectionView.rx.itemDeselected
+            .subscribe(onNext: { [weak self] indexPath in
+                guard let self = self else { return }
+                if indexPath.row == 0 {
+                    self.selectedCategory = self.selectedCategory.filter { $0 != 10}
+                } else {
+                    self.selectedCategory = self.selectedCategory.filter { $0 != 11 }
+                }
+            }).disposed(by: disposeBag)
+        
+        ///참여 공간
+        participationCategoryCollectionView.rx.itemSelected
+            .subscribe(onNext: { [weak self] indexPath in
+                guard let self = self else { return }
+                if indexPath.row == 0 {
+                    self.selectedCategory.append(12)
+                } else if indexPath.row == 1 {
+                    self.selectedCategory.append(13)
+                } else {
+                    self.selectedCategory.append(14)
+                }
+            }).disposed(by: disposeBag)
+        
+        participationCategoryCollectionView.rx.itemDeselected
+            .subscribe(onNext: { [weak self] indexPath in
+                guard let self = self else { return }
+                if indexPath.row == 0 {
+                    self.selectedCategory = self.selectedCategory.filter { $0 != 12}
+                } else if indexPath.row == 1 {
+                    self.selectedCategory = self.selectedCategory.filter { $0 != 13}
+                } else {
+                    self.selectedCategory = self.selectedCategory.filter { $0 != 14}
+                }
+            }).disposed(by: disposeBag)
+        
+        ///필터 완료 버튼
+        confirmButton.rx.tap
+            .asDriver()
+            .drive(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                if self.selectedCategory.count > 0 {
+                    print("넘기는 카테고리: \(self.selectedCategory)")
+                    print("넘기는 카테고리: \(self.selectedRegion)")
+                    
+                    FilterViewController.selectedCategories = self.selectedCategory
+                    FilterViewController.selectedRegions = self.selectedRegion
+                    
+                    NotificationCenter.default.post(name: NSNotification.Name("sendFilteredInfo"), object: nil, userInfo: nil)
+                }
+                self.navigationController?.popViewController(animated: true)
             }).disposed(by: disposeBag)
     }
     
@@ -155,24 +436,89 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
             .scan(into: [DataDetail]()) { DataDetail, action in
                 switch action {
                 case .isFirstLoad(let datalist):
+                    self.selectedRegion.removeAll()
                     for i in 0..<datalist.count {
-                        DataDetail.append(datalist[i])
+                        let list = datalist
+//                        DataDetail.append(datalist[i])
+                        DataDetail = list
+                        self.selectedRegion.append(datalist[i].region.id)
+                        print("첫 로드 시 선택된 지역: \(self.selectedRegion)")
+                        print("필터된 데이터 리스트 \(FilterRegionViewController.filteredDataList)")
                     }
+                    FilterViewController.isFirstLoad = false
+                    
                 case .delete(let index):
-                    break
+                    DataDetail.remove(at: index)
+                    self.selectedRegion.remove(at: index)
+                    print("삭제된 후 선택된 지역: \(self.selectedRegion)")
+
                 case .add(let datalist):
-                    break
+                    print("추가된 후 선택된 지역: \(self.selectedRegion)")
                 }
             }
             .asObservable()
             .bind(to: regionTagCollectionView.rx.items(cellIdentifier: "regionTagCollectionViewCell", cellType: TagCollectionViewCell.self)) {
                 (index: Int, element: DataDetail, cell) in
                 cell.setLayout()
-                cell.tagLabel.text = (element.region.parent?.name ?? "") + ( element.region.name)
+                if (element.region.id == 0 || element.region.id == 100 || element.region.id == 200) {
+                    cell.tagLabel.text = (element.region.name)
+                } else {
+                    cell.tagLabel.text = (element.region.parent?.name ?? "") + ( element.region.name)
+                }
                 cell.layer.borderColor = UIColor(hexString: "5B43EF").cgColor
                 cell.layer.borderWidth = 1
                 cell.layer.cornerRadius = 3
+ 
+                //여기서 추가한 횟수만큼 들어감
+//                FilterRegionViewController.filteredDataList.append(element)
             }.disposed(by: disposeBag)
+        
+        viewModel.output.getJobData
+            .scan(into: [ChildDetail](), accumulator: { childDatail, arrays in
+                for i in 0..<arrays.data[0].childs.count {
+                    childDatail.append(arrays.data[0].childs[i])
+                }
+            })
+            .debug()
+            .asObservable()
+            .observe(on: MainScheduler.instance)
+            .bind(to: jobCategoryCollectionView.rx.items(cellIdentifier: "jobCategoryCollectionView", cellType: FilterCollectionViewCell.self)) { (index: Int, element: ChildDetail, cell) in
+                cell.tagLabel.text = element.name
+                cell.tagLabel.sizeToFit()
+                cell.frame.size = CGSize(width: cell.tagLabel.frame.width+20, height: 40)
+            }.disposed(by: disposeBag)
+        
+        viewModel.output.getJobData
+            .scan(into: [ChildDetail](), accumulator: { childDatail, arrays in
+                for i in 0..<arrays.data[2].childs.count {
+                    childDatail.append(arrays.data[2].childs[i])
+                }
+            })
+            .debug()
+            .asObservable()
+            .observe(on: MainScheduler.instance)
+            .bind(to: educationCategoryCollectionView.rx.items(cellIdentifier: "educationCategoryCollectionView", cellType: FilterCollectionViewCell.self)) {
+                (index: Int, element: ChildDetail, cell) in
+                cell.tagLabel.text = element.name
+                cell.tagLabel.sizeToFit()
+                cell.frame.size = CGSize(width: cell.tagLabel.frame.width+20, height: 40)
+            }.disposed(by: disposeBag)
+
+        viewModel.output.getJobData
+            .scan(into: [ChildDetail](), accumulator: { childDatail, arrays in
+                for i in 0..<arrays.data[3].childs.count {
+                    childDatail.append(arrays.data[3].childs[i])
+                }
+            })
+            .asObservable()
+            .observe(on: MainScheduler.instance)
+            .bind(to: participationCategoryCollectionView.rx.items(cellIdentifier: "participationCategoryCollectionView", cellType: FilterCollectionViewCell.self)) {
+                (index: Int, element: ChildDetail, cell) in
+                cell.tagLabel.text = element.name
+                cell.tagLabel.sizeToFit()
+                cell.frame.size = CGSize(width: cell.tagLabel.frame.width+20, height: 40)
+            }.disposed(by: disposeBag)
+        
         
     }
     
@@ -206,16 +552,42 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
 }
 
 extension FilterViewController: UICollectionViewDelegateFlowLayout {
+    
+//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+//        return UIEdgeInsets(top: 5, left: 2, bottom: 5, right: 10)
+//    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        if collectionView == participationCategoryCollectionView {
+            return 15
+        } else { return 3 }
+    }
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        if collectionView == regionTagCollectionView {
+            let dummyLabel = UILabel().then {
+                $0.font = .systemFont(ofSize: 16)
+                $0.text = "길이 측정용 "
+                $0.sizeToFit()
+            }
+            let size = dummyLabel.frame.size
 
-        let dummyLabel = UILabel().then {
-            $0.font = .systemFont(ofSize: 16)
-            $0.text = "길이 측정용 "
-            $0.sizeToFit()
+            return CGSize(width: size.width+12, height: size.height+15)
         }
-        let size = dummyLabel.frame.size
-
-        return CGSize(width: size.width+12, height: size.height+15)
+//        else if collectionView == jobCategoryCollectionView {
+//            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "jobCategoryCollectionView", for: indexPath) as! FilterCollectionViewCell
+//            return CGSize(width: cell.tagLabel.frame.width, height: 40)
+//        } else if collectionView == educationCategoryCollectionView {
+//            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "educationCategoryCollectionView", for: indexPath) as! FilterCollectionViewCell
+//            return CGSize(width: cell.tagLabel.frame.width, height: 40)
+//        } else if collectionView == participationCategoryCollectionView {
+//            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "participationCategoryCollectionView", for: indexPath) as! FilterCollectionViewCell
+//            cell.tagLabel.sizeToFit()
+//            return CGSize(width: cell.tagLabel.frame.width, height: 40)
+//        }
+        else {
+            return CGSize(width: 10, height: 10)
+        }
     }
 }
 
