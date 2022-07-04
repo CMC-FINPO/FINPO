@@ -17,6 +17,8 @@ class HomeDetailViewController: UIViewController {
     let viewModel = HomeViewModel()
     let disposeBag = DisposeBag()
     
+    let customAlert = MyAlert()
+    
     var serviceStringData = [String]()
     
     var serviceInforVC = ServiceInfoViewController()
@@ -121,9 +123,19 @@ class HomeDetailViewController: UIViewController {
         vc.view.translatesAutoresizingMaskIntoConstraints = false
         return vc
     }()
- 
+         
     fileprivate func setAttribute() {
+        ///NavigationControl
         navigationController?.navigationBar.topItem?.backButtonTitle = ""
+        var addPolicyImage = UIImage(named: "plus")
+        addPolicyImage = addPolicyImage?.withRenderingMode(.alwaysOriginal)
+        var addBookmarkImage = UIImage(named: "bookmark_top")
+        addBookmarkImage = addBookmarkImage?.withRenderingMode(.alwaysOriginal)
+        
+        self.navigationItem.rightBarButtonItems = [
+            UIBarButtonItem(image: addPolicyImage, style: .plain, target: self, action: #selector(didAddPolicyButtonTapped)),
+            UIBarButtonItem(image: addBookmarkImage, style: .plain, target: self, action: #selector(didAddBookmarkButtonTapped))
+        ]
         
         ///segmentedControl
         self.segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor(hexString: "000000")], for: .normal)
@@ -147,9 +159,43 @@ class HomeDetailViewController: UIViewController {
         self.currentPage = control.selectedSegmentIndex
     }
     
+    @objc private func didAddPolicyButtonTapped() {
+//        let ac = UIAlertController(title: "이 정책에 참여하셨나요?", message: "마이페이지에서 내가 참여한 정책들을 편하게 찾아볼 수 있어요", preferredStyle: .actionSheet)
+//        ac.setTitle(font: UIFont(name: "AppleSDGothicNeo-Semibold", size: 27), color: UIColor(hexString: "000000"))
+//        ac.setMessage(font: UIFont(name: "AppleSDGothicNeo-Medium", size: 18), color: UIColor(hexString: "494949"))
+//        let didParticipatedAction = UIAlertAction(
+//            title: "참여했어요",
+//            style: .default) { action in
+//
+//            }
+//        didParticipatedAction.setValue(UIColor(hexString: "FFFFFF"), forKey: "titleTextColor")
+//        didParticipatedAction.setValue(UIColor(hexString: "5B43EF"), forKey: "")
+//        let imageView = UIImageView(frame: CGRect(x: view.center.x, y: 50, width: 100, height: 100))
+//        imageView.image = UIImage(named: "participate")
+//        ac.view.addSubview(imageView)
+//        let height = NSLayoutConstraint(item: ac.view, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: view.frame.width)
+//        let width = NSLayoutConstraint(item: ac.view, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: view.frame.height/2)
+//        ac.addAction(didParticipatedAction)
+//        ac.view.addConstraint(height)
+//        ac.view.addConstraint(width)
+//        self.present(ac, animated: true)
+ 
+        customAlert.showAlert(with: "이 정책에 참여하셨나요?", message: "마이페이지에서 내가 참여한\n정책들을 편하게 찾아볼 수 있어요", on: self)
+        
+    }
+    
+    @objc func dismissAlert() {
+        customAlert.dismissAlert()
+    }
+    
+    @objc private func didAddBookmarkButtonTapped() {
+        
+    }
+    
     fileprivate func setLayout() {
         view.addSubview(regionLabel)
-        regionLabel.snp.makeConstraints {             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(5)
+        regionLabel.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(5)
             $0.leading.equalToSuperview().inset(21)
         }
         
@@ -282,6 +328,99 @@ class HomeDetailViewController: UIViewController {
             }.disposed(by: disposeBag)
             
     
+    }
+}
+
+class MyAlert {
+    
+    struct Constants {
+        static let backgroundAlphaTo: CGFloat = 0.6
+    }
+    
+    private let backgroundView: UIView = {
+        let backgroundView = UIView()
+        backgroundView.backgroundColor = .black
+        backgroundView.alpha = 0
+        return backgroundView
+    }()
+    
+    private let alertView: UIView = {
+        let alert = UIView()
+        alert.backgroundColor = .white
+        alert.layer.masksToBounds = true
+        alert.layer.cornerRadius = 12
+        return alert
+    }()
+    
+    private var mytargetView: UIView?
+    
+    func showAlert(with title: String, message: String, on viewController: UIViewController) {
+        guard let targetView = viewController.view else { return }
+        
+        mytargetView = targetView
+        
+        backgroundView.frame = targetView.bounds
+        targetView.addSubview(backgroundView)
+        
+        targetView.addSubview(alertView)
+        alertView.frame = CGRect(x: 0, y: targetView.frame.height/2, width: targetView.frame.size.width, height: targetView.frame.height/2)
+        
+        let imageView = UIImageView(frame: CGRect(x: targetView.bounds.midX - 50, y: 58, width: 100, height: 100))
+        imageView.image = UIImage(named: "participate")
+        alertView.addSubview(imageView)
+        
+        let titleLabel = UILabel(frame: CGRect(x: 0, y: 130, width: alertView.frame.size.width, height: 169))
+        titleLabel.font = UIFont(name: "AppleSDGothicNeo-Semibold", size: 27)
+        titleLabel.text = title
+        titleLabel.textAlignment = .center
+        alertView.addSubview(titleLabel)
+        
+        let messageLabel = UILabel(frame: CGRect(x: 0, y: 180, width: alertView.frame.size.width, height: 179))
+        messageLabel.numberOfLines = 0
+        messageLabel.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 18)
+        messageLabel.text = message
+        messageLabel.textAlignment = .center
+        alertView.addSubview(messageLabel)
+        
+        let button = UIButton(frame: CGRect(x: 20, y: alertView.frame.size.height-100, width: alertView.frame.size.width-40, height: 55))
+        button.setTitle("참여했어요", for: .normal)
+        button.addTarget(self, action: #selector(dismissAlert), for: .touchUpInside)
+        button.backgroundColor = UIColor(hexString: "5B43EF")
+        button.layer.masksToBounds = true
+        button.layer.cornerRadius = 5
+        alertView.addSubview(button)
+        
+        UIView.animate(withDuration: 0.25, animations: {
+            self.backgroundView.alpha = Constants.backgroundAlphaTo
+        }, completion: { done in
+//            if done {
+//                UIView.animate(withDuration: 0.25, animations: {
+//                    self.alertView.center = targetView.center
+//                })
+//            }
+        })
+    }
+    
+    @objc func dismissAlert() {
+        guard let targetView = mytargetView else { return }
+        
+        UIView.animate(withDuration: 0.25, animations: {
+            self.alertView.frame = CGRect(x: 0,
+                                          y: targetView.frame.size.height,
+                                          width: targetView.frame.size.width,
+                                          height: 300)
+        }, completion: { done in
+            if done {
+                UIView.animate(withDuration: 0.25, animations: {
+                    self.backgroundView.alpha = 0
+                }, completion: { done in
+                    if done {
+                        self.alertView.removeFromSuperview()
+                        self.backgroundView.removeFromSuperview()
+                    }
+                })
+            }
+        })
     }
 }
 
