@@ -13,12 +13,13 @@ import SnapKit
 
 class HomeViewController: UIViewController {
     
+    let user = User.instance
+    
     let disposeBag = DisposeBag()
     let viewModel = HomeViewModel()
     
     private var dataSource = [ContentsDetail]()
     private var currenetPage = -1
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,6 +28,18 @@ class HomeViewController: UIViewController {
         setLayout()
         setInputBind()
         setOutputBind()
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.didDismissDetailNotification(_:)),
+            name: NSNotification.Name("sendFilteredInfo"),
+            object: nil
+        )
+    }
+
+    @objc fileprivate func didDismissDetailNotification(_ notification: Notification) {
+        self.viewModel.input.selectedCategoryObserver.accept(FilterViewController.selectedCategories)
+        self.viewModel.input.filteredRegionObserver.accept(FilterViewController.selectedRegions)
     }
     
     private var searchTextField: UITextField = {
@@ -128,8 +141,13 @@ class HomeViewController: UIViewController {
     fileprivate func setInputBind() {
         rx.viewWillAppear.take(1).asDriver{ _ in return .never()}
             .drive(onNext: { [weak self] _ in
-                self?.viewModel.input.textFieldObserver.accept(" ")
-                self?.viewModel.input.sortActionObserver.accept(.latest)
+                guard let self = self else { return }
+                self.viewModel.input.textFieldObserver.accept("")
+                self.viewModel.input.sortActionObserver.accept(.latest)
+                self.viewModel.input.selectedCategoryObserver.accept(self.user.category)
+                self.viewModel.input.filteredRegionObserver.accept(self.user.region)
+                print("유저 카테고리: \(self.user.category)")
+                print("유저 기본 지역: \(self.user.region)")
             }).disposed(by: disposeBag)
         
         searchTextField.rx.controlEvent([.editingDidEnd])
@@ -184,6 +202,15 @@ class HomeViewController: UIViewController {
                 vc.modalPresentationStyle = .fullScreen
                 self?.navigationController?.pushViewController(vc, animated: true)
             }).disposed(by: disposeBag)
+        
+        searchTableView.rx.itemSelected
+            .subscribe(onNext: { indexPath in
+                let vc = HomeDetailViewController()
+                vc.initialize(id: HomeViewModel.detailId[indexPath.row])
+                print("아이디 값: \(HomeViewModel.detailId[indexPath.row])")
+                vc.modalPresentationStyle = .fullScreen
+                self.navigationController?.pushViewController(vc, animated: true)
+            }).disposed(by: disposeBag)
     }
     
     fileprivate func setOutputBind() {
@@ -220,9 +247,9 @@ class HomeViewController: UIViewController {
                 cell.regionLabel.text = region
                 cell.policyNameLabel.text = element.title
                 cell.organizationLabel.text = element.institution ?? "미정"
+                
             }.disposed(by: disposeBag)
         
-                    
     }
     
 }
