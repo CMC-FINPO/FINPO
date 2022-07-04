@@ -11,13 +11,23 @@ import RxSwift
 import RxCocoa
 import SnapKit
 
+enum addPolicyStep {
+    case first
+    case second
+    case last
+}
+
 class HomeDetailViewController: UIViewController {
+    
+
     
     var acceptedDetailId: Int?
     let viewModel = HomeViewModel()
     let disposeBag = DisposeBag()
     
     let customAlert = MyAlert()
+    let secondAlert = MyAlert()
+//    let memoAlert = MemoAlert()
     
     var serviceStringData = [String]()
     
@@ -132,9 +142,8 @@ class HomeDetailViewController: UIViewController {
         var addBookmarkImage = UIImage(named: "bookmark_top")
         addBookmarkImage = addBookmarkImage?.withRenderingMode(.alwaysOriginal)
         
-        self.navigationItem.rightBarButtonItems = [
-            UIBarButtonItem(image: addPolicyImage, style: .plain, target: self, action: #selector(didAddPolicyButtonTapped)),
-            UIBarButtonItem(image: addBookmarkImage, style: .plain, target: self, action: #selector(didAddBookmarkButtonTapped))
+        self.navigationItem.rightBarButtonItems = [UIBarButtonItem(image: addBookmarkImage, style: .plain, target: self, action: #selector(didAddBookmarkButtonTapped)),
+            UIBarButtonItem(image: addPolicyImage, style: .plain, target: self, action: #selector(didAddPolicyButtonTapped))
         ]
         
         ///segmentedControl
@@ -146,8 +155,7 @@ class HomeDetailViewController: UIViewController {
         self.segmentedControl.selectedSegmentIndex = 0
         //segmentedControl 값이 변경될 때, pageVC에도 적용시켜주기 위해 selector 추가
         self.changeValue(control: self.segmentedControl)
-        
-        
+                
         ///사업 내용
         self.serviceInforVC.policyTypeCollectionView.register(PolicyTypeCollectionViewCell.self, forCellWithReuseIdentifier: "ServiceTypeCollectionViewCell")
         self.serviceInforVC.serviceInfoCollectionView.register(ServiceTypeCollectionViewCell.self, forCellWithReuseIdentifier: "ServiceTypeCollectionViewCell")
@@ -160,28 +168,8 @@ class HomeDetailViewController: UIViewController {
     }
     
     @objc private func didAddPolicyButtonTapped() {
-//        let ac = UIAlertController(title: "이 정책에 참여하셨나요?", message: "마이페이지에서 내가 참여한 정책들을 편하게 찾아볼 수 있어요", preferredStyle: .actionSheet)
-//        ac.setTitle(font: UIFont(name: "AppleSDGothicNeo-Semibold", size: 27), color: UIColor(hexString: "000000"))
-//        ac.setMessage(font: UIFont(name: "AppleSDGothicNeo-Medium", size: 18), color: UIColor(hexString: "494949"))
-//        let didParticipatedAction = UIAlertAction(
-//            title: "참여했어요",
-//            style: .default) { action in
-//
-//            }
-//        didParticipatedAction.setValue(UIColor(hexString: "FFFFFF"), forKey: "titleTextColor")
-//        didParticipatedAction.setValue(UIColor(hexString: "5B43EF"), forKey: "")
-//        let imageView = UIImageView(frame: CGRect(x: view.center.x, y: 50, width: 100, height: 100))
-//        imageView.image = UIImage(named: "participate")
-//        ac.view.addSubview(imageView)
-//        let height = NSLayoutConstraint(item: ac.view, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: view.frame.width)
-//        let width = NSLayoutConstraint(item: ac.view, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: view.frame.height/2)
-//        ac.addAction(didParticipatedAction)
-//        ac.view.addConstraint(height)
-//        ac.view.addConstraint(width)
-//        self.present(ac, animated: true)
- 
-        customAlert.showAlert(with: "이 정책에 참여하셨나요?", message: "마이페이지에서 내가 참여한\n정책들을 편하게 찾아볼 수 있어요", on: self)
-        
+        customAlert.showAlert(with: "이 정책에 참여하셨나요?", message: "마이페이지에서 내가 참여한\n정책들을 편하게 찾아볼 수 있어요", on: self, step: .first)
+        customAlert.setupPolicyId(with: acceptedDetailId ?? 1000, on: self.viewModel)
     }
     
     @objc func dismissAlert() {
@@ -249,8 +237,7 @@ class HomeDetailViewController: UIViewController {
         }
         
     }
-    
-    
+        
     fileprivate func setInputBind() {
         rx.viewWillAppear.take(1).asDriver { _ in .never()}
             .drive(onNext: { [weak self] _ in
@@ -327,7 +314,31 @@ class HomeDetailViewController: UIViewController {
                 cell.configureLabels()
             }.disposed(by: disposeBag)
             
-    
+        viewModel.output.mypolicyAddOutput
+//            .distinctUntilChanged()
+            .asObservable()
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] valid in
+                guard let self = self else { return }
+                if valid {
+                    self.secondAlert.setupPolicyId(with: self.acceptedDetailId ?? 10000, on: self.viewModel)
+                    self.secondAlert.showAlert(with: "참여 정책 목록에 추가했어요", message: "추가한 참여 정책은\n마이페이지에서 확인할 수 있어요", on: self, step: .second)
+                }
+            }).disposed(by: disposeBag)
+        
+        viewModel.output.goToMemoAlert
+            .subscribe(onNext: { [weak self] valid in
+                guard let self = self else { return }
+//                self.memoAlert.setupPolicyId(with: self.acceptedDetailId ?? 10000, on: self.viewModel)
+//                self.memoAlert.showAlert(on: self)
+                let vc = MemoViewController()
+                vc.modalPresentationStyle = .overCurrentContext
+                vc.setupProperty(id: self.acceptedDetailId ?? 10000, on: self.viewModel)
+                self.present(vc, animated: false)
+            }).disposed(by: disposeBag)
+        
+
+        
     }
 }
 
@@ -353,42 +364,111 @@ class MyAlert {
     }()
     
     private var mytargetView: UIView?
+    private var selectedPolicyId: Int?
+    private var viewModel: HomeViewModel?
     
-    func showAlert(with title: String, message: String, on viewController: UIViewController) {
+    func setupPolicyId(with id: Int, on viewModel: HomeViewModel) {
+        self.viewModel = viewModel
+        self.selectedPolicyId = id
+        print("커스텀 알럿에 들어온 Id 값: \(self.selectedPolicyId ?? 10000)")
+    }
+    
+    func showAlert(with title: String, message: String, on viewController: UIViewController, step: addPolicyStep) {
         guard let targetView = viewController.view else { return }
         
         mytargetView = targetView
         
         backgroundView.frame = targetView.bounds
         targetView.addSubview(backgroundView)
+        let gesture = UITapGestureRecognizer(target: self, action: #selector(dismissAlert))
+        backgroundView.addGestureRecognizer(gesture)
+
         
-        targetView.addSubview(alertView)
-        alertView.frame = CGRect(x: 0, y: targetView.frame.height/2, width: targetView.frame.size.width, height: targetView.frame.height/2)
-        
-        let imageView = UIImageView(frame: CGRect(x: targetView.bounds.midX - 50, y: 58, width: 100, height: 100))
-        imageView.image = UIImage(named: "participate")
-        alertView.addSubview(imageView)
-        
-        let titleLabel = UILabel(frame: CGRect(x: 0, y: 130, width: alertView.frame.size.width, height: 169))
-        titleLabel.font = UIFont(name: "AppleSDGothicNeo-Semibold", size: 27)
-        titleLabel.text = title
-        titleLabel.textAlignment = .center
-        alertView.addSubview(titleLabel)
-        
-        let messageLabel = UILabel(frame: CGRect(x: 0, y: 180, width: alertView.frame.size.width, height: 179))
-        messageLabel.numberOfLines = 0
-        messageLabel.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 18)
-        messageLabel.text = message
-        messageLabel.textAlignment = .center
-        alertView.addSubview(messageLabel)
-        
-        let button = UIButton(frame: CGRect(x: 20, y: alertView.frame.size.height-100, width: alertView.frame.size.width-40, height: 55))
-        button.setTitle("참여했어요", for: .normal)
-        button.addTarget(self, action: #selector(dismissAlert), for: .touchUpInside)
-        button.backgroundColor = UIColor(hexString: "5B43EF")
-        button.layer.masksToBounds = true
-        button.layer.cornerRadius = 5
-        alertView.addSubview(button)
+        switch step {
+        case .first:
+            targetView.addSubview(alertView)
+            alertView.frame = CGRect(x: 0, y: targetView.frame.height/2, width: targetView.frame.size.width, height: targetView.frame.height/2)
+            
+            let imageView = UIImageView(frame: CGRect(x: targetView.bounds.midX - 50, y: 58, width: 100, height: 100))
+            imageView.image = UIImage(named: "participate")
+            alertView.addSubview(imageView)
+            
+            let titleLabel = UILabel(frame: CGRect(x: 0, y: 130, width: alertView.frame.size.width, height: 169))
+            titleLabel.font = UIFont(name: "AppleSDGothicNeo-Semibold", size: 27)
+            titleLabel.text = title
+            titleLabel.textAlignment = .center
+            alertView.addSubview(titleLabel)
+            
+            let messageLabel = UILabel(frame: CGRect(x: 0, y: 180, width: alertView.frame.size.width, height: 179))
+            messageLabel.numberOfLines = 0
+            messageLabel.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 18)
+            messageLabel.text = message
+            let attributedText = NSMutableAttributedString(string: messageLabel.text!)
+            attributedText.addAttribute(.foregroundColor, value: UIColor(hexString: "5B43EF"), range: (messageLabel.text! as NSString).range(of: "마이페이지"))
+            messageLabel.attributedText = attributedText
+            messageLabel.textAlignment = .center
+            alertView.addSubview(messageLabel)
+
+            let button = UIButton(frame: CGRect(x: 20, y: alertView.frame.size.height-100, width: alertView.frame.size.width-40, height: 55))
+            button.setTitle("참여했어요", for: .normal)
+            button.addTarget(self, action: #selector(setInputBind), for: .touchUpInside)
+            button.backgroundColor = UIColor(hexString: "5B43EF")
+            button.layer.masksToBounds = true
+            button.layer.cornerRadius = 5
+            alertView.addSubview(button)
+            
+        case .second:
+            targetView.addSubview(alertView)
+            alertView.frame = CGRect(x: 0, y: targetView.frame.height/2, width: targetView.frame.size.width, height: targetView.frame.height/2)
+            
+            let imageView = UIImageView(frame: CGRect(x: targetView.bounds.midX - 40, y: 58, width: 80, height: 80))
+            imageView.image = UIImage(named: "add_confirm")
+            alertView.addSubview(imageView)
+            
+            let titleLabel = UILabel(frame: CGRect(x: 0, y: 130, width: alertView.frame.size.width, height: 169))
+            titleLabel.font = UIFont(name: "AppleSDGothicNeo-Semibold", size: 27)
+            titleLabel.text = title
+            titleLabel.textAlignment = .center
+            alertView.addSubview(titleLabel)
+            
+            let messageLabel = UILabel(frame: CGRect(x: 0, y: 180, width: alertView.frame.size.width, height: 179))
+            messageLabel.numberOfLines = 0
+            messageLabel.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 18)
+            messageLabel.text = message
+            let attributedText = NSMutableAttributedString(string: messageLabel.text!)
+            attributedText.addAttribute(.foregroundColor, value: UIColor(hexString: "5B43EF"), range: (messageLabel.text! as NSString).range(of: "마이페이지"))
+            messageLabel.attributedText = attributedText
+            messageLabel.textAlignment = .center
+            alertView.addSubview(messageLabel)
+            
+            let cancelButton = UIButton(frame: CGRect(x: 20, y: alertView.frame.size.height-100, width: alertView.frame.size.width/2 - 30, height: 55))
+            cancelButton.setTitle("닫기", for: .normal)
+            cancelButton.addTarget(self, action: #selector(dismissAlert), for: .touchUpInside)
+            cancelButton.backgroundColor = UIColor(hexString: "F0F0F0")
+            cancelButton.setTitleColor(UIColor(hexString: "616161"), for: .normal)
+            cancelButton.layer.masksToBounds = true
+            cancelButton.layer.cornerRadius = 5
+            alertView.addSubview(cancelButton)
+            
+            let memoButton = UIButton(frame: CGRect(x: alertView.frame.size.width/2 + 10, y: alertView.frame.size.height-100, width: alertView.frame.size.width/2 - 30, height: 55))
+            memoButton.setTitle("메모 작성하기", for: .normal)
+            memoButton.addTarget(self, action: #selector(presentMemoAlert), for: .touchUpInside)
+            memoButton.backgroundColor = UIColor(hexString: "5B43EF")
+            memoButton.setTitleColor(UIColor(hexString: "FFFFFF"), for: .normal)
+            memoButton.layer.masksToBounds = true
+            memoButton.layer.cornerRadius = 5
+            alertView.addSubview(memoButton)
+            
+        case .last:
+            targetView.addSubview(alertView)
+            alertView.frame = CGRect(x: 0, y: targetView.frame.height - targetView.frame.height/3, width: targetView.frame.size.width, height: targetView.frame.height/3)
+            
+            let titleLabel = UILabel(frame: CGRect(x: 0, y: 20, width: alertView.frame.size.width, height: 50))
+            titleLabel.font = UIFont(name: "AppleSDGothicNeo-Semibold", size: 27)
+            titleLabel.text = title
+            titleLabel.textAlignment = .center
+            alertView.addSubview(titleLabel)
+        }
         
         UIView.animate(withDuration: 0.25, animations: {
             self.backgroundView.alpha = Constants.backgroundAlphaTo
@@ -401,7 +481,13 @@ class MyAlert {
         })
     }
     
-    @objc func dismissAlert() {
+    @objc func setInputBind() {
+        guard let viewModel = viewModel else { return }
+        dismissAlert()
+        viewModel.input.mypolicyAddObserver.accept(self.selectedPolicyId ?? 10000)
+    }
+    
+    @objc fileprivate func dismissAlert() {
         guard let targetView = mytargetView else { return }
         
         UIView.animate(withDuration: 0.25, animations: {
@@ -415,6 +501,7 @@ class MyAlert {
                     self.backgroundView.alpha = 0
                 }, completion: { done in
                     if done {
+                        print("알럿뷰 삭제됨")
                         self.alertView.removeFromSuperview()
                         self.backgroundView.removeFromSuperview()
                     }
@@ -422,7 +509,109 @@ class MyAlert {
             }
         })
     }
+    
+    @objc func presentMemoAlert() {
+        print("tapped")
+        guard let viewModel = viewModel else { return }
+        dismissAlert()
+        viewModel.input.presentMemoAlertObserver.accept(())
+        print("메모알럿 트리거 발동")
+    }
 }
+
+//class MemoAlert {
+//    struct Constants {
+//        static let backgroundAlphaTo: CGFloat = 0.6
+//    }
+//
+//    let textViewPlaceHolder = "정책을 참여한 날짜, 이유 등 메모를 남겨보세요"
+//
+//    private let backgroundView: UIView = {
+//        let backgroundView = UIView()
+//        backgroundView.backgroundColor = .black
+//        backgroundView.alpha = 0
+//        return backgroundView
+//    }()
+//
+//    private let alertView: UIView = {
+//        let alert = UIView()
+//        alert.backgroundColor = .white
+//        alert.layer.masksToBounds = true
+//        alert.layer.cornerRadius = 12
+//        return alert
+//    }()
+//
+//    private var textField: UITextView = {
+//        let tf = UITextView()
+//        tf.font = UIFont(name: "AppleSDGothicNeo-Regular", size: 18)
+//        tf.textColor = UIColor(hexString: "494949")
+//        tf.textAlignment = .left
+//        return tf
+//    }()
+//
+//    private var mytargetView: UIView?
+//    private var selectedPolicyId: Int?
+//    private var viewModel: HomeViewModel?
+//
+//    func setupPolicyId(with id: Int, on viewModel: HomeViewModel) {
+//        self.viewModel = viewModel
+//        self.selectedPolicyId = id
+//        print("메모 알럿에 들어온 Id 값: \(self.selectedPolicyId ?? 10000)")
+//    }
+//
+//    func showAlert(on viewController: UIViewController) {
+//        guard let targetView = viewController.view else { return }
+//
+//        mytargetView = targetView
+//
+//        backgroundView.frame = targetView.bounds
+//        targetView.addSubview(backgroundView)
+//        let gesture = UITapGestureRecognizer(target: self, action: #selector(dismissAlert))
+//        backgroundView.addGestureRecognizer(gesture)
+//
+//        targetView.addSubview(alertView)
+//        alertView.frame = CGRect(x: 0, y: targetView.frame.height - targetView.frame.height/3, width: targetView.frame.size.width, height: targetView.frame.height/3)
+//
+//        let titleLabel = UILabel(frame: CGRect(x: 0, y: 10, width: alertView.frame.size.width, height: 35))
+//        titleLabel.font = UIFont(name: "AppleSDGothicNeo-Semibold", size: 18)
+//        titleLabel.textAlignment = .center
+//        titleLabel.text = "메모 작성"
+//        alertView.addSubview(titleLabel)
+//
+//        alertView.addSubview(textField)
+//        textField.frame = CGRect(x: 5, y: 50, width: alertView.frame.size.width, height: 120)
+//
+//        UIView.animate(withDuration: 0.25, animations: {
+//            self.backgroundView.alpha = Constants.backgroundAlphaTo
+//        })
+//
+//    }
+//
+//    @objc fileprivate func dismissAlert() {
+//        guard let targetView = mytargetView else { return }
+//
+//        UIView.animate(withDuration: 0.25, animations: {
+//            self.alertView.frame = CGRect(x: 0,
+//                                          y: targetView.frame.size.height,
+//                                          width: targetView.frame.size.width,
+//                                          height: 300)
+//        }, completion: { done in
+//            if done {
+//                UIView.animate(withDuration: 0.25, animations: {
+//                    self.backgroundView.alpha = 0
+//                }, completion: { done in
+//                    if done {
+//                        print("알럿뷰 삭제됨")
+//                        self.alertView.removeFromSuperview()
+//                        self.backgroundView.removeFromSuperview()
+//                    }
+//                })
+//            }
+//        })
+//    }
+//}
+
+
 
 extension HomeDetailViewController: UIPageViewControllerDataSource {
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
@@ -464,6 +653,3 @@ extension HomeDetailViewController: UICollectionViewDelegateFlowLayout {
         return CGSize(width: cellSize.width/3, height: cellSize.height)
     }
 }
-
-
-
