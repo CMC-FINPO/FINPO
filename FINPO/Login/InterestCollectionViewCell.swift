@@ -24,7 +24,6 @@ class InterestCollectionViewCell: UICollectionViewCell {
     
     public var imageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.layer.borderWidth = 1
         return imageView
     }()
     
@@ -35,6 +34,19 @@ class InterestCollectionViewCell: UICollectionViewCell {
         label.textColor = UIColor(hexString: "000000")
         return label
     }()
+    
+    private var checkImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "Interest_check")
+        imageView.isHidden = true
+        return imageView
+    }()
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        contentView.layer.borderWidth = 1
+        contentView.layer.cornerRadius = 3
+    }
     
     func setup() {
         addSubview(imageView)
@@ -50,19 +62,29 @@ class InterestCollectionViewCell: UICollectionViewCell {
             $0.top.equalTo(imageView.snp.bottom).offset(10)
             $0.centerX.equalTo(imageView.snp.centerX)
         }
+        
+        addSubview(checkImage)
+        checkImage.snp.makeConstraints {
+            $0.top.equalTo(contentView.snp.top).offset(10)
+            $0.leading.equalTo(contentView.snp.leading).offset(10)
+            $0.height.width.equalTo(25)
+        }
     }
     
     override var isSelected: Bool {
         didSet {
             if isSelected {
-                imageView.layer.borderColor = UIColor(hexString: "5B43EF").cgColor
+                contentView.layer.borderColor = UIColor(hexString: "5B43EF").cgColor
+                contentView.backgroundColor = UIColor(hexString: "5B43EF").withAlphaComponent(0.1)
                 titleLabel.textColor = UIColor(hexString: "5B43EF")
+                checkImage.isHidden = false
             } else {
-                imageView.layer.borderColor = UIColor(hexString: "000000").cgColor
+                contentView.layer.borderColor = UIColor(hexString: "000000").cgColor
+                contentView.backgroundColor = .clear
                 titleLabel.textColor = UIColor(hexString: "000000")
-                                
                 self.viewModel?.user.category.removeAll { $0 == id }
                 self.viewModel?.input.interestButtonTapped.accept(())
+                checkImage.isHidden = true
             }
         }
     }
