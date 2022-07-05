@@ -22,7 +22,7 @@ class LoginRegionViewController: UIViewController {
     
     var setStr = [String]()
     var isSelected: Bool = false
-        
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -53,7 +53,7 @@ class LoginRegionViewController: UIViewController {
     private var titleLabel: UILabel = {
         let label = UILabel()
         label.text = "핀포님이 거주하고 있는 \n지역은 어디인가요?"
-        label.numberOfLines = 2
+        label.numberOfLines = 0
         label.textColor = .black
         label.font =  UIFont(name: "AppleSDGothicNeo-SemiBold", size: 27)
         return label
@@ -77,6 +77,7 @@ class LoginRegionViewController: UIViewController {
         tv.rowHeight = CGFloat(60)
         tv.backgroundColor = UIColor(hexString: "F9F9F9")
         tv.bounces = false
+        tv.showsHorizontalScrollIndicator = false
         return tv
     }()
     
@@ -85,6 +86,7 @@ class LoginRegionViewController: UIViewController {
         tv.rowHeight = CGFloat(40)
         tv.backgroundColor = UIColor(hexString: "F9F9F9")
         tv.bounces = false
+        tv.showsHorizontalScrollIndicator = false
         return tv
     }()
     
@@ -101,6 +103,7 @@ class LoginRegionViewController: UIViewController {
     }()
     
     fileprivate func setAttribute() {
+        navigationController?.navigationBar.tintColor = .black
         navigationController?.navigationBar.topItem?.backButtonTitle = ""
         mainRegionTableView.tag = 1
         mainRegionTableView.register(MainRegionTableViewCell.self, forCellReuseIdentifier: "cell")
@@ -162,6 +165,7 @@ class LoginRegionViewController: UIViewController {
         titleLabel.snp.makeConstraints {
             $0.top.equalTo(progressBar.snp.bottom).offset(30)
             $0.leading.equalToSuperview().offset(15)
+            $0.trailing.equalToSuperview().inset(15)
         }
         
         view.addSubview(tagCollectionView)
@@ -169,7 +173,7 @@ class LoginRegionViewController: UIViewController {
             $0.top.equalTo(titleLabel.snp.bottom).offset(30)
             $0.leading.trailing.equalToSuperview().inset(15)
             $0.width.equalToSuperview().inset(10)
-            $0.height.equalTo(70)
+            $0.height.equalTo(85)
 //            TODO: 나중에 지역 선택 많이 했을 때, height 조절되게 하기
         }
         
@@ -178,7 +182,9 @@ class LoginRegionViewController: UIViewController {
             $0.top.equalTo(tagCollectionView.snp.bottom).offset(30)
             $0.leading.equalToSuperview().inset(15)
             $0.width.equalTo(100)
-            $0.height.equalTo(view.frame.size.height/2)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-150)
+//            $0.height.equalTo(view.frame.size.height/2)
+//            $0.height.equalTo(180)
         }
         
         view.addSubview(localRegionTableView)
@@ -199,6 +205,16 @@ class LoginRegionViewController: UIViewController {
     }
     
     fileprivate func setInputBind() {
+        ///viewWillAppear -> tableview 통신 및 초기화
+        rx.viewWillAppear.take(1).asDriver { _ in
+            return .never()}
+        .drive(onNext: { [weak self] _ in
+            guard let self = self else { return }
+            self.titleLabel.text = "\(self.viewModel.user.nickname)님이 거주하고 있는\n지역은 어디인가요?"
+            self.viewModel.getMainRegionDataToTableView()
+            self.viewModel.getSubRegionDataToTableView(0)}) //default: Seoul
+        .disposed(by: disposeBag)
+        
         mainRegionTableView.rx.itemSelected
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] indexPath in
@@ -209,7 +225,6 @@ class LoginRegionViewController: UIViewController {
 //            .take(1)
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] indexPath in
-//                let cell = self?.localRegionTableView.cellForRow(at: indexPath) as? SubRegionTableViewCell
                 if(self?.isSelected == false) {
                     self?.viewModel.input.subRegionTapped.accept(indexPath.row)
                     self?.tagCollectionView.subviews[0].removeFromSuperview()
@@ -229,6 +244,7 @@ class LoginRegionViewController: UIViewController {
                     self?.createDefaultTag()
                     self?.setStr.removeAll()
                     self?.viewModel.user.region.removeAll()
+                    LoginViewModel.isMainRegionSelected = false
                     self?.isSelected = false
                     self?.viewModel.input.regeionButtonObserver.accept(false)
                     print("기본 텍스트 표시할 카운트\(self?.setStr.count)")
@@ -239,17 +255,7 @@ class LoginRegionViewController: UIViewController {
                 }
 
             }).disposed(by: disposeBag)
-                
-        ///viewWillAppear -> tableview 통신 및 초기화
-        rx.viewWillAppear.take(1).asDriver { _ in
-            return .never()}
-        .drive(onNext: { [weak self] _ in
-            guard let self = self else { return }
-            self.titleLabel.text = "\(self.viewModel.user.nickname)님이 거주하고 있는\n지역은 어디인가요?"
-            self.viewModel.getMainRegionDataToTableView()
-            self.viewModel.getSubRegionDataToTableView(0)}) //default: Seoul
-        .disposed(by: disposeBag)
-        
+                        
         confirmButton.rx.tap
             .asDriver(onErrorJustReturn: ())
             .drive(onNext: { [weak self] _ in
@@ -266,6 +272,14 @@ class LoginRegionViewController: UIViewController {
             .observe(on: MainScheduler.instance)
             .bind(to: mainRegionTableView.rx.items(cellIdentifier: "cell")) {
                 (index: Int, element: MainRegion, cell: MainRegionTableViewCell) in
+                print("인덱스 값: \(index)")
+                if index > 2 {
+                    cell.setLayout()
+                }
+                if index == 0 || index == 1 || index == 2 {
+                    cell.setRegionLayout()
+                    cell.notReadyRegionLabel.isHidden = true
+                }
                 cell.selectionStyle = .none
                 cell.mainRegionLabel.text = element.name
             }.disposed(by: disposeBag)
@@ -277,6 +291,8 @@ class LoginRegionViewController: UIViewController {
                 (index: Int, element: SubRegion, cell: SubRegionTableViewCell) in
                 cell.selectionStyle = .none
                 cell.subRegionLabel.text = element.name
+                cell.layoutMargins = UIEdgeInsets.zero
+                cell.separatorInset = UIEdgeInsets.zero
             }.disposed(by: disposeBag)
         
         viewModel.output.unionedReion

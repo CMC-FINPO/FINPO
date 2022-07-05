@@ -43,6 +43,7 @@ class LoginViewModel {
     var addedRegionCheck: [String] = []
     var purposeBag: [Int] = []
     var selectedInterestRegion: [Int] = []
+    //지역 정보 전달
     
     static var isMainRegionSelected: Bool = false
     static var isInterestRegionSelected: Bool = false
@@ -221,6 +222,7 @@ class LoginViewModel {
         input.interestRegionDataSetObserver
             .subscribe(onNext: { [weak self] _ in
                 self?.user.interestRegion = self?.selectedInterestRegion ?? [Int]()
+                LastSignUpAPI.lastSignUpAPI(regionId: self?.user.interestRegion ?? [Int]() )
                 print("최종 선택된 추가 관심 지역: \(self?.user.interestRegion)")
             }).disposed(by: disposeBag)
                         
@@ -348,7 +350,7 @@ class LoginViewModel {
                                 self.output.errorValue.accept(error)
                             } else { ///회원정보 가져오기 성공 시
                                 self.input.nickNameObserver.accept(user?.kakaoAccount?.profile?.nickname ?? "")
-                                self.user.profileImg = user?.kakaoAccount?.profile?.profileImageUrl
+                                self.user.profileImg = user?.kakaoAccount?.profile?.profileImageUrl!
                                 UserDefaults.standard.setValue("kakao", forKey: "socialType")
                                 LoginViewModel.socialType = "kakao"
                                 //TODO: get data using accessToken, refreshToken check here
@@ -377,7 +379,7 @@ class LoginViewModel {
                 //소셜 액세스 토큰
                 self.user.accessTokenFromSocial = authentication.accessToken
                 
-                self.user.profileImg = user.profile?.imageURL(withDimension: 200)
+                self.user.profileImg = user.profile?.imageURL(withDimension: 200)!
                 
                 self.input.nickNameObserver.accept(user.profile?.name ?? "")
                 print("구글 유저 이름: \(user.profile?.name ?? "")")
@@ -508,6 +510,7 @@ class LoginViewModel {
                         }
                         self.mainRegion = json.data
                         self.output.mainRegionUpdate.accept(self.mainRegion)
+                        HomeViewModel.mainRegion = json.data
                     } catch(let err) {
                         print(err.localizedDescription)
                     }
@@ -540,6 +543,7 @@ class LoginViewModel {
                         }
                         self.subRegion = json.data                        
                         self.output.subRegionUpdate.accept(self.subRegion)
+                        HomeViewModel.subRegion = json.data
                     } catch(let err) {
                         print(err.localizedDescription)
                     }
@@ -596,7 +600,6 @@ class LoginViewModel {
             AF.upload(multipartFormData: { (multipart) in
                 for (key, value) in parameter {
                     multipart.append("\(value)".data(using: .utf8, allowLossyConversion: false)!, withName: "\(key)")
-                    print("multipart 데이터 추가 됨")
                 }
             }, to: url, method: .post, headers: header).responseJSON {
                 (response) in
@@ -604,10 +607,9 @@ class LoginViewModel {
                     print("status code is not valid")
                     return
                 }
-                print("스태이터스 코드: \(statusCode)")
+
                 switch statusCode {
                 case 200..<299:
-                    print("회원정보 등록 진행 중(이게 보인다고 반드시 성공은 아니며, 중복인 경우가 포함)")
                     do {
                         let json = try response.result.get() as? [String: Any]
                         let errorCode = json?["errorCode"] as? Int ?? 0
