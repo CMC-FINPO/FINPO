@@ -25,6 +25,12 @@ class HomeViewModel {
         case popular
     }
     
+    //나의 정책인지 확인하는 액션
+    enum isMyPolicy {
+        case mypolicy
+        case notMyPolicy
+    }
+    
     enum TagLoadAction {
         case isFirstLoad([DataDetail])
         case delete(at: Int)
@@ -45,6 +51,9 @@ class HomeViewModel {
     static var subRegion: [SubRegion] = [SubRegion]()
     
     struct INPUT {
+        //맨처음 나의 정책 로드
+        let myPolicyTrigger = PublishRelay<isMyPolicy>()
+        
         //Sort
         let textFieldObserver = PublishRelay<String>()
         let loadMoreObserver = PublishRelay<Void>()
@@ -69,6 +78,11 @@ class HomeViewModel {
         
         //policy detail info
         let serviceInfoObserver = PublishRelay<Int>()
+        let mypolicyAddObserver = PublishRelay<Int>()
+        let presentMemoAlertObserver = PublishRelay<Void>()
+        let memoTextObserver = PublishRelay<String>()
+        let memoCheckObserver = PublishRelay<Void>()
+        var bookmarkObserver = PublishRelay<Int>()
     }
     
     struct OUTPUT {
@@ -89,6 +103,10 @@ class HomeViewModel {
         
         //policy detail info
         var serviceInfoOutput = PublishRelay<DetailInfoModel>()
+        var mypolicyAddOutput = PublishRelay<Bool>()
+        var goToMemoAlert = PublishRelay<Bool>()
+        var checkedMemoOutput = PublishRelay<Bool>()
+        var checkedBookmarkOutput = PublishRelay<Bool>()
     }
     
     init() {
@@ -153,27 +171,72 @@ class HomeViewModel {
                 HomeViewModel.serviceString = str.components(separatedBy: ["n", "ㅇ", "\n"])
                 self.output.serviceInfoOutput.accept(info)
             }).disposed(by: disposeBag)
-
+        
+        ///참여 정책 추가
+        input.mypolicyAddObserver
+            .flatMap { id in
+                AddParticipatedAPI.addParticipationToAPI(id: id, with: nil) }
+            .subscribe(onNext: { valid in
+                self.output.mypolicyAddOutput.accept(valid)
+            }).disposed(by: disposeBag)
+                    
+        ///메모 알럿 present
+        input.presentMemoAlertObserver
+            .subscribe(onNext: { _ in
+                self.output.goToMemoAlert.accept(true)
+            }).disposed(by: disposeBag)
+        
+        _ = Observable.combineLatest(self.input.mypolicyAddObserver, self.input.memoTextObserver)
+            .map { a, b in
+                AddParticipatedAPI.addParticipationToAPI(id: a, with: b)
+            }
+            .flatMap { $0 }
+            .subscribe(onNext: { valid in
+                print("메모 삽입완료")
+                self.output.checkedMemoOutput.accept(valid)
+            }).disposed(by: disposeBag)
+        
+        //북마크
+        input.bookmarkObserver
+            .flatMap { BookMarkAPI.addBookmark(polidyId: $0) } //북마크 추가 API
+            .subscribe(onNext: { valid in
+                self.output.checkedBookmarkOutput.accept(valid)
+            }).disposed(by: disposeBag)
         
         ///OUTPUT
+        //맨 처음 로드 시 나의 정책(관심+기본지역), 카테고리에 해당하는 정책 조회
                 
         //정렬했을 때 -> Page 0 불러오기
         _ = Observable.combineLatest(
-            input.sortActionObserver.asObservable(),
-            input.textFieldObserver.asObservable(),
-            input.selectedCategoryObserver.asObservable(),
-            input.filteredRegionObserver.asObservable()
+            input.myPolicyTrigger.asObservable(), //나의 정책인지 아닌지
+            input.sortActionObserver.asObservable(), //최신/인기순 정렬
+            input.textFieldObserver.asObservable(), //정책 검색시
+            input.selectedCategoryObserver.asObservable(), //필터링 시 카테고리
+            input.filteredRegionObserver.asObservable() //필터링 시 지역
         )
 //        .take(1)
-        .flatMap({ (action, text, categories, filteredRegions) -> Observable<SearchPolicyResponse> in
-            switch action {
-            case .latest:
-                self.currentText = text
-                return SearchPolicyAPI.searchPolicyAPI(title: text, to: categories, in: filteredRegions)
-            case .popular:
-                self.currentText = text
-                return SearchPolicyAPI.searchPolicyAsPopular(title: text)
+        .flatMap({ (myPolicy, action, text, categories, filteredRegions) -> Observable<SearchPolicyResponse> in
+            switch myPolicy {
+            case .mypolicy:
+                switch action {
+                case .latest:
+                    //여기서 최초 최신순 나의 정책 리턴
+                    return MyPolicySearchAPI.searchMyPolicy()
+                case .popular:
+                    //여기서 인기순 나의 정책 리턴
+                    return MyPolicySearchAPI.searchMyPolicyAsPopular()
+                }
+            case .notMyPolicy:
+                switch action {
+                case .latest:
+                    self.currentText = text
+                    return SearchPolicyAPI.searchPolicyAPI(title: text, to: categories, in: filteredRegions)
+                case .popular:
+                    self.currentText = text
+                    return SearchPolicyAPI.searchPolicyAsPopular(title: text, to: categories, in: filteredRegions)
+                }
             }
+
         })
         .subscribe(onNext: { policyData in
             HomeViewModel.detailId.removeAll()
@@ -186,6 +249,7 @@ class HomeViewModel {
         
         //스크롤 내렸을 때 loadMore 하기
         _ = Observable.combineLatest(
+            input.myPolicyTrigger.asObservable(),
             input.loadMoreObserver.asObservable(),
             input.currentPage.asObservable(),
 //            input.textFieldObserver.asObservable(),
@@ -193,13 +257,24 @@ class HomeViewModel {
             input.selectedCategoryObserver.asObservable(),
             input.filteredRegionObserver.asObservable()
         )
-        .flatMap({ (_, page, action, categories, filteredRegions) -> Observable<SearchPolicyResponse> in
-            switch action {
-            case .latest:
-                return SearchPolicyAPI.searchPolicyAPI(title: self.currentText, at: page, to: categories, in: filteredRegions)
-            case .popular:
-                return SearchPolicyAPI.searchPolicyAsPopular(title: self.currentText, at: page)
+        .flatMap({ (myPolicy, _, page, action, categories, filteredRegions) -> Observable<SearchPolicyResponse> in
+            switch myPolicy {
+            case .mypolicy:
+                switch action {
+                case .latest:
+                    return MyPolicySearchAPI.searchMyPolicy(at: page)
+                case .popular:
+                    return MyPolicySearchAPI.searchMyPolicyAsPopular(at: page)
+                }
+            case .notMyPolicy:
+                switch action {
+                case .latest:
+                    return SearchPolicyAPI.searchPolicyAPI(title: self.currentText, at: page, to: categories, in: filteredRegions)
+                case .popular:
+                    return SearchPolicyAPI.searchPolicyAsPopular(title: self.currentText, at: page, to: categories, in: filteredRegions)
+                }
             }
+
         })
         .subscribe(onNext: { addedData in
             self.output.policyResult.accept(Action.loadMore(Contents(content: addedData.data!.content)))

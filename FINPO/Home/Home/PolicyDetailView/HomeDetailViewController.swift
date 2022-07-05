@@ -19,7 +19,7 @@ enum addPolicyStep {
 
 class HomeDetailViewController: UIViewController {
     
-
+    var addbookmarkButton = UIBarButtonItem()
     
     var acceptedDetailId: Int?
     let viewModel = HomeViewModel()
@@ -142,8 +142,11 @@ class HomeDetailViewController: UIViewController {
         var addBookmarkImage = UIImage(named: "bookmark_top")
         addBookmarkImage = addBookmarkImage?.withRenderingMode(.alwaysOriginal)
         
-        self.navigationItem.rightBarButtonItems = [UIBarButtonItem(image: addBookmarkImage, style: .plain, target: self, action: #selector(didAddBookmarkButtonTapped)),
-            UIBarButtonItem(image: addPolicyImage, style: .plain, target: self, action: #selector(didAddPolicyButtonTapped))
+        addbookmarkButton = UIBarButtonItem(image: addBookmarkImage, style: .plain, target: self, action: #selector(didAddBookmarkButtonTapped))
+        var addPolicyButton = UIBarButtonItem(image: addPolicyImage, style: .plain, target: self, action: #selector(didAddPolicyButtonTapped))
+        
+        self.navigationItem.rightBarButtonItems = [
+            addbookmarkButton, addPolicyButton
         ]
         
         ///segmentedControl
@@ -177,7 +180,7 @@ class HomeDetailViewController: UIViewController {
     }
     
     @objc private func didAddBookmarkButtonTapped() {
-        
+        viewModel.input.bookmarkObserver.accept(self.acceptedDetailId ?? -1)
     }
     
     fileprivate func setLayout() {
@@ -256,6 +259,11 @@ class HomeDetailViewController: UIViewController {
                 self.policySubscriptionLabel.text = data.data.content ?? "표시할 내용이 없습니다."
                 self.scrapCountLabel.text = "스크랩수 \(data.data.countOfInterest ?? 0)"
                 self.viewCountLabel.text = "조회수 \(data.data.hits)"
+                if (data.data.isInterest) {
+                    self.addbookmarkButton.image = UIImage(named: "bookmark_top_active")?.withRenderingMode(.alwaysOriginal)
+                } else {
+                    self.addbookmarkButton.image = UIImage(named: "bookmark_top")?.withRenderingMode(.alwaysOriginal)
+                }
                 
                 //사업 내용
                 self.serviceInforVC.institutionNameValueLabel.text = data.data.institution ?? ""
@@ -329,16 +337,34 @@ class HomeDetailViewController: UIViewController {
         viewModel.output.goToMemoAlert
             .subscribe(onNext: { [weak self] valid in
                 guard let self = self else { return }
-//                self.memoAlert.setupPolicyId(with: self.acceptedDetailId ?? 10000, on: self.viewModel)
-//                self.memoAlert.showAlert(on: self)
                 let vc = MemoViewController()
                 vc.modalPresentationStyle = .overCurrentContext
                 vc.setupProperty(id: self.acceptedDetailId ?? 10000, on: self.viewModel)
                 self.present(vc, animated: false)
             }).disposed(by: disposeBag)
         
-
+        viewModel.output.checkedMemoOutput
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: { [weak self] valid in
+                guard let self = self else { return }
+                if valid {
+                    let ac = UIAlertController(title: nil, message: "메모가 등록되었습니다", preferredStyle: .alert)
+                    ac.setTitle(font: UIFont(name: "AppleSDGothicNeo-Medium", size: 18), color: UIColor(hexString: "000000"))
+                    let action = UIAlertAction(title: "확인", style: .default)
+                    action.setValue(UIColor(hexString: "5B43EF"), forKey: "titleTextColor")
+                    ac.addAction(action)
+                    self.present(ac, animated: true)
+                }
+            }).disposed(by: disposeBag)
         
+        viewModel.output.checkedBookmarkOutput
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: { [weak self] valid in
+                guard let self = self else { return }
+                if valid { //성공
+                    self.addbookmarkButton.image = UIImage(named: "bookmark_top_active")?.withRenderingMode(.alwaysOriginal)
+                }
+            }).disposed(by: disposeBag)
     }
 }
 
