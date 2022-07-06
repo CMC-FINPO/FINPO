@@ -26,7 +26,7 @@ struct BookMarkAPI {
                 "policyId": id
             ]
             
-            API.session.request(url, method: .post, parameters: parameter, encoding: JSONEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+            AF.request(url, method: .post, parameters: parameter, encoding: JSONEncoding.default, headers: header, interceptor: MyRequestInterceptor())
                 .validate(statusCode: 200..<300)
                 .response { response in
                     switch response.result {
@@ -46,6 +46,47 @@ struct BookMarkAPI {
                     }
                 }
 
+            return Disposables.create()
+        }
+    }
+    
+    static func deleteBookmark(polidyId id: Int) -> Observable<Bool> {
+        return Observable.create { observer in
+            
+            let urlStr = BaseURL.url.appending("policy/interest/me")
+//            let urlEncoded = urlStr.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+//            let url = URL(string: urlEncoded)!
+            let accessToken = UserDefaults.standard.string(forKey: "accessToken")
+            
+            let header: HTTPHeaders = [
+                "Content-Type":"application/json;charset=UTF-8",
+                "Authorization":"Bearer ".appending(accessToken ?? "")
+            ]
+
+            let parameter: Parameters = [
+                "policyId": id
+            ]
+            
+            API.session.request(urlStr, method: .delete, parameters: parameter, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+                .validate(statusCode: 200..<300)
+                .response { response in
+                    switch response.result {
+                    case .success(let data):
+                        if let data = data {
+                            do {
+                                let json = try? JSONSerialization.jsonObject(with: data, options: [])
+                                as? [String: Any]
+                                let result = json?["success"] as? Bool ?? false
+                                print("북마크 삭제 결과: \(result)")
+                                observer.onNext(result)
+                            }
+                        }
+                    case .failure(let err):
+                        print("북마크 삭제 에러 발생: \(err)")
+                        observer.onError(err)
+                    }
+                }
+            
             return Disposables.create()
         }
     }

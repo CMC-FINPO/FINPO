@@ -20,6 +20,7 @@ enum addPolicyStep {
 class HomeDetailViewController: UIViewController {
     
     var addbookmarkButton = UIBarButtonItem()
+    var didTapped = false
     
     var acceptedDetailId: Int?
     let viewModel = HomeViewModel()
@@ -72,6 +73,7 @@ class HomeDetailViewController: UIViewController {
         self.tabBarController?.tabBar.isHidden = false
         self.serviceStringData.removeAll()
     }
+    
     private var regionLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
@@ -133,16 +135,36 @@ class HomeDetailViewController: UIViewController {
         vc.view.translatesAutoresizingMaskIntoConstraints = false
         return vc
     }()
+    
+    let button = UIButton()
          
     fileprivate func setAttribute() {
         ///NavigationControl
         navigationController?.navigationBar.topItem?.backButtonTitle = ""
         var addPolicyImage = UIImage(named: "plus")
         addPolicyImage = addPolicyImage?.withRenderingMode(.alwaysOriginal)
+        
         var addBookmarkImage = UIImage(named: "bookmark_top")
         addBookmarkImage = addBookmarkImage?.withRenderingMode(.alwaysOriginal)
         
-        addbookmarkButton = UIBarButtonItem(image: addBookmarkImage, style: .plain, target: self, action: #selector(didAddBookmarkButtonTapped))
+
+        button.frame = CGRect(x: 0, y: 0, width: 51, height: 31)
+        button.setImage(UIImage(named: "bookmark_top"), for: .normal)
+        
+        button.rx.tap
+            .subscribe(onNext: { [weak self] in
+                if(self?.didTapped == true) {
+                    self?.viewModel.input.bookmarkDeleteObserver.accept(self?.acceptedDetailId ?? -1)
+                } else {
+                    self?.viewModel.input.bookmarkObserver.accept(self?.acceptedDetailId ?? -1)
+                }
+            }).disposed(by: disposeBag)
+        addbookmarkButton.customView = button
+        
+        
+        
+//        addbookmarkButton = UIBarButtonItem(image: addBookmarkImage, style: .plain, target: self, action: #selector(didAddBookmarkButtonTapped))
+        
         var addPolicyButton = UIBarButtonItem(image: addPolicyImage, style: .plain, target: self, action: #selector(didAddPolicyButtonTapped))
         
         self.navigationItem.rightBarButtonItems = [
@@ -180,7 +202,12 @@ class HomeDetailViewController: UIViewController {
     }
     
     @objc private func didAddBookmarkButtonTapped() {
-        viewModel.input.bookmarkObserver.accept(self.acceptedDetailId ?? -1)
+        if addbookmarkButton.isSelected {
+            viewModel.input.bookmarkDeleteObserver.accept(self.acceptedDetailId ?? -1)
+        }
+        else {
+            viewModel.input.bookmarkObserver.accept(self.acceptedDetailId ?? -1)
+        }
     }
     
     fileprivate func setLayout() {
@@ -259,10 +286,12 @@ class HomeDetailViewController: UIViewController {
                 self.policySubscriptionLabel.text = data.data.content ?? "표시할 내용이 없습니다."
                 self.scrapCountLabel.text = "스크랩수 \(data.data.countOfInterest ?? 0)"
                 self.viewCountLabel.text = "조회수 \(data.data.hits)"
-                if (data.data.isInterest) {
-                    self.addbookmarkButton.image = UIImage(named: "bookmark_top_active")?.withRenderingMode(.alwaysOriginal)
+                if data.data.isInterest {
+                    self.button.setImage(UIImage(named: "bookmark_top_active")?.withRenderingMode(.alwaysOriginal), for: .normal)
+                    self.didTapped = true
                 } else {
-                    self.addbookmarkButton.image = UIImage(named: "bookmark_top")?.withRenderingMode(.alwaysOriginal)
+                    self.button.setImage( UIImage(named: "bookmark_top")?.withRenderingMode(.alwaysOriginal), for: .normal)
+                    self.didTapped = false
                 }
                 
                 //사업 내용
@@ -305,6 +334,7 @@ class HomeDetailViewController: UIViewController {
 //                for _ in 0..<(self.serviceStringData.count) {
 //                    willAddedSupportInfo.append(data.data)
 //                }
+//                print("들어온 지원내용: \(willAddedSupportInfo[0].support ?? "")")
                 for _ in 0..<(HomeViewModel.serviceString.count) {
                     willAddedSupportInfo.append(data.data)
                 }
@@ -362,7 +392,18 @@ class HomeDetailViewController: UIViewController {
             .drive(onNext: { [weak self] valid in
                 guard let self = self else { return }
                 if valid { //성공
-                    self.addbookmarkButton.image = UIImage(named: "bookmark_top_active")?.withRenderingMode(.alwaysOriginal)
+                    self.button.setImage(UIImage(named: "bookmark_top_active")?.withRenderingMode(.alwaysOriginal), for: .normal)
+                    self.didTapped = true
+                }
+            }).disposed(by: disposeBag)
+        
+        viewModel.output.checkedBookmarkDeleteOutput
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: { [weak self] valid in
+                guard let self = self else { return }
+                if valid { //삭제성공
+                    self.button.setImage(UIImage(named: "bookmark_top")?.withRenderingMode(.alwaysOriginal), for: .normal)
+                    self.didTapped = false
                 }
             }).disposed(by: disposeBag)
     }
