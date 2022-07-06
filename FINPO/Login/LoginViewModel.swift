@@ -24,6 +24,7 @@ import GoogleSignIn
 enum RegionActionType {
     case add(region: UniouRegion)
     case delete(index: Int)
+    case first(userDetail: UserDataModel)
 }
 
 enum SocialLoginType {
@@ -71,6 +72,8 @@ class LoginViewModel {
         let purposeButtonTapped = PublishRelay<Bool>()
         let statusPurposeButtonTapped = PublishRelay<Void>()
         let interestRegionDataSetObserver = PublishRelay<Void>()
+        let interestRegionObserver = PublishRelay<Void>()
+        let editInterestRegionObserver = PublishRelay<[Int]>()
     }
     
     struct OUTPUT {
@@ -99,6 +102,7 @@ class LoginViewModel {
         var getStatus = PublishRelay<[UserStatus]>()
         var getPurpose = PublishRelay<[UserPurpose]>()
         var statusPurposeButtonValid: Driver<Bool> = PublishRelay<Bool>().asDriver(onErrorJustReturn: false)
+        var editInterestRegionCompleted = PublishRelay<Bool>()
 
         var errorValue = PublishRelay<Error>()
     }
@@ -224,6 +228,22 @@ class LoginViewModel {
                 self?.user.interestRegion = self?.selectedInterestRegion ?? [Int]()
                 LastSignUpAPI.lastSignUpAPI(regionId: self?.user.interestRegion ?? [Int]() )
                 print("최종 선택된 추가 관심 지역: \(self?.user.interestRegion)")
+            }).disposed(by: disposeBag)
+        
+        ///관심지역 가져오기
+        input.interestRegionObserver
+            .flatMap { _ in UserInfoAPI.getUserInfo() }
+            .subscribe(onNext: { userRegionData in
+                self.output.regionButton.accept(.first(userDetail: userRegionData))
+            }).disposed(by: disposeBag)
+        
+        ///관심지역 서버 저장
+        input.editInterestRegionObserver
+            .flatMap { UserInfoAPI.saveInterestRegion(interestRegionId: $0) }
+            .subscribe(onNext: { valid in
+                if valid {
+                    self.output.editInterestRegionCompleted.accept(valid)
+                }
             }).disposed(by: disposeBag)
                         
         ///OUTPUT
