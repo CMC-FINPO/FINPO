@@ -44,6 +44,7 @@ class LoginViewModel {
     var addedRegionCheck: [String] = []
     var purposeBag: [Int] = []
     var selectedInterestRegion: [Int] = []
+    var selectedMainRegion = Int()
     //지역 정보 전달
     
     static var isMainRegionSelected: Bool = false
@@ -72,8 +73,12 @@ class LoginViewModel {
         let purposeButtonTapped = PublishRelay<Bool>()
         let statusPurposeButtonTapped = PublishRelay<Void>()
         let interestRegionDataSetObserver = PublishRelay<Void>()
+        ///마이페이지 관심지역 수정
         let interestRegionObserver = PublishRelay<Void>()
         let editInterestRegionObserver = PublishRelay<[Int]>()
+        ///마이페이지 거주지역 수정
+        let myRegionObserver = PublishRelay<Void>()
+        let editMainRegionObserver = PublishRelay<Int>()
     }
     
     struct OUTPUT {
@@ -98,8 +103,10 @@ class LoginViewModel {
         var getStatus = PublishRelay<[UserStatus]>()
         var getPurpose = PublishRelay<[UserPurpose]>()
         var statusPurposeButtonValid: Driver<Bool> = PublishRelay<Bool>().asDriver(onErrorJustReturn: false)
+        //관심지역 수정
         var editInterestRegionCompleted = PublishRelay<Bool>()
-
+        //거주지역 수정
+        var editMainRegionCompleted = PublishRelay<Bool>()
         var errorValue = PublishRelay<Error>()
     }
     
@@ -241,6 +248,22 @@ class LoginViewModel {
                     self.output.editInterestRegionCompleted.accept(valid)
                 }
             }).disposed(by: disposeBag)
+        
+        ///거주지역 가져오기
+        input.myRegionObserver
+            .flatMap { _ in UserInfoAPI.getUserInfo() }
+            .subscribe(onNext: { userRegionData in
+                self.output.regionButton.accept(.first(userDetail: userRegionData))
+            }).disposed(by: disposeBag)
+        
+        ///거주지역 서버 저장
+        input.editMainRegionObserver
+            .flatMap { UserInfoAPI.setMainRegion(mainRegionId: $0) }
+            .subscribe(onNext: { valid in
+                if valid {
+                    self.output.editMainRegionCompleted.accept(valid)
+                }
+            }).disposed(by: disposeBag)
                         
         ///OUTPUT
         output.genderValid = input.genderObserver.asDriver(onErrorJustReturn: .none)
@@ -285,12 +308,16 @@ class LoginViewModel {
                     let union = UniouRegion.init(unionRegionName: "\(self.subRegion[indexPath].name)")
                     self.output.unionedReion.accept([union])
                     self.output.regionButton.accept(.add(region: union))
+                    
                 }
                 //구 선택 시
                 else {
                     let union = UniouRegion.init(unionRegionName: "\(self.mainRegion[self.subRegion[indexPath].id / 100].name) " + "\(self.subRegion[indexPath].name)")
                     //메인 거주 지역
                     self.output.unionedReion.accept([union])
+                    //메인지역 수정 시 임시저장
+                    self.selectedMainRegion = self.subRegion[indexPath].id
+                    print("임시저장 된 메인지역: \(self.selectedMainRegion)")
                     //추가 관심 지역
                     ///관심지역 수정 시 기존에 포함되어 있다면 태그생성 방지
                     if (self.selectedInterestRegion.contains(self.subRegion[indexPath].id)) {
