@@ -184,7 +184,7 @@ class InterestRegionViewController: UIViewController {
                 self.tableViewModel.selectedInterestRegion = self.viewModel?.user.interestRegion ?? [Int]()
                 self.tableViewModel.input.deleteTagObserver.accept(indexPath.row)
             }).disposed(by: disposeBag)
-        
+                        
         confirmButton.rx.tap
             .asDriver()
             .drive(onNext: { [weak self] _ in
@@ -236,8 +236,8 @@ class InterestRegionViewController: UIViewController {
                             newRegions.append(unionRegion)
                             ///처음 로드 시 관심지역도 임시저장
                             self.tableViewModel.selectedInterestRegion.append(userData.data[i].region.id)
+                            self.isSelected = true
                         }
-
                     }
                 }
                 return newRegions
@@ -260,6 +260,19 @@ class InterestRegionViewController: UIViewController {
             .drive(onNext: { [weak self] valid in
                 if valid {
                     self?.navigationController?.popViewController(animated: true)
+                }
+            }).disposed(by: disposeBag)
+        
+        tableViewModel.output.regionButtonValid
+            .drive(onNext: { valid in
+                if valid {
+                    self.confirmButton.isEnabled = true
+                    self.confirmButton.setTitleColor(UIColor(hexString: "FFFFFF"), for: .normal)
+                    self.confirmButton.backgroundColor = UIColor(hexString: "5B43EF")
+                } else {
+                    self.confirmButton.isEnabled = false
+                    self.confirmButton.setTitleColor(UIColor(hexString: "616161"), for: .disabled)
+                    self.confirmButton.backgroundColor = UIColor(hexString: "F0F0F0")
                 }
             }).disposed(by: disposeBag)
     }

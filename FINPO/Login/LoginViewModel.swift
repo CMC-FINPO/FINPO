@@ -88,16 +88,12 @@ class LoginViewModel {
         var buttonValid:Driver<Bool> = PublishRelay<Bool>().asDriver(onErrorJustReturn: false)
         var mainRegionUpdate = PublishRelay<[MainRegion]>()
         var subRegionUpdate = PublishRelay<[SubRegion]>()
-//        var createRegionButton = PublishRelay<String>()
-//        var createRegionButton = PublishRelay<UniouRegion>()
         var regionButton = PublishRelay<RegionActionType>()
         var unionedReion = PublishRelay<[UniouRegion]>()
         var regionButtonValid: Driver<Bool> = PublishRelay<Bool>().asDriver(onErrorJustReturn: false)
         var interestingNameOutput = PublishRelay<[MainInterest]>()
         var forUserInterestOutput = PublishRelay<[Int]>()
-//        var interestButtonValid = PublishRelay<Bool>()
         var interestButtonValid: Driver<Bool> = PublishRelay<Bool>().asDriver(onErrorJustReturn: false)
-//        var isSemiSignupComplete = PublishRelay<Bool>()
         var isSemiSignupComplete = PublishRelay<User>()
         var getStatus = PublishRelay<[UserStatus]>()
         var getPurpose = PublishRelay<[UserPurpose]>()
@@ -296,7 +292,12 @@ class LoginViewModel {
                     //메인 거주 지역
                     self.output.unionedReion.accept([union])
                     //추가 관심 지역
-                    self.output.regionButton.accept(.add(region: union))
+                    ///관심지역 수정 시 기존에 포함되어 있다면 태그생성 방지
+                    if (self.selectedInterestRegion.contains(self.subRegion[indexPath].id)) {
+                        return
+                    } else {
+                        self.output.regionButton.accept(.add(region: union))
+                    }                    
                 }
                 
                 //추가 관심지역
