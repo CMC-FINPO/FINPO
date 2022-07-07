@@ -59,7 +59,7 @@ struct UserInfoAPI {
             request.httpMethod = "PUT"
             request.httpBody = try! JSONSerialization.data(withJSONObject: interestRegionId.map({["regionId":$0]}))
             
-            API.session.request(request, interceptor: MyRequestInterceptor())
+            AF.request(request, interceptor: MyRequestInterceptor())
                 .validate(statusCode: 200..<300)
                 .response { response in
                     switch response.result {
@@ -73,6 +73,45 @@ struct UserInfoAPI {
                         }
                     case .failure(let err):
                         print("관심지역 수정 에러발생: \(err)")
+                    }
+                }
+            
+            return Disposables.create()
+        }
+    }
+    
+    static func setMainRegion(mainRegionId: Int) -> Observable<Bool> {
+        return Observable.create { observer in
+            
+            let urlStr = BaseURL.url.appending("region/my-default")
+            let url = URL(string: urlStr)
+            var request = URLRequest(url: url!)
+            
+            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            
+            let parameter: Parameters = [
+                "regionId": mainRegionId
+            ]
+            
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue("Bearer ".appending(accessToken), forHTTPHeaderField: "Authorization")
+            request.httpMethod = "PUT"
+            request.httpBody = try! JSONSerialization.data(withJSONObject: parameter)
+            
+            API.session.request(request, interceptor: MyRequestInterceptor())
+                .validate(statusCode: 200..<300)
+                .response { response in
+                    switch response.result {
+                    case .success(let data):
+                        if let data = data {
+                            do {
+                                let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                                let result = json?["success"] as? Bool ?? false
+                                print("메인지역 수정 결과: \(result)")
+                            }
+                        }
+                    case .failure(let err):
+                        print("메인지역 수정 에러발생: \(err)")
                     }
                 }
             
