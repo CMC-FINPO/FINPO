@@ -636,26 +636,39 @@ class LoginViewModel {
         return Observable.create { observer in
             let socialType = UserDefaults.standard.string(forKey: "socialType") ?? ""
             let url = "https://dev.finpo.kr/oauth/register/".appending(socialType)
-            print("소셜타입: \(socialType)")
-            print(url)
             let parameter = self.user.toDic()
-            print(parameter)
+            
+//            //카테고리 설정
+//            var dic: [String: Any] = [String:Any]()
+//
+//            dic.updateValue(self.user.category, forKey: "categoryId")
+//
+            
+            
+            print("세미 사인업 파라미터: \(parameter)")
             let header: HTTPHeaders = [
                 "Content-Type":"application/x-www-form-urlencoded;charset=UTF-8;boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm",
                 "Authorization":"Bearer ".appending((self.user.accessTokenFromSocial))
             ]
             
-            AF.upload(multipartFormData: { (multipart) in
+            API.session.upload(multipartFormData: { (multipart) in
                 for (key, value) in parameter {
                     multipart.append("\(value)".data(using: .utf8, allowLossyConversion: false)!, withName: "\(key)")
                 }
-            }, to: url, method: .post, headers: header).responseJSON {
-                (response) in
+                //카테고리 JSON 타입으로 보내기
+                var dics: [[String:Any]] = [[String:Any]]()
+                var dicsData: Data = Data()
+                for i in 0..<(self.user.category.count) {
+                    dics.append(["categoryId": self.user.category[i]])
+                    dicsData = try! JSONSerialization.data(withJSONObject: dics, options: [])
+                }
+                multipart.append(dicsData, withName: "categories")
+            }, to: url, method: .post, headers: header)
+            .responseJSON { (response) in
                 guard let statusCode = response.response?.statusCode else {
                     print("status code is not valid")
                     return
                 }
-
                 switch statusCode {
                 case 200..<299:
                     do {
@@ -668,13 +681,10 @@ class LoginViewModel {
                             let jsonData = json?["data"] as? [String: Any]
                             let accessToken = jsonData?["accessToken"] as? String
                             let refreshToken = jsonData?["refreshToken"] as? String
-//                            let accessTokenExpiresIn = jsonData?["accessTokenExpiresIn"] as? Date
                             let accessTokenExpiresIn = jsonData?["accessTokenExpiresIn"] as? Int ?? Int()
                             print("accessTokenExpiresIn 값: \(accessTokenExpiresIn)")
                             let accessTokenExpireDate = Date(milliseconds: Int64(accessTokenExpiresIn) )
                             print("accessTokenExpireDate 값: \(accessTokenExpireDate)")
-                            //accessTokenExpireDate 값: 1970-01-01 00:00:00 +0000
-//                            let dateFormatter = DateFormatter()
                             
                             //API 액세스 토큰
                             self.user.accessToken = accessToken ?? ""
