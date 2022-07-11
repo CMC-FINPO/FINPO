@@ -121,6 +121,14 @@ class BookmarkViewController: UIViewController {
                 self?.viewModel.input.getMyInterestPolicyObserver.accept(())
             }).disposed(by: disposeBag)
         
+        interestTableView.rx.itemSelected
+            .subscribe(onNext: { [weak self] indexPath in
+                let vc = HomeDetailViewController()
+                vc.initialize(id: self?.selectedId[indexPath.row] ?? -1)
+                vc.modalPresentationStyle = .fullScreen
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }).disposed(by: disposeBag)
+        
     }
     
     fileprivate func setOutputBind() {
@@ -192,7 +200,6 @@ class BookmarkViewController: UIViewController {
                     .asDriver()
                     .drive(onNext: { [weak self] _ in
                         guard let self = self else { return }
-                        //삭제나 등록 후 다시 탭하면 isInterest 상태변화를 인지하지 못함
                         if(self.idIsSelected[index]) {
                             print("인덱스: \(index)")
                             self.homeViewModel.input.bookmarkDeleteObserver.accept(self.selectedId[index])
