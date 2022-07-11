@@ -19,6 +19,10 @@ class BookmarkViewController: UIViewController {
     let myPageViewModel = MyPageViewModel()
     let homeViewModel = HomeViewModel()
     
+    ///불러온 정책 아이디 저장
+    var selectedId: [Int] = [Int]()
+    var idIsSelected: [Bool] = [Bool]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -45,6 +49,13 @@ class BookmarkViewController: UIViewController {
         return label
     }()
     
+    private var interestTableView: UITableView = {
+        let tv = UITableView()
+        tv.rowHeight = CGFloat(120)
+        tv.backgroundColor = UIColor(hexString: "F9F9F9")
+        return tv
+    }()
+    
     private var interestCollectionView: UICollectionView = {
         let flow = UICollectionViewFlowLayout()
         flow.minimumInteritemSpacing = 20
@@ -61,8 +72,9 @@ class BookmarkViewController: UIViewController {
     fileprivate func setAttribute() {
         view.backgroundColor = .white
         self.interestCollectionView.register(BookmarkCollectionViewCell.self, forCellWithReuseIdentifier: "BookmarkCollectionViewCell")
-        
         self.interestCollectionView.delegate = self
+        
+        self.interestTableView.register(HomeTableViewCell.self, forCellReuseIdentifier: "HomeTableViewCell")
     }
  
     fileprivate func setLayout() {
@@ -86,16 +98,27 @@ class BookmarkViewController: UIViewController {
             $0.trailing.equalToSuperview()
             $0.height.equalTo(115)
         }
+        
+        view.addSubview(interestTableView)
+        interestTableView.snp.makeConstraints {
+            $0.top.equalTo(interestCollectionView.snp.bottom).offset(20)
+            $0.leading.equalTo(areaLabel.snp.leading)
+            $0.trailing.equalToSuperview().inset(21)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+        }
     }
     
     fileprivate func setInputBind() {
-        rx.viewWillAppear.take(1).asDriver { _ in return .never()}
+        rx.viewWillAppear.asDriver { _ in return .never()}
             .drive(onNext: { [weak self] _ in
                 ///관심정책 데이터 트리거
                 self?.viewModel.input.getUserInterestedInfo.accept(())
                 
                 ///나의 관심 카테고리 조회 트리거
                 self?.viewModel.input.getMyCategoryObserver.accept(())
+                
+                ///나의 관심정책 조회 트리거
+                self?.viewModel.input.getMyInterestPolicyObserver.accept(())
             }).disposed(by: disposeBag)
         
     }
@@ -113,6 +136,7 @@ class BookmarkViewController: UIViewController {
         viewModel.output.sendMyCategoryOutput
             .asObservable()
             .scan(into: [myInterestCategory](), accumulator: { category, data in
+                category.removeAll()
                 for i in 0..<data.data.count {
                     category.append(data.data[i])
                     print("불러온 관심카테고리: \(category[i].name)")
@@ -126,6 +150,62 @@ class BookmarkViewController: UIViewController {
                 cell.imageView.kf.setImage(with: imageURL)
             }.disposed(by: disposeBag)
         
+        viewModel.output.sendMyInterestPoliciesOutput
+            .scan(into: [ParticipationModel](), accumulator: { model, acceptedModel in
+                model.removeAll()
+                for i in 0..<(acceptedModel.data.count) {
+                    model.append(acceptedModel.data[i])
+                }
+                ///save selected Id
+                self.selectedId.removeAll()
+                self.idIsSelected.removeAll()
+                if(acceptedModel.data.count > 0) {
+                    for i in 0..<(acceptedModel.data.count) {
+                        self.selectedId.append(acceptedModel.data[i].policy.id)
+                        self.idIsSelected.append(acceptedModel.data[i].policy.isInterest)
+                    }
+                }
+                print("선택된 정책 아이디: \(self.selectedId)")
+            })
+            .asObservable()
+            .observe(on: MainScheduler.instance)
+            .bind(to: self.interestTableView.rx.items(cellIdentifier: "HomeTableViewCell", cellType: HomeTableViewCell.self)) {
+                (index: Int, element: ParticipationModel, cell) in
+                ///ex 서울 성북 -> 서울 전체일 경우 예외처리 할 것
+                cell.regionLabel.text = (element.policy.region.parent?.name ?? "") + " " + (element.policy.region.name)
+               
+                
+                ///공고명, 정책이름
+                cell.policyNameLabel.text = element.policy.title
+                
+                ///기관명
+                cell.organizationLabel.text = element.policy.institution ?? "기관명 없음"
+                
+                ///북마크 여부
+                if element.policy.isInterest {
+                    cell.bookMarkButton.setImage(UIImage(named: "scrap_active"), for: .normal)
+                } else {
+                    cell.bookMarkButton.setImage(UIImage(named: "scrap_inactive"), for: .normal)
+                }
+                
+                cell.bookMarkButton.rx.tap
+                    .asDriver()
+                    .drive(onNext: { [weak self] _ in
+                        guard let self = self else { return }
+                        //삭제나 등록 후 다시 탭하면 isInterest 상태변화를 인지하지 못함
+                        if(self.idIsSelected[index]) {
+                            print("인덱스: \(index)")
+                            self.homeViewModel.input.bookmarkDeleteObserver.accept(self.selectedId[index])
+                            cell.bookMarkButton.setImage(UIImage(named: "scrap_inactive"), for: .normal)
+                            self.idIsSelected[index] = false
+                        } else {
+                            self.homeViewModel.input.bookmarkObserver.accept(self.selectedId[index])
+                            cell.bookMarkButton.setImage(UIImage(named: "scrap_active"), for: .normal)
+                            self.idIsSelected[index] = true
+                        }
+                    }).disposed(by: cell.disposeBag)
+                
+            }.disposed(by: disposeBag)
         
     }
     
@@ -141,5 +221,14 @@ extension BookmarkViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: 95, height: 111)
     }
-    
+     
+}
+
+extension BookmarkViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let cell = interestTableView.dequeueReusableCell(withIdentifier: "HomeTableViewCell", for: indexPath) as? HomeTableViewCell else { return }
+        
+        ///화면 밖에서 사라질 때 subscription을 dispose 하기
+        cell.disposeBag = DisposeBag()
+    }
 }
