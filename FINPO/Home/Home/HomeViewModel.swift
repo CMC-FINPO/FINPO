@@ -42,6 +42,7 @@ class HomeViewModel {
     enum isMyInterestCategory {
         case right(ChildDetail)
         case notYet(ChildDetail)
+        case clear(Bool)
     }
     var checkNotInterestCategoryId = Set<[Int]>()
     
@@ -49,6 +50,7 @@ class HomeViewModel {
     enum isMyForWhat {
         case right(UserPurpose)
         case nope(UserPurpose)
+        case clear(Bool)
     }
     var checkIsMyForWhat = Set<[Int]>()
     
@@ -106,6 +108,12 @@ class HomeViewModel {
         let forWhatObserver = PublishRelay<Void>()
         ///내 이용 목적 트리거
         let myForWhatObserver = PublishRelay<Void>()
+        ///리셋 트리거
+        let resetTrigger = PublishRelay<Void>()
+        
+        ///서버 등록
+        let interestEditCompleteObserver = PublishRelay<[Int]>()
+        let forWhatEditCompleteObserver = PublishRelay<[Int]>()
     }
     
     struct OUTPUT {
@@ -149,6 +157,7 @@ class HomeViewModel {
         var getMyAllForWhat = PublishRelay<MyPurposeAPIResponse>()
         ///이용목적 리턴
         var returnForWhat = PublishRelay<isMyForWhat>()
+        
     }
     
     init() {
@@ -282,6 +291,20 @@ class HomeViewModel {
                 self.output.getMyAllForWhat.accept(myAllForWhat)
             }).disposed(by: disposeBag)
         
+        ///관심 일자리, 문화, 참여공간 서버 등록
+        input.interestEditCompleteObserver
+            .flatMap { CallCategoryAPI.saveCategory(at: $0) }
+            .subscribe(onNext: { valid in
+                print("관심 일자리, 문화, 참여공간 서버 등록: \(valid)")
+            }).disposed(by: disposeBag)
+        
+        ///이용목적 서버 등록
+        input.forWhatEditCompleteObserver
+            .flatMap { ForWhatAPI.saveForWhat(forWhatIds: $0) }
+            .subscribe(onNext: { valid in
+                print("이용목적 서버 등록: \(valid)")
+            }).disposed(by: disposeBag)
+        
         ///
         ///OUTPUT
         ///
@@ -334,7 +357,6 @@ class HomeViewModel {
             input.myPolicyTrigger.asObservable(),
             input.loadMoreObserver.asObservable(),
             input.currentPage.asObservable(),
-//            input.textFieldObserver.asObservable(),
             input.sortActionObserver.asObservable(),
             input.selectedCategoryObserver.asObservable(),
             input.filteredRegionObserver.asObservable()
@@ -369,7 +391,7 @@ class HomeViewModel {
         output.confirmButtonValidOutput = input.confirmButtonValid.asDriver(onErrorJustReturn: false)
                 
         ///전체 카테고리 + 관심 카테고리
-        _ = Observable.combineLatest(
+        _ = Observable.zip(
             self.output.getLowCategory,
             self.output.getInterestCategory, resultSelector: { (all, interest) in
                 for i in 0..<(interest.data.count) {
@@ -422,15 +444,31 @@ class HomeViewModel {
             print("방출")
         }).disposed(by: disposeBag)
         
-        
-        _ = Observable.combineLatest(
+        ///리셋버튼 클릭 시 전체 카테고리 가져오기
+        _ = Observable.zip(self.input.resetTrigger, self.output.getLowCategory, resultSelector: { _, all in
+            for i in 0..<(all.data.count) {
+                if(all.data[i].parent.id == 1) {
+                    self.output.interestCategoryOutput.accept(.clear(true))
+                } else if(all.data[i].parent.id == 3) {
+                    self.output.interestEducationCategoryOutput.accept(.clear(true))
+                } else if(all.data[i].parent.id == 4) {
+                    self.output.participationCategoryOutput.accept(.clear(true))
+                }
+            }
+        })
+        .subscribe(onNext: {
+            print("리셋 방출")
+        }).disposed(by: disposeBag)
+    
+        ///전체 이용목적 + 관심 이용목적
+        _ = Observable.zip(
             self.output.getAllForWhat, self.output.getMyAllForWhat, resultSelector: { all, my in
                 //내 이용목적과 전체 이용목적을 비교해서 중복된다면 저장
                 all.data.forEach { data in
                     my.data.forEach { num in
                         if(data.id == num) {
                             self.checkIsMyForWhat.insert([num])
-//                            print("체크 마이 이용목적: \(self.checkIsMyForWhat)") 
+//                            print("체크 마이 이용목적: \(self.checkIsMyForWhat)")
                         }
                     }
                 }
@@ -448,6 +486,19 @@ class HomeViewModel {
         .subscribe(onNext: {
             print("이용목적 방출")
         }).disposed(by: disposeBag)
+        
+        ///전체 이용목적 초기화
+        _ = Observable.zip(self.input.resetTrigger, self.output.getAllForWhat, resultSelector: { _, all in
+            for _ in 0..<(all.data.count) {
+                self.output.returnForWhat.accept(.clear(true))
+            }
+        })
+        .subscribe(onNext: {
+            print("이용목적 클리어 방출")
+        }).disposed(by: disposeBag)
+        
+        
+        
         
     }
 
