@@ -48,7 +48,7 @@ struct ForWhatAPI {
                 "Authorization":"Bearer ".appending(accessToken)
             ]
             
-            API.session.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+            AF.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
                 .validate(statusCode: 200..<300)
                 .responseDecodable(of: MyPurposeAPIResponse.self) { response in
                     switch response.result {
@@ -59,6 +59,38 @@ struct ForWhatAPI {
                         observer.onCompleted()
                     }
                 }
+            
+            return Disposables.create()
+        }
+    }
+    
+    static func saveForWhat(forWhatIds: [Int]) -> Observable<Bool> {
+        return Observable.create { observer in
+            
+            let url = BaseURL.url.appending("user/me")
+            
+            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            
+            let header: HTTPHeaders = [
+                "Content-Type": "application/json;charset=UTF-8",
+                "Authorization": "Bearer ".appending(accessToken)
+            ]
+            
+            let parameter: Parameters = [
+                "purposeIds": forWhatIds
+            ]
+            
+            AF.request(url, method: .put, parameters: parameter, encoding: JSONEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+                .validate(statusCode: 200..<300)
+                .responseDecodable(of: UserResponseModel.self) { response in
+                    switch response.result {
+                    case .success(let user):
+                        print("이용목적 등록완료! 리스폰스 유저 데이터: \(user)")
+                        observer.onNext(true)
+                    case .failure(let err):
+                        observer.onError(err)
+                    }
+                }            
             
             return Disposables.create()
         }
