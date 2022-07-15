@@ -188,4 +188,46 @@ struct FCMAPI {
             return Disposables.create()
         }
     }
+    
+    static func editRegionCellSubs(id: Int, subOrNot: Bool) -> Observable<MyAlarmIsOnModel> {
+        return Observable.create { observer in
+            
+            let urlStr = BaseURL.url.appending("notification/me")
+            let url = URL(string: urlStr)
+            var request = URLRequest(url: url!)
+            
+            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+
+            request.setValue("application/json;charset=utf-8", forHTTPHeaderField: "Content-Type")
+            request.setValue("Bearer ".appending(accessToken), forHTTPHeaderField: "Authorization")
+            request.httpMethod = "PUT"
+            
+            let parameter: [String: [[String: Any]]] = [
+                "interestRegions": [[
+                    "subscribe": subOrNot,
+                    "id": id
+                ]]
+            ]
+            
+            let header: HTTPHeaders = [
+                "Content-Type": "application/json;charset=UTF-8",
+                "Authorization": "Bearer ".appending(accessToken)
+            ]
+            
+            request.httpBody = try! JSONSerialization.data(withJSONObject: parameter, options: .prettyPrinted)
+            
+            API.session.request(request)
+                .validate(statusCode: 200..<300)
+                .responseDecodable(of: MyAlarmIsOnModel.self) { response in
+                    switch response.result {
+                    case .success(let isOnMyModel):
+                        observer.onNext(isOnMyModel)
+                    case .failure(let err):
+                        observer.onError(err)
+                    }
+                }
+            
+            return Disposables.create()
+        }
+    }
 }
