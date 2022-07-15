@@ -8,6 +8,7 @@
 import Foundation
 import RxCocoa
 import RxSwift
+import CloudKit
 
 class CategoryAlarmViewModel {
     let disposeBag = DisposeBag()
@@ -21,6 +22,7 @@ class CategoryAlarmViewModel {
     
     ///INPUT
     struct INPUT {
+        ///관심 카테고리 알람 Part
         ///내 관심 카테고리 조회
         let myInterestCategoryObserver = PublishRelay<Void>()
         
@@ -30,12 +32,23 @@ class CategoryAlarmViewModel {
         ///개별 카테고리 스위치 조작
         let didTappedCellSwitchIdObserver = PublishRelay<Int>()
         let didTappedCellSwitchSubsObserver = PublishRelay<Bool>()
+        
+        
+        ///관심 지역 알람 Part
+        let myInterestRegionObserver = PublishRelay<Void>()
+        
+        ///개별 지역 스위치 조작
+        let didTappedRegionCellSwtichIdObserver = PublishRelay<Int>()
+        let didTappedRegionCellSwitchSubsObserver = PublishRelay<Bool>()
     }
         
     ///OUTPUT
     struct OUTPUT {
-        ///종합한거 뷰컨 전달
+        ///카테고리 종합한거 뷰컨 전달
         var sendResultCategory = PublishRelay<MyAlarmIsOnModel>()
+        
+        ///지역 종합한거 뷰컨 전달
+        var sendResultRegion = PublishRelay<MyAlarmIsOnModel>()
     }
     
     init() {
@@ -65,21 +78,20 @@ class CategoryAlarmViewModel {
                         .subscribe(onNext: { isOnModel in
                             CategoryAlarmViewController.editWholeSwitch = true
                             self.output.sendResultCategory.accept(isOnModel)
-                            
+                            self.output.sendResultRegion.accept(isOnModel)
                         }).disposed(by: self.disposeBag)
                 } else { //false -> 전체 구독 해지
                     FCMAPI.cancelAllSub(subOrNot: valid)
                         .subscribe(onNext: { isOnModel in
                             CategoryAlarmViewController.editWholeSwitch = false
                             self.output.sendResultCategory.accept(isOnModel)
+                            self.output.sendResultRegion.accept(isOnModel)
                         }).disposed(by: self.disposeBag)
                 }
             }
             .subscribe(onNext: {
                 print("방출")
             }).disposed(by: disposeBag)
-        
-        
         
         ///개별 스위치 조작 -> 개별 스위치 상태 변경 및 전체 알림 스위치의 보여지는 상태 변경
         _ = Observable.zip(self.input.didTappedCellSwitchIdObserver, self.input.didTappedCellSwitchSubsObserver, resultSelector: { id, isSubs in
@@ -110,5 +122,31 @@ class CategoryAlarmViewModel {
             print("개별 셀 구독 여부 방출 완료")
         }).disposed(by: disposeBag)
         
+        ///관심 지역 리스트 가져오기
+        input.myInterestRegionObserver
+            .flatMap { FCMAPI.getMyInterestCategoryAlarmList() }
+            .subscribe(onNext: { [weak self] myRegions in
+                guard let self = self else { return }
+                self.output.sendResultRegion.accept(myRegions)
+            }).disposed(by: disposeBag)
+        
+        ///관심지역 개별 스위치 조작
+        _ = Observable.zip(self.input.didTappedRegionCellSwtichIdObserver, self.input.didTappedRegionCellSwitchSubsObserver, resultSelector: { id, subs in
+            if(subs) {
+                FCMAPI.editRegionCellSubs(id: id, subOrNot: subs)
+                    .subscribe(onNext: { isOnMyModel in
+                        self.output.sendResultRegion.accept(isOnMyModel)
+                    }).disposed(by: self.disposeBag)
+            }
+            else {
+                FCMAPI.editRegionCellSubs(id: id, subOrNot: subs)
+                    .subscribe(onNext: { isOnMyModel in
+                        self.output.sendResultRegion.accept(isOnMyModel)
+                    }).disposed(by: self.disposeBag)
+            }
+        })
+        .subscribe(onNext: {
+            print("지역 개별 셀 구독 여부 방출 완료")
+        }).disposed(by: disposeBag)
     }
 }
