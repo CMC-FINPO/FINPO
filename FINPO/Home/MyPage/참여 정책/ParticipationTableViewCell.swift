@@ -7,8 +7,11 @@
 
 import Foundation
 import UIKit
+import RxSwift
 
 class ParticipationTableViewCell: UITableViewCell {
+    var disposeBag = DisposeBag()
+    
     public var regionLabel: PaddingLabel = {
         let label = PaddingLabel()
         label.textAlignment = .left
@@ -42,6 +45,7 @@ class ParticipationTableViewCell: UITableViewCell {
         let button = UIButton()
         button.setImage(UIImage(named: "scrap_inactive"), for: .normal)
         button.setImage(UIImage(named: "scrap_active"), for: .selected)
+        button.isUserInteractionEnabled = true
         return button
     }()
     
@@ -51,6 +55,9 @@ class ParticipationTableViewCell: UITableViewCell {
         view.backgroundColor = UIColor(hexString: "F9F9F9")
         view.spacing = 5
         view.alignment = .leading
+        view.layer.masksToBounds = true
+        view.layer.cornerRadius = 5
+        view.isUserInteractionEnabled = true
         return view
     }()
     
@@ -59,6 +66,7 @@ class ParticipationTableViewCell: UITableViewCell {
         label.numberOfLines = 0
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
         label.textColor = UIColor(hexString: "494949")
+        label.isUserInteractionEnabled = true
         return label
     }()
     
@@ -68,8 +76,15 @@ class ParticipationTableViewCell: UITableViewCell {
         button.titleLabel?.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
         button.setImage(UIImage(named: "memo")?.withRenderingMode(.alwaysOriginal), for: .normal)
         button.setTitle("메모 작성", for: .normal)
+        button.isUserInteractionEnabled = true
         return button
     }()
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        disposeBag = DisposeBag()
+    }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -127,8 +142,6 @@ class ParticipationTableViewCell: UITableViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        
-
-        
     }
 }
+
