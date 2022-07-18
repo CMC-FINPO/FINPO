@@ -16,6 +16,7 @@ import Then
 import GoogleSignIn
 import KakaoSDKAuth
 
+
 class LoginViewController: UIViewController {
     let user = User.instance
     let disposeBag = DisposeBag()
@@ -68,7 +69,6 @@ class LoginViewController: UIViewController {
     private func setAttribute() {
         view.backgroundColor = .white
         appleSignUpButton.addTarget(self, action: #selector(appleSignUpButtonPressed), for: .touchUpInside)
-
     }
     
     private func setLayout() {
@@ -122,25 +122,23 @@ class LoginViewController: UIViewController {
         googleSignUpButton.rx.tap
             .bind { [weak self] in
                 guard let self = self else { return }
+                ///소셜 로그인, 회원가입 리팩토링
                 GIDSignIn.sharedInstance.signIn(with: self.googleSiginInConfig, presenting: self) { user, error in
                     guard error == nil else { return }
                     guard let user = user else { return }
-                    self.viewModel.input.googleSignUpObserver.accept(user)
+                    self.viewModel.input.finalSocialSignupCheckObserver.accept(.google(user))
                 }
             }.disposed(by: disposeBag)
+        
         
     }
     
     private func setOutputBind() {
+        ///회원가입
         viewModel.output.goKakaoSignUp
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: { [weak self] valid in
                 if valid {
-                    if(AuthApi.hasToken()) {
-                        let vc = HomeTapViewController()
-                        vc.modalPresentationStyle = .fullScreen
-                        self?.present(vc, animated: true)
-                    }
                     let vc = LoginDetailViewController()
                     self?.navigationController?.pushViewController(vc, animated: true)
                 }
@@ -151,13 +149,6 @@ class LoginViewController: UIViewController {
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: { [weak self] valid in
                 if valid {
-                    let accessToken = UserDefaults.standard.object(forKey: "accessToken") as? String
-                    //TODO: 여기 accessToken 비교부분 비교 대상이 이상함(소셜토큰과 유저디폴트 토큰은 다름)
-                    if(accessToken == self?.user.accessTokenFromSocial) {
-                        let vc = HomeTapViewController()
-                        self?.present(vc, animated: true, completion: nil)
-                        return
-                    }
                     let vc = LoginDetailViewController()
                     self?.navigationController?.pushViewController(vc, animated: true)
                 }
@@ -170,6 +161,38 @@ class LoginViewController: UIViewController {
                 if valid {
                     let vc = LoginDetailViewController()
                     self.navigationController?.pushViewController(vc, animated: true)
+                }
+            }).disposed(by: disposeBag)
+        
+        ///재로그인
+        viewModel.output.goKakaoLogin
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: { [weak self] valid in
+                if valid {
+                    print("카카오로그인 -> 토큰 확인 -> 홈 이동")
+                    let vc = HomeTapViewController()
+                    vc.modalPresentationStyle = .fullScreen
+                    self?.present(vc, animated: true)
+                }
+            }).disposed(by: disposeBag)
+        
+        viewModel.output.goGoogleLogin
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: { [weak self] valid in
+                if valid {
+                    let vc = HomeTapViewController()
+                    vc.modalPresentationStyle = .fullScreen
+                    self?.present(vc, animated: true)
+                }
+            }).disposed(by: disposeBag)
+        
+        viewModel.output.goAppleLogin
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: { [weak self] valid in
+                if valid {
+                    let vc = HomeTapViewController()
+                    vc.modalPresentationStyle = .fullScreen
+                    self?.present(vc, animated: true)
                 }
             }).disposed(by: disposeBag)
         
@@ -190,40 +213,94 @@ class LoginViewController: UIViewController {
         let authorizationController = ASAuthorizationController(authorizationRequests: [request])
         authorizationController.delegate = self
         authorizationController.presentationContextProvider = self
-        authorizationController.performRequests()
+        //회원가입 시 리퀘스트 요청?
+//        authorizationController.performRequests() //요청 보냄
+        
+        let checkValidation = UserDefaults.standard.string(forKey: "appleAccessToken") ?? nil
+        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? nil
+        ///재로그인
+        if checkValidation != nil {
+            ///탈퇴한 경우
+            if accessToken != nil {
+                let url = BaseURL.url.appending("oauth/login/apple")
+                let appleAccessToken = checkValidation
+                let header: HTTPHeaders = [
+                    "Content-Type": "application/json;charset=UTF-8",
+                    "Authorization": "Bearer ".appending(appleAccessToken ?? "")
+                ]
+                
+                API.session.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: header)
+                    .validate(statusCode: 200..<300)
+                    .response {
+                        response in
+                            switch response.result {
+                            case .success(let data):
+                                if let data = data {
+                                    do {
+                                        let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                                        let result = json?["data"] as? [String:Any]
+                                        let accessToken = result?["accessToken"] as? String ?? ""
+                                        let refreshToken = result?["refreshToken"] as? String ?? ""
+                                        UserDefaults.standard.setValue(accessToken, forKey: "accessToken")
+                                        UserDefaults.standard.setValue(refreshToken, forKey: "refreshToken")
+                                        UserDefaults.standard.setValue("apple", forKey: "socialType")
+                                        LoginViewModel.socialType = "apple"
+                                        print("애플 재로그인")
+                                        self.viewModel.output.goAppleLogin.accept(true)
+                                    }
+                                }
+                            case .failure(let err):
+                                print("애플 재로그인 에러발생: \(err)")
+                            }
+                    }
+            } else {
+                authorizationController.performRequests() //요청 보냄
+            }
+            
+        } else {
+            authorizationController.performRequests() //요청 보냄
+        }
     }
 
 }
 
 extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
+    ///현재 화면에서 애플 로그인 화면 띄우기
     func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
         return self.view.window!
     }
     
+    @available(iOS 13.0, *)
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
         switch authorization.credential {
         case let appleIDCredential as ASAuthorizationAppleIDCredential:
-            //Create an account in system
+            ///Create an account in system
             let userIdentifier = appleIDCredential.user
             let nickName = appleIDCredential.fullName?.nickname
             let email = appleIDCredential.email
-            
+
             if let authorizationCode = appleIDCredential.authorizationCode,
                let identifyToken = appleIDCredential.identityToken,
                let authString = String(data: authorizationCode, encoding: .utf8),
                let tokenString = String(data: identifyToken, encoding: .utf8) {
-                
-                print("authorizationCode: \(authorizationCode)")
-                print("identifyToken: \(identifyToken)")
-                print("authString: \(authString)")
-                print("tokenString: \(tokenString)")
+                UserDefaults.standard.setValue(tokenString, forKey: "appleAccessToken")
                 UserDefaults.standard.setValue("apple", forKey: "socialType")
-                LoginViewModel.socialType = "apple"
-                viewModel.input.nickNameObserver.accept(nickName ?? "")
-                viewModel.user.accessTokenFromSocial = tokenString
-                if(userIdentifier != "") {
-                    viewModel.input.appleSignUpObserver.accept(())
+                UserDefaults.standard.setValue(authString, forKey: "authorizationCode")
+                
+                ///회원가입 진행
+                DispatchQueue.main.async {
+                    UserDefaults.standard.setValue("apple", forKey: "socialType")
+                    UserDefaults.standard.setValue(authString, forKey: "authorizationCode")
+                    self.viewModel.input.nickNameObserver.accept(nickName ?? "")
+                    ///애플 액세스 토큰(=tokenString)
+                    self.viewModel.user.accessTokenFromSocial = tokenString
+                    print("애플 회원가입 로직 실행")
+                    print("애플 액세스 토큰: \(tokenString)")
+                    if(userIdentifier != "") {
+                        self.viewModel.input.appleSignUpObserver.accept(())
+                    }
                 }
+
             }
         case let passwordCredential as ASPasswordCredential:
             let userName = passwordCredential.user
@@ -241,3 +318,5 @@ extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizatio
         print("애플 로그인 실패: \(error.localizedDescription)")
     }
 }
+
+

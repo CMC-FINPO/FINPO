@@ -29,7 +29,7 @@ enum RegionActionType {
 
 enum SocialLoginType {
     case kakao
-    case google
+    case google(GIDGoogleUser)
     case apple
 }
 
@@ -45,8 +45,8 @@ class LoginViewModel {
     var purposeBag: [Int] = []
     var selectedInterestRegion: [Int] = []
     var selectedMainRegion = Int()
-    //지역 정보 전달
     
+    //지역 정보 전달
     static var isMainRegionSelected: Bool = false
     static var isInterestRegionSelected: Bool = false
     static var socialType: String = ""
@@ -55,9 +55,15 @@ class LoginViewModel {
     var output = OUTPUT()
     
     struct INPUT {
+        let finalSocialSignupCheckObserver = PublishRelay<SocialLoginType>()
+        
+        
         let appleSignUpObserver = PublishRelay<Void>()
         let kakaoSignUpObserver = PublishRelay<Void>()
+        ///구글 회원가입
         let googleSignUpObserver = PublishRelay<GIDGoogleUser>()
+        ///구글 재로그인
+        let googleLoginObserver = PublishRelay<GIDGoogleUser>()
         let nameObserver = PublishRelay<String>()
         let nickNameObserver = PublishRelay<String>()
         let birthObserver = PublishRelay<String>()
@@ -79,12 +85,19 @@ class LoginViewModel {
         ///마이페이지 거주지역 수정
         let myRegionObserver = PublishRelay<Void>()
         let editMainRegionObserver = PublishRelay<Int>()
+        ///전체 알림 설정
+        let addPermissionObserver = PublishRelay<Bool>()
     }
     
     struct OUTPUT {
+        ///회원가입
         var goAppleSignUp = PublishRelay<Bool>()
         var goKakaoSignUp = PublishRelay<Bool>()
         var goGoogleSignUp = PublishRelay<Bool>()
+        ///재로그인
+        var goAppleLogin = PublishRelay<Bool>()
+        var goKakaoLogin = PublishRelay<Bool>()
+        var goGoogleLogin = PublishRelay<Bool>()
         var isNameValid = PublishRelay<Bool>()
         var isNicknameValid = PublishRelay<Bool>()
         var genderValid: Driver<Gender> = PublishRelay<Gender>().asDriver(onErrorJustReturn: .none)
@@ -112,6 +125,22 @@ class LoginViewModel {
     
     init() {        
         ///INPUT
+       
+        ///소셜 로그인, 회원가입 리팩토링
+        input.finalSocialSignupCheckObserver
+            .subscribe(onNext: { [weak self] actionIsGoogle in
+                guard let self = self else { return }
+                switch actionIsGoogle {
+                case .apple:
+                    break
+                case .google(let user):
+                    self.googleSignin(user: user).subscribe(onNext: { [weak self] valid in
+                        if valid { self?.output.goGoogleLogin.accept(valid) }
+                    }).disposed(by: self.disposeBag)
+                case .kakao:
+                    break
+                }
+            }).disposed(by: disposeBag)
         
         input.appleSignUpObserver
             .subscribe(onNext: { [weak self] in
@@ -132,6 +161,7 @@ class LoginViewModel {
                 }
             }).disposed(by: disposeBag)
         
+        ///구글 회원가입
         input.googleSignUpObserver
             .flatMap { user in self.googleLogin(user: user) }
             .subscribe({ valid in
@@ -208,9 +238,13 @@ class LoginViewModel {
         input.deleteTagObserver
             .subscribe(onNext: {
                 [weak self] indexPath in
-                self?.output.regionButton.accept(.delete(index: indexPath))
-                self?.selectedInterestRegion.remove(at: indexPath)
-                print("삭제 후 갱신된 추가 관심지역 리스트: \(self?.selectedInterestRegion)")
+                guard let self = self else { return }
+                self.output.regionButton.accept(.delete(index: indexPath))
+                print("실제 LoginViewModel 선택된 관심지역 리스트 \(self.selectedInterestRegion)")
+                if(self.selectedInterestRegion.count > 0) {
+                    self.selectedInterestRegion.remove(at: indexPath)
+                }                
+                print("삭제 후 갱신된 추가 관심지역 리스트: \(self.selectedInterestRegion)")
 //                self?.user.interestRegion.remove(at: indexPath)
 //                print("삭제 후 갱신된 추가 관심지역 리스트: \(self?.user.interestRegion)")
             }).disposed(by: disposeBag)
@@ -368,11 +402,19 @@ class LoginViewModel {
                 switch valid {
                 case .next(let tr):
                     self.output.isSemiSignupComplete.accept(tr)
+                    self.input.addPermissionObserver.accept(true)
                 case .error(let err):
                     self.output.errorValue.accept(err)
                 case .completed:
                     break
                 }
+            }).disposed(by: disposeBag)
+        
+        ///FCM 전체 알림 허용(회원 가입 시) -> 세미 가입 완료 후 액세스 얻고나서 진행
+        input.addPermissionObserver
+            .flatMap { _ in FCMAPI.addFCMPermission() }
+            .subscribe(onNext: { valid in
+                print("전체 알림 설정 OUTPUT: \(valid)")
             }).disposed(by: disposeBag)
         
         output.statusPurposeButtonValid = Driver.combineLatest(
@@ -389,10 +431,50 @@ class LoginViewModel {
     ///유저 정보 입력받기 전 kakao api server에서 accesstoken get
     private func kakaoLogin() -> Observable<Bool> {
         return Observable.create { observer in
-            if (UserApi.isKakaoTalkLoginAvailable()) {
+            ///로그인 되어있지 않은 경우 -> 1. 로그인시도 2. 회원가입ㄴ
+            
+            if AuthApi.hasToken() {
+                UserApi.shared.accessTokenInfo { _, error in
+                    if let error = error { print("------kakao login error occured ------") }
+                    if UserApi.isKakaoTalkLoginAvailable() {
+                        UserApi.shared.rx.loginWithKakaoTalk()
+                            .subscribe(onNext: { oauthToken in
+                                let kakaoAccessToken = oauthToken.accessToken
+                                let url = BaseURL.url.appending("oauth/login/kakao")
+                                let header: HTTPHeaders = [
+                                    "Content-Type": "application/json;charset=UTF-8",
+                                    "Authorization": "Bearer ".appending(kakaoAccessToken)
+                                ]
+                                
+                                AF.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: header)
+                                    .validate(statusCode: 200..<300)
+                                    .response { response in
+                                        switch response.result {
+                                        case .success(let data):
+                                            if let data = data {
+                                                do {
+                                                    let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                                                    let result = json?["data"] as? [String:Any]
+                                                    let accessToken = result?["accessToken"] as? String ?? ""
+                                                    let refreshToken = result?["refreshToken"] as? String ?? ""
+                                                    UserDefaults.standard.setValue(accessToken, forKey: "accessToken")
+                                                    UserDefaults.standard.setValue(refreshToken, forKey: "refreshToken")
+                                                    UserDefaults.standard.setValue("kakao", forKey: "socialType")
+                                                    LoginViewModel.socialType = "kakao"
+                                                    self.output.goKakaoLogin.accept(true)
+                                                }
+                                            }
+                                        case .failure(let err):
+                                            print("카카오 재로그인 에러발생: \(err)")
+                                        }
+                                    }
+                            }).disposed(by: self.disposeBag)
+                    }
+                }
+            }
+            else {
                 UserApi.shared.rx.loginWithKakaoTalk()
                     .subscribe(onNext: { (oauthToken) in
-                        print("loginWithKakaoTalk() success.")
                         UserApi.shared.me { user, error in
                             if let error = error {
                                 self.output.errorValue.accept(error)
@@ -401,8 +483,6 @@ class LoginViewModel {
                                 self.user.profileImg = user?.kakaoAccount?.profile?.profileImageUrl!
                                 UserDefaults.standard.setValue("kakao", forKey: "socialType")
                                 LoginViewModel.socialType = "kakao"
-                                //TODO: get data using accessToken, refreshToken check here
-//                                PredictAPI.predictWithAuth()
                                 observer.onNext(true)
                             }
                         }
@@ -415,10 +495,64 @@ class LoginViewModel {
                         observer.onError(error)
                     }).disposed(by: self.disposeBag)
             }
+            
             return Disposables.create()
         }
     }
     
+    ///구글 회원가입 상태 체크
+    private func googleSignin(user: GIDGoogleUser) -> Observable<Bool> {
+        return Observable.create { observer in
+            var googleAccessToken = String()
+            
+            user.authentication.do { authentication, error in
+                guard error == nil else { return }
+                guard let authentication = authentication else { return }
+                googleAccessToken = authentication.accessToken
+                
+                let url = BaseURL.url.appending("oauth/login/google")
+                let header: HTTPHeaders = [
+                    "Content-Type": "application/json;charset=UTF-8",
+                    "Authorization": "Bearer ".appending(googleAccessToken)
+                ]
+                
+                AF.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: header)
+                    .response { response in
+                        switch response.result {
+                        case .success(let data):
+                            ///이미 가입된 회원 -> 재로그인
+                            if (response.response?.statusCode == 200) {
+                                if let data = data {
+                                    do {
+                                        let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                                        let result = json?["data"] as? [String: Any]
+                                        let accessToken = result?["accessToken"] as? String ?? ""
+                                        let refreshToken = result?["refreshToken"] as? String ?? ""
+                                        UserDefaults.standard.setValue(accessToken, forKey: "accessToken")
+                                        UserDefaults.standard.setValue(refreshToken, forKey: "refreshToken")
+                                        UserDefaults.standard.setValue("google", forKey: "socialType")
+                                        LoginViewModel.socialType = "google"
+                                        observer.onNext(true)
+                                    }
+                                }
+                            }
+                            ///회원가입 진행
+                            else if (response.response?.statusCode == 202) {
+                                self.input.googleSignUpObserver.accept(user)
+                            }
+                        case .failure(let err):
+                            print("구글 재로그인 에러발생: \(err)")
+                        }
+                    }
+            }
+            
+            return Disposables.create()
+        }
+    }
+    
+    
+    
+    ///회원가입
     private func googleLogin(user: GIDGoogleUser) -> Observable<Bool> {
         return Observable.create { observer in
             user.authentication.do { authentication, error in
@@ -426,9 +560,8 @@ class LoginViewModel {
                 guard let authentication = authentication else { return }
                 //소셜 액세스 토큰
                 self.user.accessTokenFromSocial = authentication.accessToken
-                
                 self.user.profileImg = user.profile?.imageURL(withDimension: 200)!
-                
+                print("구글 프로필 사진 옵셔널: \(self.user.profileImg)")
                 self.input.nickNameObserver.accept(user.profile?.name ?? "")
                 print("구글 유저 이름: \(user.profile?.name ?? "")")
                 UserDefaults.standard.setValue("google", forKey: "socialType")
@@ -437,6 +570,7 @@ class LoginViewModel {
                 UserDefaults.standard.setValue(authentication.accessToken, forKey: "SocialAccessToken")
                 observer.onNext(true)
             }
+            
             return Disposables.create()
         }
     }
@@ -446,7 +580,7 @@ class LoginViewModel {
         return Observable.create { observer in
             let encodedNickname = self.user.nickname.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
             
-            let url = "https://dev.finpo.kr/user/check-duplicate?nickname=\(encodedNickname)"
+            let url = "https://api.finpo.kr/user/check-duplicate?nickname=\(encodedNickname)"
             let parameter: Parameters = [
                 "nickname": self.user.nickname
             ]
@@ -540,7 +674,7 @@ class LoginViewModel {
 //    }
     
     func getMainRegionDataToTableView() {
-        let url = "https://dev.finpo.kr/region/name"
+        let url = "https://api.finpo.kr/region/name"
         
         DispatchQueue.main.async {
             AF.request(url).responseJSON { (response) in
@@ -572,7 +706,7 @@ class LoginViewModel {
     
     func getSubRegionDataToTableView(_ parentId: Int = 0) {
         let searchMainRegionNum = (parentId % 100) * 100
-        let url = "https://dev.finpo.kr/region/name?parentId=\(searchMainRegionNum)"
+        let url = "https://api.finpo.kr/region/name?parentId=\(searchMainRegionNum)"
 
         DispatchQueue.main.async {
             AF.request(url).responseJSON { (response) in
@@ -604,7 +738,7 @@ class LoginViewModel {
     }
     
     func getInterestCVMenuData() {
-        let url = "https://dev.finpo.kr/policy/category/name"
+        let url = "https://api.finpo.kr/policy/category/name"
 
         DispatchQueue.main.async {
             AF.request(url).responseJSON { (response) in
@@ -635,15 +769,18 @@ class LoginViewModel {
     func semiSignup() -> Observable<User> {
         return Observable.create { observer in
             let socialType = UserDefaults.standard.string(forKey: "socialType") ?? ""
-            let url = "https://dev.finpo.kr/oauth/register/".appending(socialType)
-            let parameter = self.user.toDic()
+            let url = "https://api.finpo.kr/oauth/register/".appending(socialType)
+//            let parameter = self.user.toDic()
             
-//            //카테고리 설정
-//            var dic: [String: Any] = [String:Any]()
-//
-//            dic.updateValue(self.user.category, forKey: "categoryId")
-//
-            
+            let parameter: Parameters = [
+                "name": self.user.name,
+                "nickname" : self.user.nickname,
+                "birth":self.user.birth,
+                "gender": self.user.gender, //Male, Female
+                "regionId": self.user.region[0], //메인 지역 (추가 전)
+                "status": self.user.status,
+                "profileImg": self.user.profileImg ?? ""
+            ]
             
             print("세미 사인업 파라미터: \(parameter)")
             let header: HTTPHeaders = [
@@ -709,7 +846,7 @@ class LoginViewModel {
     
     func getStatus() {
         let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
-        let url = "https://dev.finpo.kr/user/status/name"
+        let url = "https://api.finpo.kr/user/status/name"
         let header: HTTPHeaders = [
             "Content-Type": "application/json;charset=UTF-8",
             "Authorization":"Bearer ".appending(accessToken)
@@ -741,7 +878,7 @@ class LoginViewModel {
     
     func getPurpose() {
         let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
-        let url = "https://dev.finpo.kr/user/purpose/name"
+        let url = "https://api.finpo.kr/user/purpose/name"
         let header: HTTPHeaders = [
             "Content-Type": "application/json;charset=UTF-8",
             "Authorization":"Bearer ".appending(accessToken)
@@ -775,7 +912,7 @@ class LoginViewModel {
         return Observable.create { [weak self] observer in
             guard let self = self else { return Disposables.create() }
             let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
-            let url = "https://dev.finpo.kr/user/me"
+            let url = "https://api.finpo.kr/user/me"
             let header: HTTPHeaders = [
                 "Content-Type": "application/json;charset=UTF-8",
                 "Authorization":"Bearer ".appending(accessToken)
