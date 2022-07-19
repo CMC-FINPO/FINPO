@@ -30,7 +30,7 @@ enum RegionActionType {
 enum SocialLoginType {
     case kakao
     case google(GIDGoogleUser)
-    case apple
+    case apple(String)
 }
 
 class LoginViewModel {
@@ -128,38 +128,42 @@ class LoginViewModel {
        
         ///소셜 로그인, 회원가입 리팩토링
         input.finalSocialSignupCheckObserver
-            .subscribe(onNext: { [weak self] actionIsGoogle in
+            .subscribe(onNext: { [weak self] socialAction in
                 guard let self = self else { return }
-                switch actionIsGoogle {
-                case .apple:
-                    break
+                switch socialAction {
+                case .apple(let identifyToken):
+                    self.appleSignin(identifyToken: identifyToken).subscribe(onNext: { [weak self] valid in
+                        self?.output.goAppleSignUp.accept(valid)
+                    }).disposed(by: self.disposeBag)
                 case .google(let user):
                     self.googleSignin(user: user).subscribe(onNext: { [weak self] valid in
                         if valid { self?.output.goGoogleLogin.accept(valid) }
                     }).disposed(by: self.disposeBag)
                 case .kakao:
-                    break
+                    self.kakaoLogin().subscribe(onNext: { [weak self] valid in
+                        self?.output.goKakaoSignUp.accept(valid)
+                    }).disposed(by: self.disposeBag)
                 }
             }).disposed(by: disposeBag)
         
-        input.appleSignUpObserver
-            .subscribe(onNext: { [weak self] in
-                self?.output.goAppleSignUp.accept(true)
-            }).disposed(by: disposeBag)
+//        input.appleSignUpObserver
+//            .subscribe(onNext: { [weak self] in
+//                self?.output.goAppleSignUp.accept(true)
+//            }).disposed(by: disposeBag)
         
-        input.kakaoSignUpObserver
-            .flatMap { self.kakaoLogin() }
-            .subscribe({ valid in
-                switch valid {
-                case .next(let validation):
-                    print("주입되었음")
-                    self.output.goKakaoSignUp.accept(validation)
-                case .completed:
-                    break
-                case .error(let error):
-                    self.output.errorValue.accept(error)
-                }
-            }).disposed(by: disposeBag)
+//        input.kakaoSignUpObserver
+//            .flatMap { self.kakaoLogin() }
+//            .subscribe({ valid in
+//                switch valid {
+//                case .next(let validation):
+//                    print("주입되었음")
+//                    self.output.goKakaoSignUp.accept(validation)
+//                case .completed:
+//                    break
+//                case .error(let error):
+//                    self.output.errorValue.accept(error)
+//                }
+//            }).disposed(by: disposeBag)
         
         ///구글 회원가입
         input.googleSignUpObserver
@@ -431,71 +435,173 @@ class LoginViewModel {
     ///유저 정보 입력받기 전 kakao api server에서 accesstoken get
     private func kakaoLogin() -> Observable<Bool> {
         return Observable.create { observer in
-            ///로그인 되어있지 않은 경우 -> 1. 로그인시도 2. 회원가입ㄴ
             
-            if AuthApi.hasToken() {
-                UserApi.shared.accessTokenInfo { _, error in
-                    if let error = error { print("------kakao login error occured ------") }
-                    if UserApi.isKakaoTalkLoginAvailable() {
-                        UserApi.shared.rx.loginWithKakaoTalk()
-                            .subscribe(onNext: { oauthToken in
-                                let kakaoAccessToken = oauthToken.accessToken
-                                let url = BaseURL.url.appending("oauth/login/kakao")
-                                let header: HTTPHeaders = [
-                                    "Content-Type": "application/json;charset=UTF-8",
-                                    "Authorization": "Bearer ".appending(kakaoAccessToken)
-                                ]
-                                
-                                AF.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: header)
-                                    .validate(statusCode: 200..<300)
-                                    .response { response in
-                                        switch response.result {
-                                        case .success(let data):
-                                            if let data = data {
-                                                do {
-                                                    let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-                                                    let result = json?["data"] as? [String:Any]
-                                                    let accessToken = result?["accessToken"] as? String ?? ""
-                                                    let refreshToken = result?["refreshToken"] as? String ?? ""
-                                                    UserDefaults.standard.setValue(accessToken, forKey: "accessToken")
-                                                    UserDefaults.standard.setValue(refreshToken, forKey: "refreshToken")
+            ///리팩 시작
+            if UserApi.isKakaoTalkLoginAvailable() {
+                UserApi.shared.loginWithKakaoTalk { oauthToken, _ in
+                    guard let oauthToken = oauthToken else { return }
+                    let kakaoAccessToken = oauthToken.accessToken
+                    let url = BaseURL.url.appending("oauth/login/kakao")
+                    let header: HTTPHeaders = [
+                        "Content-Type": "application/json;charset=UTF-8",
+                        "Authorization": "Bearer ".appending(kakaoAccessToken)
+                    ]
+                    ///서버 회원가입 상태 체크
+                    API.session.request(url, method: .get, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+                        .response { response in
+                            switch response.result {
+                            case .success(let data):
+                                if let data = data {
+                                    do {
+                                        //이미 회원가입 한 유저라면
+                                        if response.response?.statusCode == 200 {
+                                            let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                                            let result = json?["data"] as? [String:Any]
+                                            let accessToken = result?["accessToken"] as? String ?? ""
+                                            let refreshToken = result?["refreshToken"] as? String ?? ""
+                                            UserDefaults.standard.setValue(accessToken, forKey: "accessToken")
+                                            UserDefaults.standard.setValue(refreshToken, forKey: "refreshToken")
+                                            UserDefaults.standard.setValue("kakao", forKey: "socialType")
+                                            LoginViewModel.socialType = "kakao"
+                                            self.user.accessTokenFromSocial = oauthToken.accessToken
+                                            self.output.goKakaoLogin.accept(true)
+                                            observer.onCompleted()
+                                        }
+                                        //회원가입 대상이라면
+                                        else if response.response?.statusCode == 202 {
+                                            UserApi.shared.me { user, error in
+                                                if let error = error {
+                                                    self.output.errorValue.accept(error)
+                                                } else { ///회원정보 가져오기 성공 시
+                                                    self.input.nickNameObserver.accept(user?.kakaoAccount?.profile?.nickname ?? "")
+                                                    self.user.profileImg = user?.kakaoAccount?.profile?.profileImageUrl!
                                                     UserDefaults.standard.setValue("kakao", forKey: "socialType")
                                                     LoginViewModel.socialType = "kakao"
-                                                    self.output.goKakaoLogin.accept(true)
+                                                    observer.onNext(true)
                                                 }
                                             }
-                                        case .failure(let err):
-                                            print("카카오 재로그인 에러발생: \(err)")
+                                            self.user.accessTokenFromSocial = oauthToken.accessToken
                                         }
                                     }
-                            }).disposed(by: self.disposeBag)
-                    }
-                }
-            }
-            else {
-                UserApi.shared.rx.loginWithKakaoTalk()
-                    .subscribe(onNext: { (oauthToken) in
-                        UserApi.shared.me { user, error in
-                            if let error = error {
-                                self.output.errorValue.accept(error)
-                            } else { ///회원정보 가져오기 성공 시
-                                self.input.nickNameObserver.accept(user?.kakaoAccount?.profile?.nickname ?? "")
-                                self.user.profileImg = user?.kakaoAccount?.profile?.profileImageUrl!
-                                UserDefaults.standard.setValue("kakao", forKey: "socialType")
-                                LoginViewModel.socialType = "kakao"
-                                observer.onNext(true)
+                                }
+                            case .failure(let err):
+                                observer.onError(err)
                             }
                         }
-                        //소셜 액세스 토큰
-                        self.user.accessTokenFromSocial = oauthToken.accessToken
-                        
-                        print("카카오 엑세스 토큰 from kakao api server: \(self.user.accessTokenFromSocial)")
-                    }, onError: { (error) in
-                        print("error occured: \(error)")
-                        observer.onError(error)
-                    }).disposed(by: self.disposeBag)
+                }
             }
             
+            ///로그인 되어있지 않은 경우 -> 1. 로그인시도 2. 회원가입ㄴ
+            
+//            if AuthApi.hasToken() {
+//                UserApi.shared.accessTokenInfo { _, error in
+//                    if let error = error { print("------kakao login error occured ------") }
+//                    if UserApi.isKakaoTalkLoginAvailable() {
+//                        UserApi.shared.rx.loginWithKakaoTalk()
+//                            .subscribe(onNext: { oauthToken in
+//                                let kakaoAccessToken = oauthToken.accessToken
+//                                let url = BaseURL.url.appending("oauth/login/kakao")
+//                                let header: HTTPHeaders = [
+//                                    "Content-Type": "application/json;charset=UTF-8",
+//                                    "Authorization": "Bearer ".appending(kakaoAccessToken)
+//                                ]
+//
+//                                AF.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: header)
+//                                    .validate(statusCode: 200..<300)
+//                                    .response { response in
+//                                        switch response.result {
+//                                        case .success(let data):
+//                                            if let data = data {
+//                                                do {
+//                                                    let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+//                                                    let result = json?["data"] as? [String:Any]
+//                                                    let accessToken = result?["accessToken"] as? String ?? ""
+//                                                    let refreshToken = result?["refreshToken"] as? String ?? ""
+//                                                    UserDefaults.standard.setValue(accessToken, forKey: "accessToken")
+//                                                    UserDefaults.standard.setValue(refreshToken, forKey: "refreshToken")
+//                                                    UserDefaults.standard.setValue("kakao", forKey: "socialType")
+//                                                    LoginViewModel.socialType = "kakao"
+//                                                    self.output.goKakaoLogin.accept(true)
+//                                                }
+//                                            }
+//                                        case .failure(let err):
+//                                            print("카카오 재로그인 에러발생: \(err)")
+//                                        }
+//                                    }
+//                            }).disposed(by: self.disposeBag)
+//                    }
+//                }
+//            }
+//            else {
+//                UserApi.shared.rx.loginWithKakaoTalk()
+//                    .subscribe(onNext: { (oauthToken) in
+//                        UserApi.shared.me { user, error in
+//                            if let error = error {
+//                                self.output.errorValue.accept(error)
+//                            } else { ///회원정보 가져오기 성공 시
+//                                self.input.nickNameObserver.accept(user?.kakaoAccount?.profile?.nickname ?? "")
+//                                self.user.profileImg = user?.kakaoAccount?.profile?.profileImageUrl!
+//                                UserDefaults.standard.setValue("kakao", forKey: "socialType")
+//                                LoginViewModel.socialType = "kakao"
+//                                observer.onNext(true)
+//                            }
+//                        }
+//                        //소셜 액세스 토큰
+//                        self.user.accessTokenFromSocial = oauthToken.accessToken
+//
+//                        print("카카오 엑세스 토큰 from kakao api server: \(self.user.accessTokenFromSocial)")
+//                    }, onError: { (error) in
+//                        print("error occured: \(error)")
+//                        observer.onError(error)
+//                    }).disposed(by: self.disposeBag)
+//            }
+            
+            return Disposables.create()
+        }
+    }
+    ///애플 회원가입 상태 체크
+    private func appleSignin(identifyToken: String) -> Observable<Bool> {
+        return Observable.create { observer in
+            
+            let url = BaseURL.url.appending("oauth/login/apple")
+            let header: HTTPHeaders = [
+                "Content-Type": "application/json;charset=UTF-8",
+                "Authorization": "Bearer ".appending(identifyToken)
+            ]
+            
+            API.session.request(url, method: .get, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+                .response { response in
+                    switch response.result {
+                    case .success(let data):
+                        ///이미 가입된 회원 -> 재로그인
+                        if response.response?.statusCode == 200 {
+                            if let data = data {
+                                do {
+                                    let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                                    let result = json?["data"] as? [String:Any]
+                                    let accessToken = result?["accessToken"] as? String ?? ""
+                                    let refreshToken = result?["refreshToken"] as? String ?? ""
+                                    UserDefaults.standard.setValue(accessToken, forKey: "accessToken")
+                                    UserDefaults.standard.setValue(refreshToken, forKey: "refreshToken")
+                                    UserDefaults.standard.setValue("apple", forKey: "socialType")
+                                    LoginViewModel.socialType = "apple"
+                                    print("애플 재로그인")
+                                    self.output.goAppleLogin.accept(true)
+                                    observer.onCompleted()
+                                }
+                            }
+                        }
+                        ///회원가입
+                        else if response.response?.statusCode == 202 {
+                            self.user.accessTokenFromSocial = identifyToken
+                            LoginViewModel.socialType = "apple"
+                            observer.onNext(true) //회원가입 진행하기
+                        }
+                    case .failure(let err):
+                        self.output.errorValue.accept(err)
+                        observer.onError(err)
+                    }
+                }
             return Disposables.create()
         }
     }
