@@ -13,8 +13,10 @@ import Alamofire
 class HomeViewModel {
     
     static var detailId = [Int]()
+    static var participatedId = Int()
     static var serviceString: [String] = [String]()
     
+    let myPageViewModel = MyPageViewModel()
     
     enum Action {
         case load([Contents])
@@ -36,6 +38,7 @@ class HomeViewModel {
         case isFirstLoad([DataDetail])
         case delete(at: Int)
         case add(DataDetail)
+        case deleteAll
     }
     
     ///나의 관심 카테고리인지 확인하는 액션
@@ -68,12 +71,16 @@ class HomeViewModel {
     static var subRegion: [SubRegion] = [SubRegion]()
     
     struct INPUT {
+        
+        ///유저 정보 가져오기
+        let getUserInfo = PublishRelay<Void>()
+        
         //맨처음 나의 정책 로드
         let myPolicyTrigger = PublishRelay<isMyPolicy>()
         
         //Sort
         let textFieldObserver = PublishRelay<String>()
-        let loadMoreObserver = PublishRelay<Void>()
+        let loadMoreObserver = PublishRelay<Bool>()
         let currentPage = PublishRelay<Int>()
         let sortActionObserver = PublishRelay<SortAction>()
                 
@@ -85,6 +92,7 @@ class HomeViewModel {
         let regionDataSetObserver = PublishRelay<Void>()
         let addMainRegionIndexObserver = PublishRelay<Int>()
         let filteredRegionObserver = PublishRelay<[Int]>()
+        let filterResetTriggerObserver = PublishRelay<Void>()
         
         //category
         let categoryObserver = PublishRelay<Void>() ///child 형식
@@ -99,6 +107,7 @@ class HomeViewModel {
         let serviceInfoObserver = PublishRelay<Int>()
         let mypolicyAddObserver = PublishRelay<Int>()
         let presentMemoAlertObserver = PublishRelay<Void>()
+        let participatedId = PublishRelay<Int>()
         let memoTextObserver = PublishRelay<String>()
         let memoCheckObserver = PublishRelay<Void>()
         var bookmarkObserver = PublishRelay<Int>()
@@ -117,6 +126,9 @@ class HomeViewModel {
     }
     
     struct OUTPUT {
+        ///유저 정보 전달
+        var sendUserInfo = PublishRelay<User>()
+        
         var textFieldResult = PublishRelay<Contents>()
         var policyResult = PublishRelay<Action>()
         
@@ -161,6 +173,20 @@ class HomeViewModel {
     }
     
     init() {
+        ///유저 정보 가져오기
+        input.getUserInfo
+            .flatMap { self.myPageViewModel.getProfileInfo() }
+            .subscribe(onNext: { value in
+                self.output.sendUserInfo.accept(value)
+                self.input.selectedCategoryObserver.accept(value.category)
+                self.input.filteredRegionObserver.accept(value.region)
+            }).disposed(by: disposeBag)
+        
+//        self.myPageViewModel.getProfileInfo()
+//            .subscribe(onNext: { value in
+//                self.output.sendUserInfo.accept(value)
+//            }).disposed(by: disposeBag)
+        
         ///INPUT
         input.loadMoreObserver
             .debug()
@@ -188,6 +214,11 @@ class HomeViewModel {
                 FilterRegionViewController.filteredDataList.remove(at: index)
             }).disposed(by: disposeBag)
         
+        input.filterResetTriggerObserver
+            .subscribe(onNext: { _ in
+                self.input.tagLoadActionObserver.accept(.deleteAll)
+            }).disposed(by: disposeBag)
+        
         output.subRegionTagOutput =  input.addTagObserver.withLatestFrom(input.addMainRegionIndexObserver) { subIndex, mainIndex in
             let dataDetail = DataDetail(
                 region: RegionDetail(
@@ -211,6 +242,10 @@ class HomeViewModel {
             .flatMap { CallCategoryAPI.callCategory() }
             .subscribe(onNext: { data in
                 self.output.getJobData.accept(data)
+                ///참여 공간 라벨 레이아웃 조정용
+                for i in 0..<(data.data[3].childs.count) {
+                    FilterViewController.participationTagStr.append(data.data[3].childs[i].name)
+                }
             }).disposed(by: disposeBag)
         
         input.lowCategoryObserver
@@ -242,6 +277,7 @@ class HomeViewModel {
                 AddParticipatedAPI.addParticipationToAPI(id: id, with: nil) }
             .subscribe(onNext: { valid in
                 self.output.mypolicyAddOutput.accept(valid)
+                self.input.participatedId.accept(HomeViewModel.participatedId)
             }).disposed(by: disposeBag)
                     
         ///메모 알럿 present
@@ -250,12 +286,12 @@ class HomeViewModel {
                 self.output.goToMemoAlert.accept(true)
             }).disposed(by: disposeBag)
         
-        //메모 서버 저장
+        ///메모 서버 저장
         _ = Observable.combineLatest(
-            self.input.mypolicyAddObserver,
+            self.input.participatedId,
             self.input.memoTextObserver)
             .map { a, b in
-                AddParticipatedAPI.addParticipationToAPI(id: a, with: b)
+                AddParticipatedAPI.addMemoToAPI(id: a, with: b)
             }
             .flatMap { $0 }
             .subscribe(onNext: { valid in
@@ -263,14 +299,14 @@ class HomeViewModel {
                 self.output.checkedMemoOutput.accept(valid)
             }).disposed(by: disposeBag)
         
-        //북마크
+        ///북마크
         input.bookmarkObserver
             .flatMap { BookMarkAPI.addBookmark(polidyId: $0) } //북마크 추가 API
             .subscribe(onNext: { valid in
                 self.output.checkedBookmarkOutput.accept(valid)
             }).disposed(by: disposeBag)
         
-        //북마크 삭제
+        ///북마크 삭제
         input.bookmarkDeleteObserver
             .flatMap { BookMarkAPI.deleteBookmark(polidyId: $0) }
             .subscribe(onNext: { valid in
@@ -309,8 +345,30 @@ class HomeViewModel {
         ///OUTPUT
         ///
         
-        //맨 처음 로드 시 나의 정책(관심+기본지역), 카테고리에 해당하는 정책 조회
-                
+        ///맨 처음 로드 시 나의 정책(관심+기본지역), 카테고리에 해당하는 정책 조회
+//        _ = Observable.combineLatest(input.myPolicyTrigger.asObservable(), input.sortActionObserver.asObservable())
+//            .flatMap({ (mypolicy, action) -> Observable<MyPolicyTestModel> in
+//                switch mypolicy {
+//                case .mypolicy:
+//                    switch action {
+//                    case .latest:
+//                        return MyPolicySearchAPI.searchMyPolicy()
+//                    case .popular:
+//                        return MyPolicySearchAPI.searchMyPolicy()
+//                    }
+//                case .notMyPolicy:
+//                    switch action {
+//                    case .latest:
+//                        return MyPolicySearchAPI.searchMyPolicy()
+//                    case .popular:
+//                        return MyPolicySearchAPI.searchMyPolicy()
+//                    }
+//                }
+//            })
+//        .subscribe(onNext: { testModel in
+//            print("내 정책 조회 결과: \(testModel)")
+//        }).disposed(by: disposeBag)
+        
         //정렬했을 때 -> Page 0 불러오기
         _ = Observable.combineLatest(
             input.myPolicyTrigger.asObservable(), //나의 정책인지 아닌지
@@ -319,7 +377,6 @@ class HomeViewModel {
             input.selectedCategoryObserver.asObservable(), //필터링 시 카테고리
             input.filteredRegionObserver.asObservable() //필터링 시 지역
         )
-//        .take(1)
         .flatMap({ (myPolicy, action, text, categories, filteredRegions) -> Observable<SearchPolicyResponse> in
             switch myPolicy {
             case .mypolicy:
@@ -341,18 +398,18 @@ class HomeViewModel {
                     return SearchPolicyAPI.searchPolicyAsPopular(title: text, to: categories, in: filteredRegions)
                 }
             }
-
         })
         .subscribe(onNext: { policyData in
             HomeViewModel.detailId.removeAll()
             for i in 0..<(policyData.data?.content.count ?? 0) {
                 HomeViewModel.detailId.append(policyData.data?.content[i].id ?? 1000)
+                
             }
             self.output.policyResult.accept(Action.load([Contents(content: policyData.data!.content)]))
             print("상세정보 아이디: \(HomeViewModel.detailId)")
         }).disposed(by: disposeBag)
         
-        //스크롤 내렸을 때 loadMore 하기
+//        스크롤 내렸을 때 loadMore 하기
         _ = Observable.combineLatest(
             input.myPolicyTrigger.asObservable(),
             input.loadMoreObserver.asObservable(),
@@ -361,7 +418,10 @@ class HomeViewModel {
             input.selectedCategoryObserver.asObservable(),
             input.filteredRegionObserver.asObservable()
         )
-        .flatMap({ (myPolicy, _, page, action, categories, filteredRegions) -> Observable<SearchPolicyResponse> in
+        .take(while: { _, can, _, _, _, _ in
+            return can
+        })
+        .flatMap({ (myPolicy, canLoadMore, page, action, categories, filteredRegions) -> Observable<SearchPolicyResponse> in
             switch myPolicy {
             case .mypolicy:
                 switch action {
@@ -378,7 +438,7 @@ class HomeViewModel {
                     return SearchPolicyAPI.searchPolicyAsPopular(title: self.currentText, at: page, to: categories, in: filteredRegions)
                 }
             }
-
+            
         })
         .subscribe(onNext: { addedData in
             self.output.policyResult.accept(Action.loadMore(Contents(content: addedData.data!.content)))
