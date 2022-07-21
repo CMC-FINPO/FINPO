@@ -19,18 +19,24 @@ struct SearchPolicyAPI {
             
             let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
             
-            let urlStr = "https://dev.finpo.kr/policy/search?size=10&sort=title,asc&sort=modifiedAt,desc"
+            let urlStr = BaseURL.url.appending("policy/search?size=10&sort=title,asc&sort=modifiedAt,desc")
             
             let encodedStr = urlStr.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
 
             let url = URL(string: encodedStr)!
             
+            let stringRegion = region.map { String($0) }
+                .joined(separator: ",")
+            
+            let stringCategory = categories.map { String($0) }
+                .joined(separator: ",")
+            
             //만약 타이틀이 빈값이면 설정한 거주지역을 넣기
             let parameter: Parameters
             if title == "" {
                 parameter = [
-                    "region": region,
-                    "category": categories,
+                    "region": stringRegion,
+                    "category": stringCategory,
                     "page": page
                 ]
             } else {
@@ -46,8 +52,9 @@ struct SearchPolicyAPI {
                 "Content-Type": "application/json;charset=UTF-8",
                 "Authorization": "Bearer ".appending(accessToken)
             ]
-            
-            API.session.request(url, method: .get, parameters: parameter, encoding: URLEncoding(arrayEncoding: .noBrackets), headers: header, interceptor: MyRequestInterceptor())
+             
+            //URLEncoding(arrayEncoding: .noBrackets)
+            API.session.request(url, method: .get, parameters: parameter, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
                 .validate(statusCode: 200..<300)
                 .responseJSON { (response) in
                     switch response.result {
@@ -55,6 +62,7 @@ struct SearchPolicyAPI {
                         do {
                             let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
                             let json = try JSONDecoder().decode(SearchPolicyResponse.self, from: jsonData)
+//                            print("가져온 데이터: \(json)")
                             observer.onNext(json)
                         } catch(let err) {
                             print(err.localizedDescription)
@@ -69,7 +77,7 @@ struct SearchPolicyAPI {
         }
     }
     
-    static func searchPolicyAsPopular(title: String, at page: Int = 0) -> Observable<SearchPolicyResponse> {
+    static func searchPolicyAsPopular(title: String, at page: Int = 0, to categories: [Int], in region: [Int]) -> Observable<SearchPolicyResponse> {
         
         let user = User.instance
         
@@ -79,7 +87,7 @@ struct SearchPolicyAPI {
 //            }
             let accessToken = UserDefaults.standard.string(forKey: "accessToken")!
             print("타이틀: \(title), 불러 올 페이지: \(page)")
-            let urlStr = "https://dev.finpo.kr/policy/search?size=10&sort=countOfInterest,desc"
+            let urlStr = BaseURL.url.appending("policy/search?size=10&sort=countOfInterest,desc")
             
             let encodedStr = urlStr.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
 
@@ -90,14 +98,31 @@ struct SearchPolicyAPI {
                 "Authorization": "Bearer ".appending(accessToken)
             ]
             
-            let parameter: Parameters = [
-                "region": user.region,
-                "category": user.category,
-                "page": page,
-                "title": title
-            ]
+//            let parameter: Parameters = [
+//                "region": user.region,
+//                "category": user.category,
+//                "page": page,
+//                "title": title
+//            ]
             
-            API.session.request(url, method: .get, parameters: parameter, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+            let parameter: Parameters
+            //만약 타이틀이 빈값이면 설정한 거주지역을 넣기
+            if title == "" {
+                parameter = [
+                    "region": region,
+                    "category": categories,
+                    "page": page
+                ]
+            } else {
+                parameter = [
+                    "region": region,
+                    "category": categories,
+                    "page": page,
+                    "title": title
+                ]
+            }
+            
+            AF.request(url, method: .get, parameters: parameter, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
                 .validate(statusCode: 200..<300)
                 .responseJSON { (response) in
                     switch response.result {
