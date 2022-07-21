@@ -24,6 +24,12 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
     static var selectedCategories: [Int] = [Int]()
     static var selectedRegions: [Int] = [Int]()
     
+    ///참여 공간 라벨 레이아웃 조정용
+    static var participationTagStr = [String]()
+    
+    ///필터 리셋 시 FilterRegionVC에 전달
+    static var isFilterResetBtnTapped = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -128,8 +134,7 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         let flow = LeftAlignedCollectionViewFlowLayout()
         flow.minimumLineSpacing = 3
         flow.minimumInteritemSpacing = 10
-        flow.sectionInset = UIEdgeInsets(top: 5, left: 2, bottom: 5, right: 2)
-        
+        flow.sectionInset = UIEdgeInsets(top: 5, left: 2, bottom: 5, right: 2)        
         let cv = UICollectionView(frame: .init(x: 0, y: 0, width: 100, height: 100), collectionViewLayout: flow)
         cv.showsVerticalScrollIndicator = false
         cv.showsHorizontalScrollIndicator = false
@@ -167,11 +172,11 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
     }()
     
     private var participationCategoryCollectionView: UICollectionView = {
-//        let flow = LeftAlignedCollectionViewFlowLayout()
-        let flow = UICollectionViewFlowLayout()
+        let flow = LeftAlignedCollectionViewFlowLayout()
+//        let flow = UICollectionViewFlowLayout()
         flow.minimumLineSpacing = 3
-//        flow.minimumInteritemSpacing = 20
-        flow.sectionInset = UIEdgeInsets(top: 5, left: 2, bottom: 5, right: 2)
+        flow.minimumInteritemSpacing = 20
+        flow.sectionInset = UIEdgeInsets(top: 5, left: 2, bottom: 5, right: 20)
         
         let cv = UICollectionView(frame: .init(x: 0, y: 0, width: 100, height: 100), collectionViewLayout: flow)
         cv.showsVerticalScrollIndicator = false
@@ -187,40 +192,39 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         button.setTitleColor(UIColor(hexString: "616161"), for: .normal)
         button.backgroundColor = UIColor(hexString: "F0F0F0")
         button.layer.cornerRadius = 5
-        //카테고리, 지역 테스트용
-        button.isEnabled = true
-//        button.isEnabled = false
+        button.isEnabled = false
         button.layer.masksToBounds = true
         return button
     }()
     
     fileprivate func setAttribute() {
         view.backgroundColor = .white
-        
-        //navigation
+        ///navigation
         navigationController?.navigationBar.topItem?.backButtonTitle = ""
         self.navigationItem.title = "필터"
         let rightBarButtonItem = UIBarButtonItem(title: "모두 초기화", style: .plain, target: self, action: #selector(resetFilter))
         rightBarButtonItem.tintColor = UIColor(hexString: "999999")
         let attributes = [NSAttributedString.Key.font: UIFont(name: "AppleSDGothicNeo-Medium", size: 14)!]
         rightBarButtonItem.setTitleTextAttributes(attributes, for: .normal)
+        rightBarButtonItem.setTitleTextAttributes(attributes, for: .selected)
         self.navigationItem.rightBarButtonItem = rightBarButtonItem
         self.navigationController?.navigationBar.tintColor = UIColor(hexString: "000000")
         
-        //collectionview
+        ///collectionview
         regionTagCollectionView.delegate = self
         regionTagCollectionView.register(TagCollectionViewCell.self, forCellWithReuseIdentifier: "regionTagCollectionViewCell")
         
-        //region 선택 view
+        ///region 선택 view
         let gesture = UITapGestureRecognizer(target: self, action: #selector(presentFilterView))
         guideForAddRegionView.addGestureRecognizer(gesture)
         
-        //카테고리 Collection view
+        ///카테고리 Collection view
         jobCategoryCollectionView.register(FilterCollectionViewCell.self, forCellWithReuseIdentifier: "jobCategoryCollectionView")
         
         educationCategoryCollectionView.register(FilterCollectionViewCell.self, forCellWithReuseIdentifier: "educationCategoryCollectionView")
 
         participationCategoryCollectionView.register(FilterCollectionViewCell.self, forCellWithReuseIdentifier: "participationCategoryCollectionView")
+        participationCategoryCollectionView.delegate = self
     }
                                              
     @objc fileprivate func presentFilterView() {
@@ -232,7 +236,9 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
     }
     
     @objc fileprivate func resetFilter() {
-        
+        FilterViewController.isFilterResetBtnTapped = true
+        self.viewModel.input.filterResetTriggerObserver.accept(())
+        self.viewModel.input.categoryObserver.accept(())
     }
     
     fileprivate func setLayout() {  
@@ -267,7 +273,7 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         
         view.addSubview(jobTitleLabel)
         jobTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(separatorLineView.snp.bottom).offset(20)
+            $0.top.equalTo(separatorLineView.snp.bottom).offset(15)
             $0.leading.equalTo(guideForAddRegionView.snp.leading)
         }
         
@@ -275,13 +281,13 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         jobCategoryCollectionView.snp.makeConstraints {
             $0.top.equalTo(jobTitleLabel.snp.bottom).offset(10)
             $0.leading.equalTo(jobTitleLabel.snp.leading)
-            $0.trailing.equalToSuperview().inset(69)
+            $0.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(50)
         }
         
         view.addSubview(educationTitleLabel)
         educationTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(jobCategoryCollectionView.snp.bottom).offset(20)
+            $0.top.equalTo(jobCategoryCollectionView.snp.bottom).offset(15)
             $0.leading.equalTo(jobTitleLabel.snp.leading)
         }
         
@@ -289,13 +295,13 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         educationCategoryCollectionView.snp.makeConstraints {
             $0.top.equalTo(educationTitleLabel.snp.bottom).offset(10)
             $0.leading.equalTo(educationTitleLabel.snp.leading)
-            $0.trailing.equalToSuperview().inset(186)
+            $0.trailing.equalToSuperview().inset(50)
             $0.height.equalTo(50)
         }
         
         view.addSubview(participationTitleLabel)
         participationTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(educationCategoryCollectionView.snp.bottom).offset(20)
+            $0.top.equalTo(educationCategoryCollectionView.snp.bottom).offset(15)
             $0.leading.equalTo(jobTitleLabel.snp.leading)
         }
         
@@ -303,7 +309,7 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         participationCategoryCollectionView.snp.makeConstraints {
             $0.top.equalTo(participationTitleLabel.snp.bottom).offset(10)
             $0.leading.equalTo(jobTitleLabel.snp.leading)
-            $0.trailing.equalToSuperview().inset(109)
+            $0.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(50)
         }
         
@@ -335,7 +341,7 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
             .subscribe(onNext: { [weak self] indexPath in
                 guard let self = self else { return }
                 if self.regionTagCollectionView.visibleCells.count <= 1 {
-                    self.createDefaultTag()
+                    //self.createDefaultTag()
                     self.viewModel.input.confirmButtonValid.accept(false)
                 }
                 self.viewModel.input.deleteTagObserver.accept(indexPath.row)
@@ -346,6 +352,10 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         jobCategoryCollectionView.rx.itemSelected
             .subscribe(onNext: { [weak self] indexPath in
                 guard let self = self else { return }
+                ///눌리는 순간 필터 버튼 효과 없애기
+                FilterViewController.isFilterResetBtnTapped = false
+                ///선택완료 버튼은 카테고리 중 하나라도 선택되면 트루
+                self.viewModel.input.confirmButtonValid.accept(true)
                 if indexPath.row == 0 {
                     self.selectedCategory.append(5)
                 } else if indexPath.row == 1 {
@@ -371,6 +381,8 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         educationCategoryCollectionView.rx.itemSelected
             .subscribe(onNext: { [weak self] indexPath in
                 guard let self = self else { return }
+                FilterViewController.isFilterResetBtnTapped = false
+                self.viewModel.input.confirmButtonValid.accept(true)
                 if indexPath.row == 0 {
                     self.selectedCategory.append(10)
                 } else {
@@ -381,6 +393,7 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         educationCategoryCollectionView.rx.itemDeselected
             .subscribe(onNext: { [weak self] indexPath in
                 guard let self = self else { return }
+                FilterViewController.isFilterResetBtnTapped = false
                 if indexPath.row == 0 {
                     self.selectedCategory = self.selectedCategory.filter { $0 != 10}
                 } else {
@@ -392,6 +405,7 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         participationCategoryCollectionView.rx.itemSelected
             .subscribe(onNext: { [weak self] indexPath in
                 guard let self = self else { return }
+                self.viewModel.input.confirmButtonValid.accept(true)
                 if indexPath.row == 0 {
                     self.selectedCategory.append(12)
                 } else if indexPath.row == 1 {
@@ -437,6 +451,11 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
                 switch action {
                 case .isFirstLoad(let datalist):
                     self.selectedRegion.removeAll()
+                    if(FilterViewController.isFilterResetBtnTapped) {
+                        self.selectedRegion.removeAll()
+                        DataDetail.removeAll()
+                        break
+                    }
                     for i in 0..<datalist.count {
                         let list = datalist
 //                        DataDetail.append(datalist[i])
@@ -454,6 +473,10 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
 
                 case .add(let datalist):
                     print("추가된 후 선택된 지역: \(self.selectedRegion)")
+                    
+                case .deleteAll:
+                    self.selectedRegion.removeAll()
+                    DataDetail.removeAll()
                 }
             }
             .asObservable()
@@ -475,6 +498,8 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         
         viewModel.output.getJobData
             .scan(into: [ChildDetail](), accumulator: { childDatail, arrays in
+                childDatail.removeAll()
+                print("일자리 태그 개수: \(arrays.data[0].childs.count)")
                 for i in 0..<arrays.data[0].childs.count {
                     childDatail.append(arrays.data[0].childs[i])
                 }
@@ -483,6 +508,11 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
             .asObservable()
             .observe(on: MainScheduler.instance)
             .bind(to: jobCategoryCollectionView.rx.items(cellIdentifier: "jobCategoryCollectionView", cellType: FilterCollectionViewCell.self)) { (index: Int, element: ChildDetail, cell) in
+                
+                if(FilterViewController.isFilterResetBtnTapped) {
+                    self.selectedCategory.removeAll()
+                    cell.isSelected = false
+                }
                 cell.tagLabel.text = element.name
                 cell.tagLabel.sizeToFit()
                 cell.frame.size = CGSize(width: cell.tagLabel.frame.width+20, height: 40)
@@ -490,6 +520,7 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         
         viewModel.output.getJobData
             .scan(into: [ChildDetail](), accumulator: { childDatail, arrays in
+                childDatail.removeAll()
                 for i in 0..<arrays.data[2].childs.count {
                     childDatail.append(arrays.data[2].childs[i])
                 }
@@ -499,6 +530,10 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
             .observe(on: MainScheduler.instance)
             .bind(to: educationCategoryCollectionView.rx.items(cellIdentifier: "educationCategoryCollectionView", cellType: FilterCollectionViewCell.self)) {
                 (index: Int, element: ChildDetail, cell) in
+                if(FilterViewController.isFilterResetBtnTapped) {
+                    self.selectedCategory.removeAll()
+                    cell.isSelected = false
+                }
                 cell.tagLabel.text = element.name
                 cell.tagLabel.sizeToFit()
                 cell.frame.size = CGSize(width: cell.tagLabel.frame.width+20, height: 40)
@@ -506,6 +541,7 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
 
         viewModel.output.getJobData
             .scan(into: [ChildDetail](), accumulator: { childDatail, arrays in
+                childDatail.removeAll()
                 for i in 0..<arrays.data[3].childs.count {
                     childDatail.append(arrays.data[3].childs[i])
                 }
@@ -514,10 +550,27 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
             .observe(on: MainScheduler.instance)
             .bind(to: participationCategoryCollectionView.rx.items(cellIdentifier: "participationCategoryCollectionView", cellType: FilterCollectionViewCell.self)) {
                 (index: Int, element: ChildDetail, cell) in
+                if(FilterViewController.isFilterResetBtnTapped) {
+                    self.selectedCategory.removeAll()
+                    cell.isSelected = false
+                }
                 cell.tagLabel.text = element.name
                 cell.tagLabel.sizeToFit()
                 cell.frame.size = CGSize(width: cell.tagLabel.frame.width+20, height: 40)
             }.disposed(by: disposeBag)
+        
+        viewModel.output.confirmButtonValidOutput
+            .drive(onNext: { valid in
+                if valid {
+                    self.confirmButton.isEnabled = true
+                    self.confirmButton.backgroundColor = UIColor(hexString: "5B43EF")
+                    self.confirmButton.setTitleColor(UIColor(hexString: "FFFFFF"), for: .normal)
+                } else {
+                    self.confirmButton.isEnabled = false
+                    self.confirmButton.backgroundColor = UIColor(hexString: "F0F0F0")
+                    self.confirmButton.setTitleColor(UIColor(hexString: "616161"), for: .normal)
+                }
+            }).disposed(by: disposeBag)
         
         
     }
@@ -560,7 +613,7 @@ extension FilterViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         if collectionView == participationCategoryCollectionView {
             return 15
-        } else { return 3 }
+        } else { return 15 }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -585,6 +638,15 @@ extension FilterViewController: UICollectionViewDelegateFlowLayout {
 //            cell.tagLabel.sizeToFit()
 //            return CGSize(width: cell.tagLabel.frame.width, height: 40)
 //        }
+        else if(collectionView == participationCategoryCollectionView) {
+            let dummyLabel = UILabel().then {
+                $0.font = .systemFont(ofSize: 16)
+                $0.text = FilterViewController.participationTagStr[indexPath.row]
+                $0.sizeToFit()
+            }
+            let size = dummyLabel.frame.size
+            return CGSize(width: size.width+10, height: size.height+5)
+        }
         else {
             return CGSize(width: 10, height: 10)
         }

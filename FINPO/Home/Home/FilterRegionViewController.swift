@@ -214,6 +214,7 @@ class FilterRegionViewController: UIViewController {
         tv.backgroundColor = UIColor(hexString: "F9F9F9")
         tv.bounces = false
         tv.layer.masksToBounds = true
+        tv.separatorInset.left = 0
         return tv
     }()
     
@@ -224,6 +225,7 @@ class FilterRegionViewController: UIViewController {
         tv.bounces = false
         tv.showsHorizontalScrollIndicator = false
         tv.layoutIfNeeded()
+        tv.separatorInset.left = 0
         return tv
     }()
     
@@ -360,6 +362,7 @@ class FilterRegionViewController: UIViewController {
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] indexPath in
                 guard let self = self else { return }
+                FilterViewController.isFilterResetBtnTapped = false
                 if self.isSelected == false {
                     self.regionTagCollectionView.subviews[(self.regionTagCollectionView.subviews.count)-1].removeFromSuperview()
                     self.isSelected = true
@@ -387,6 +390,8 @@ class FilterRegionViewController: UIViewController {
             .drive(onNext: { [weak self] _ in
                 self?.animateDismissView()
 //                FilterRegionViewController.filteredDataList.removeAll()
+                ///여기서 필터링 된 지역id, 카테고리id 가지고 이벤트 주기 -> 홈 테이블뷰 갱신되게
+                
             }).disposed(by: disposeBag)
     }
     
@@ -394,7 +399,12 @@ class FilterRegionViewController: UIViewController {
         viewModel.input.tagLoadActionObserver
             .scan(into: [DataDetail]()) { DataDetail, action in
                 switch action {
-                case .isFirstLoad(let datalist):
+                case .isFirstLoad(let datalist) :
+                    if FilterViewController.isFilterResetBtnTapped {
+                        DataDetail.removeAll()
+                        FilterRegionViewController.filteredDataList.removeAll()
+                        break
+                    } 
                     if FilterRegionViewController.isFirstLoad {
                         for i in 0..<datalist.count {
                             DataDetail.append(datalist[i])
@@ -410,6 +420,9 @@ class FilterRegionViewController: UIViewController {
                 case .add(let datalist):
                     print("이벤트 받음: \(datalist.region.name)")
                     DataDetail.append(datalist)
+                    
+                case .deleteAll:
+                    DataDetail.removeAll()
                 }
             }
             .asObservable()
