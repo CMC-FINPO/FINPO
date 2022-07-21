@@ -186,6 +186,7 @@ class HomeViewController: UIViewController {
         searchTextField.rx.controlEvent([.editingDidEnd])
             .subscribe(onNext: { [weak self] in
                 self?.viewModel.input.myPolicyTrigger.accept(.notMyPolicy)
+//                self?.viewModel.input.loadMoreObserver.accept(true)
             })
             .disposed(by: disposeBag)
         
@@ -194,6 +195,7 @@ class HomeViewController: UIViewController {
             .debug()
             .map { a -> Bool in return true }
             .subscribe(onNext: { a in
+                print("추가로드 옵저버 true 방출")
                 self.viewModel.input.loadMoreObserver.accept(true)
             }).disposed(by: disposeBag)
 //            .bind(to: viewModel.input.loadMoreObserver.accept(true))
@@ -209,9 +211,18 @@ class HomeViewController: UIViewController {
                     guard let self = self else { return }
                     //최신순 - 최신순 했을 때 page 0 중복 방지
                     self.viewModel.currentPage = 0
-                    self.viewModel.input.loadMoreObserver.accept(false)
+                    self.viewModel.input.loadMoreObserver.accept(false) //구독 해지됨
                     self.viewModel.input.currentPage.accept(self.viewModel.currentPage)
                     self.viewModel.input.sortActionObserver.accept(.latest)
+                    ///다시 구독해주기(loadMore), if 필터링 된 정보가 있다면
+                    if(FilterViewController.selectedCategories.count > 0) {
+                        self.viewModel.input.selectedCategoryObserver.accept(FilterViewController.selectedCategories)
+                        self.viewModel.input.filteredRegionObserver.accept(FilterViewController.selectedCategories)
+                        self.viewModel.input.myPolicyTrigger.accept(.notMyPolicy)
+                    } else {
+                        self.viewModel.input.getUserInfo.accept(())
+                        self.viewModel.input.myPolicyTrigger.accept(.mypolicy)
+                    }
                     DispatchQueue.main.async {
                         self.sortPolicyButton.setImage(UIImage(named: "chip=chip4"), for: .normal)
                     }
@@ -222,6 +233,15 @@ class HomeViewController: UIViewController {
                     self.viewModel.input.loadMoreObserver.accept(false)
                     self.viewModel.input.currentPage.accept(self.viewModel.currentPage)
                     self.viewModel.input.sortActionObserver.accept(.popular)
+                    ///필터링 된 정보가 있다면 다시 구독해주기(loadMore)
+                    if(FilterViewController.selectedCategories.count > 0) {
+                        self.viewModel.input.selectedCategoryObserver.accept(FilterViewController.selectedCategories)
+                        self.viewModel.input.filteredRegionObserver.accept(FilterViewController.selectedCategories)
+                        self.viewModel.input.myPolicyTrigger.accept(.notMyPolicy)
+                    } else {
+                        self.viewModel.input.getUserInfo.accept(())
+                        self.viewModel.input.myPolicyTrigger.accept(.mypolicy)
+                    }
                     DispatchQueue.main.async {
                         self.sortPolicyButton.setImage(UIImage(named: "chip=chip13"), for: .normal)
                     }

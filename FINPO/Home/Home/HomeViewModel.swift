@@ -16,6 +16,9 @@ class HomeViewModel {
     static var participatedId = Int()
     static var serviceString: [String] = [String]()
     
+    ///load more 중복 방지
+    var loadMore = false
+    
     let myPageViewModel = MyPageViewModel()
     
     enum Action {
@@ -346,28 +349,6 @@ class HomeViewModel {
         ///
         
         ///맨 처음 로드 시 나의 정책(관심+기본지역), 카테고리에 해당하는 정책 조회
-//        _ = Observable.combineLatest(input.myPolicyTrigger.asObservable(), input.sortActionObserver.asObservable())
-//            .flatMap({ (mypolicy, action) -> Observable<MyPolicyTestModel> in
-//                switch mypolicy {
-//                case .mypolicy:
-//                    switch action {
-//                    case .latest:
-//                        return MyPolicySearchAPI.searchMyPolicy()
-//                    case .popular:
-//                        return MyPolicySearchAPI.searchMyPolicy()
-//                    }
-//                case .notMyPolicy:
-//                    switch action {
-//                    case .latest:
-//                        return MyPolicySearchAPI.searchMyPolicy()
-//                    case .popular:
-//                        return MyPolicySearchAPI.searchMyPolicy()
-//                    }
-//                }
-//            })
-//        .subscribe(onNext: { testModel in
-//            print("내 정책 조회 결과: \(testModel)")
-//        }).disposed(by: disposeBag)
         
         //정렬했을 때 -> Page 0 불러오기
         _ = Observable.combineLatest(
@@ -403,7 +384,6 @@ class HomeViewModel {
             HomeViewModel.detailId.removeAll()
             for i in 0..<(policyData.data?.content.count ?? 0) {
                 HomeViewModel.detailId.append(policyData.data?.content[i].id ?? 1000)
-                
             }
             self.output.policyResult.accept(Action.load([Contents(content: policyData.data!.content)]))
             print("상세정보 아이디: \(HomeViewModel.detailId)")
@@ -418,34 +398,49 @@ class HomeViewModel {
             input.selectedCategoryObserver.asObservable(),
             input.filteredRegionObserver.asObservable()
         )
-        .take(while: { _, can, _, _, _, _ in
-            return can
-        })
-        .flatMap({ (myPolicy, canLoadMore, page, action, categories, filteredRegions) -> Observable<SearchPolicyResponse> in
-            switch myPolicy {
-            case .mypolicy:
-                switch action {
-                case .latest:
-                    return MyPolicySearchAPI.searchMyPolicy(at: page)
-                case .popular:
-                    return MyPolicySearchAPI.searchMyPolicyAsPopular(at: page)
+        .debug()
+//        .take(while: { _, can, _, _, _, _ in
+//            can == true //여기서 disposed 됨(loadmore -> sort 변경 시)
+//        })
+        .flatMap({ (myPolicy, isReload, page, action, categories, filteredRegions) -> Observable<SearchPolicyResponse> in
+            print("추가 데이터 불러오기")
+            if isReload {
+                switch myPolicy {
+                case .mypolicy:
+                    switch action {
+                    case .latest:
+                        self.loadMore = true
+                        return MyPolicySearchAPI.searchMyPolicy(at: page)
+                    case .popular:
+                        self.loadMore = true
+                        return MyPolicySearchAPI.searchMyPolicyAsPopular(at: page)
+                    }
+                case .notMyPolicy:
+                    switch action {
+                    case .latest:
+                        self.loadMore = true
+                        return SearchPolicyAPI.searchPolicyAPI(title: self.currentText, at: page, to: categories, in: filteredRegions)
+                    case .popular:
+                        self.loadMore = true
+                        return SearchPolicyAPI.searchPolicyAsPopular(title: self.currentText, at: page, to: categories, in: filteredRegions)
+                    }
                 }
-            case .notMyPolicy:
-                switch action {
-                case .latest:
-                    return SearchPolicyAPI.searchPolicyAPI(title: self.currentText, at: page, to: categories, in: filteredRegions)
-                case .popular:
-                    return SearchPolicyAPI.searchPolicyAsPopular(title: self.currentText, at: page, to: categories, in: filteredRegions)
-                }
+            }
+            else {
+                //dummy data
+                self.loadMore = false
+                return MyPolicySearchAPI.searchMyPolicy(at: page)
             }
             
         })
         .subscribe(onNext: { addedData in
-            self.output.policyResult.accept(Action.loadMore(Contents(content: addedData.data!.content)))
-            for i in 0..<(addedData.data?.content.count ?? 0) {
-                HomeViewModel.detailId.append(addedData.data?.content[i].id ?? 1000)
+            if(self.loadMore) {
+                self.output.policyResult.accept(Action.loadMore(Contents(content: addedData.data!.content)))
+                for i in 0..<(addedData.data?.content.count ?? 0) {
+                    HomeViewModel.detailId.append(addedData.data?.content[i].id ?? 1000)
+                }
+                print("추가 로드 되었을 때 상세정보 아이디: \(HomeViewModel.detailId)")
             }
-            print("추가 로드 되었을 때 상세정보 아이디: \(HomeViewModel.detailId)")
         }).disposed(by: disposeBag)
         
         output.confirmButtonValidOutput = input.confirmButtonValid.asDriver(onErrorJustReturn: false)
