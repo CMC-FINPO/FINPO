@@ -105,7 +105,7 @@ class LoginViewController: UIViewController {
             $0.top.equalTo(appleSignUpButton.snp.bottom).offset(20)
             $0.leading.trailing.equalToSuperview().inset(21)
             $0.height.equalTo(55)
-        }        
+        }
        
     }
     
@@ -230,13 +230,11 @@ extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizatio
         case let appleIDCredential as ASAuthorizationAppleIDCredential:
             ///Create an account in system
             let userIdentifier = appleIDCredential.user
-//            let nickName = appleIDCredential.fullName? -> 조회안됨...
-            guard let givenName = appleIDCredential.fullName?.givenName else { return }
             
-            guard let familyName = appleIDCredential.fullName?.familyName else { return }
-            viewModel.user.nickname = familyName + givenName
-
-//            let email = appleIDCredential.email
+            ///ver1.0.2 애플 재로그인 시 유저정보가 제공되지 않음 -> guard 통과 못함
+//            guard let givenName = appleIDCredential.fullName?.givenName else { return }
+//            guard let familyName = appleIDCredential.fullName?.familyName else { return }
+//            viewModel.user.nickname = familyName + givenName
 
             if let authorizationCode = appleIDCredential.authorizationCode,
                let identifyToken = appleIDCredential.identityToken,
