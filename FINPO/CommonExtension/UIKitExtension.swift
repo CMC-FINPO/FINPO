@@ -7,6 +7,28 @@
 
 import Foundation
 import UIKit
+import SnapKit
+
+extension UITableView {
+    func addBorderTop(size: CGFloat, color: UIColor) {
+        addBorderUtility(x: 0, y: 0, width: frame.width, height: size, color: color)
+    }
+    func addBorderBottom(size: CGFloat, color: UIColor) {
+        addBorderUtility(x: 0, y: frame.height - size, width: frame.width, height: size, color: color)
+    }
+    func addBorderLeft(size: CGFloat, color: UIColor) {
+        addBorderUtility(x: 0, y: 0, width: size, height: frame.height, color: color)
+    }
+    func addBorderRight(size: CGFloat, color: UIColor) {
+        addBorderUtility(x: frame.width - size, y: 0, width: size, height: frame.height, color: color)
+    }
+    private func addBorderUtility(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat, color: UIColor) {
+        let border = CALayer()
+        border.backgroundColor = color.cgColor
+        border.frame = CGRect(x: x, y: y, width: width, height: height)
+        layer.addSublayer(border)
+    }
+}
 
 extension UILabel {
     @IBInspectable var borderColor: UIColor {
@@ -39,6 +61,35 @@ extension UILabel {
             self.layer.cornerRadius = newValue
         }
     }
+    
+    func addCharacterSpacing(kernValue: Double = 3) {
+        if let labelText = text, labelText.isEmpty == false {
+            let attributedString = NSMutableAttributedString(string: labelText)
+            attributedString.addAttribute(.kern, value: kernValue, range: NSRange(location: 0, length: attributedString.length-1))
+            attributedText = attributedString
+        }
+    }
+    
+    func textWidth() -> CGFloat {
+        return UILabel.textWidth(label: self)
+    }
+    
+    class func textWidth(label: UILabel) -> CGFloat {
+        return textWidth(label: label, text: label.text!)
+    }
+    
+    class func textWidth(label: UILabel, text: String) -> CGFloat {
+        return textWidth(font: label.font, text: text)
+    }
+    
+    class func textWidth(font: UIFont, text: String) -> CGFloat {
+        let myText = text as NSString
+        
+        let rect = CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
+        let labelSize = myText.boundingRect(with: rect, options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: font], context: nil)
+        return ceil(labelSize.width)
+    }
+    
 }
 
 extension UIImageView {
@@ -129,16 +180,40 @@ extension UIView {
         
         imageView.image = UIImage(named: "delete_point")
         imageView.contentMode = .scaleAspectFit
-//        imageView.tintColor = UIColor(hexString: "")
+        //        imageView.tintColor = UIColor(hexString: "")
         wrapperView.addSubview(imageView)
         imageView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
-        
     }
+    
 }
 
 extension UITextField {
+    
+    func addLeftPadding() {
+        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: self.frame.height))
+        self.leftView = paddingView
+        self.leftViewMode = ViewMode.always
+    }
+    
+    func addleftimage(image:UIImage) {
+        let leftimage = UIImageView(frame: CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height))
+        leftimage.image = image
+        self.leftView = leftimage
+        self.leftViewMode = .always
+//        self.leftViewMode = ViewMode.always
+    }
+    
+    func addLeftImageAndPadding(image: UIImage) {
+        let leftView = UIView(frame: CGRect(x: 10, y: 0, width: image.size.width+13, height: image.size.height))
+        let imageView = UIImageView(frame: CGRect(x: 10, y: 0, width: image.size.width-3, height: image.size.height-3))
+        imageView.image = image
+        leftView.addSubview(imageView)
+        self.leftView = leftView
+        self.leftViewMode = ViewMode.always
+    }
+    
     func addBottomBorder(color: CGColor){
         let bottomLine = CALayer()
         bottomLine.frame = CGRect(x: 0, y: self.frame.size.height - 1, width: self.frame.size.width, height: 1)
@@ -146,6 +221,7 @@ extension UITextField {
         bottomLine.backgroundColor = color
         borderStyle = .none
         layer.addSublayer(bottomLine)
+        bottomLine.layoutIfNeeded()
     }
     
     func setLeft(image: UIImage, withPadding padding: CGFloat = 0) {
@@ -189,6 +265,8 @@ extension UITextField {
         self.rightView = clearButton
         
         self.rightViewMode = .whileEditing
+        //항상 보이도록
+        rightViewMode = .always
     }
     
     @objc private func displayClearButtonIfNeeded() {
@@ -240,5 +318,176 @@ extension UITextField {
     
     @objc func tapCancel() {
         self.resignFirstResponder()
+    }
+}
+
+extension Date {
+    var millisecondsSince1970: Int64 {
+        Int64((self.timeIntervalSince1970 * 1000.0).rounded())
+    }
+    
+    init(milliseconds: Int64) {
+        self = Date(timeIntervalSince1970: TimeInterval(milliseconds) / 1000)
+    }
+}
+
+extension UIAlertController {
+    
+    // Set title font and title color
+    func setTitle(font: UIFont?, color: UIColor?) {
+        guard let title = self.title else { return }
+        let attributeString = NSMutableAttributedString(string: title)
+        
+        if let titleFont = font {
+            attributeString.addAttributes([NSAttributedString.Key.font: titleFont],
+                                          range: NSRange(location: 0, length: title.count))
+        }
+        if let titleColor = color {
+            attributeString.addAttributes([NSAttributedString.Key.foregroundColor: titleColor],
+                                          range: NSRange(location: 0, length: title.count))
+        }
+        self.setValue(attributeString, forKey: "attributedTitle")
+        
+    }
+
+    // Set message font and message color
+    func setMessage(font: UIFont?, color: UIColor?) {
+        guard let message = self.message else { return }
+        let attributeString = NSMutableAttributedString(string: message)
+        if let messageFont = font {
+            attributeString.addAttributes([NSAttributedString.Key.font: messageFont],
+                                          range: NSRange(location: 0, length: message.count))
+        }
+        
+        if let messageColorColor = color {
+            attributeString.addAttributes([NSAttributedString.Key.foregroundColor: messageColorColor],
+                                          range: NSRange(location: 0, length: message.count))
+            
+        }
+        self.setValue(attributeString, forKey: "attributedMessage")
+    }
+    
+    // Set tint color of UIAlertController
+    func setTint(color: UIColor) {
+        self.view.tintColor = color
+    }
+}
+
+extension Dictionary {
+    func percentEncoded() -> Data? {
+        map { key, value in
+            let escapedKey = "\(key)".addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) ?? ""
+            let escapedValue = "\(value)".addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) ?? ""
+            return escapedKey + "=" + escapedValue
+        }
+        .joined(separator: "&")
+        .data(using: .utf8)
+    }
+}
+
+extension CharacterSet {
+    static let urlQueryValueAllowed: CharacterSet = {
+        let generalDelimitersToEncode = ":#[]@" // does not include "?" or "/" due to RFC 3986 - Section 3.4
+        let subDelimitersToEncode = "!$&'()*+,;="
+        
+        var allowed: CharacterSet = .urlQueryAllowed
+        allowed.remove(charactersIn: "\(generalDelimitersToEncode)\(subDelimitersToEncode)")
+        return allowed
+    }()
+}
+
+extension CGRect
+{
+    /** Creates a rectangle with the given center and dimensions
+    - parameter center: The center of the new rectangle
+    - parameter size: The dimensions of the new rectangle
+     */
+    init(center: CGPoint, size: CGSize)
+    {
+        self.init(x: center.x - size.width / 2, y: center.y - size.height / 2, width: size.width, height: size.height)
+    }
+    
+    /** the coordinates of this rectangles center */
+    var center: CGPoint
+        {
+        get { return CGPoint(x: centerX, y: centerY) }
+        set { centerX = newValue.x; centerY = newValue.y }
+    }
+    
+    /** the x-coordinate of this rectangles center
+    - note: Acts as a settable midX
+    - returns: The x-coordinate of the center
+     */
+    var centerX: CGFloat
+        {
+        get { return midX }
+        set { origin.x = newValue - width * 0.5 }
+    }
+    
+    /** the y-coordinate of this rectangles center
+     - note: Acts as a settable midY
+     - returns: The y-coordinate of the center
+     */
+    var centerY: CGFloat
+        {
+        get { return midY }
+        set { origin.y = newValue - height * 0.5 }
+    }
+    
+    // MARK: - "with" convenience functions
+    
+    /** Same-sized rectangle with a new center
+    - parameter center: The new center, ignored if nil
+    - returns: A new rectangle with the same size and a new center
+     */
+    func with(center: CGPoint?) -> CGRect
+    {
+        return CGRect(center: center ?? self.center, size: size)
+    }
+    
+    /** Same-sized rectangle with a new center-x
+    - parameter centerX: The new center-x, ignored if nil
+    - returns: A new rectangle with the same size and a new center
+     */
+    func with(centerX: CGFloat?) -> CGRect
+    {
+        return CGRect(center: CGPoint(x: centerX ?? self.centerX, y: centerY), size: size)
+    }
+
+    /** Same-sized rectangle with a new center-y
+    - parameter centerY: The new center-y, ignored if nil
+    - returns: A new rectangle with the same size and a new center
+     */
+    func with(centerY: CGFloat?) -> CGRect
+    {
+        return CGRect(center: CGPoint(x: centerX, y: centerY ?? self.centerY), size: size)
+    }
+    
+    /** Same-sized rectangle with a new center-x and center-y
+    - parameter centerX: The new center-x, ignored if nil
+    - parameter centerY: The new center-y, ignored if nil
+    - returns: A new rectangle with the same size and a new center
+     */
+    func with(centerX: CGFloat?, centerY: CGFloat?) -> CGRect
+    {
+        return CGRect(center: CGPoint(x: centerX ?? self.centerX, y: centerY ?? self.centerY), size: size)
+    }
+}
+
+extension String {
+    static func jsonString(data : Any) -> String {
+
+            var jsonString = "";
+
+            do {
+
+                let jsonData = try JSONSerialization.data(withJSONObject: data, options: .prettyPrinted)
+                jsonString = NSString(data: jsonData, encoding: String.Encoding.utf8.rawValue)! as String
+
+            } catch {
+                print(error.localizedDescription)
+            }
+
+            return jsonString;
     }
 }
