@@ -269,6 +269,7 @@ class EditUserInfoViewController: UIViewController {
             .drive(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 self.viewModel.input.userInfoObserver.accept(())
+                
             }).disposed(by: disposeBag)
         
         nameTextField.rx.text
@@ -309,15 +310,24 @@ class EditUserInfoViewController: UIViewController {
             .subscribe(onNext: { [weak self] userInfo in
                 guard let self = self else { return }
                 self.nameTextField.text = userInfo.data.name
+                
                 self.nickNameTextField.text = userInfo.data.nickname
                 self.birthTextField.text = userInfo.data.birth
                 if(userInfo.data.gender.contains("MALE")) {
                     self.maleButton.isSelected = true
                     self.maleButton.layer.borderColor = UIColor(hexString: "5B43EF").cgColor
+                    //버튼 활성화
+                    self.viewModel.input.genderObserver.accept(.male)
                 } else {
                     self.femaleButton.isSelected = true
                     self.femaleButton.layer.borderColor = UIColor(hexString: "5B43EF").cgColor
+                    //버튼 활성화
+                    self.viewModel.input.genderObserver.accept(.female)
                 }
+                //버튼 활성화
+                self.viewModel.output.isNameValid.accept(true)
+                self.viewModel.output.isNicknameValid.accept(false)
+                self.viewModel.input.birthObserver.accept(userInfo.data.birth)
                 
             }).disposed(by: disposeBag)
         

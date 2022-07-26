@@ -18,7 +18,7 @@ struct UserDataDetails: Codable {
     var nickname: String
     var birth: String
     var gender: String
-    var statusId: Int
+    var statusId: Int?
     var profileImg: String
     var oAuthType: String
     var defaultRegion: DefaultRegionDetail
