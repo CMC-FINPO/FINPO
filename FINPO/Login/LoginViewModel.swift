@@ -37,7 +37,9 @@ class LoginViewModel {
     
     let disposeBag = DisposeBag()
     var user = User.instance
-    var mainRegion: [MainRegion] = [MainRegion](repeating: MainRegion.init(id: -1, name: "빈값"), count: 5)
+    //이거 배열 카운트 안해놓으면 오류뜨는데 왜지?
+    var mainRegion: [MainRegion] = [MainRegion](repeating: MainRegion.init(id: -1, name: "서울"), count: 5)
+//    var mainRegion: [MainRegion] = []
     var subRegion: [SubRegion] = []
     var interested: [MainInterest] = []
     var unionRegion: [UniouRegion] = []
@@ -74,7 +76,7 @@ class LoginViewModel {
         let forUserInterestObserver = PublishRelay<Int>() //유저의 상위 카테고리 저장 (탭 될때)
         let interestButtonTapped = PublishRelay<Void>()
         let semiSignupConfirmButtonTapped = PublishRelay<Void>()
-        let deleteTagObserver = PublishRelay<Int>()
+        let deleteTagObserver = PublishRelay<IndexPath>()
         let statusButtonTapped = PublishRelay<Int>()
         let purposeButtonTapped = PublishRelay<Bool>()
         let statusPurposeButtonTapped = PublishRelay<Void>()
@@ -240,13 +242,13 @@ class LoginViewModel {
             }).disposed(by: disposeBag)
         
         input.deleteTagObserver
-            .subscribe(onNext: {
-                [weak self] indexPath in
+            .subscribe(onNext: { [weak self] indexPath in
                 guard let self = self else { return }
-                self.output.regionButton.accept(.delete(index: indexPath))
+                self.output.regionButton.accept(.delete(index: indexPath.row))
                 print("실제 LoginViewModel 선택된 관심지역 리스트 \(self.selectedInterestRegion)")
                 if(self.selectedInterestRegion.count > 0) {
-                    self.selectedInterestRegion.remove(at: indexPath)
+                    self.selectedInterestRegion.remove(at: indexPath.row)
+                     
                 }                
                 print("삭제 후 갱신된 추가 관심지역 리스트: \(self.selectedInterestRegion)")
 //                self?.user.interestRegion.remove(at: indexPath)
@@ -368,7 +370,7 @@ class LoginViewModel {
                 //추가 관심지역
                 if(self.user.interestRegion.contains(self.subRegion[indexPath].id)) {
                     self.output.errorValue.accept(viewModelError.alreadyExistAccount)
-                } else if(self.user.region.count >= 1) {
+                } else if(self.user.region.count >= 0) {
                     self.selectedInterestRegion.append(self.subRegion[indexPath].id)
                     print("관심지역 추가 됨: \(self.selectedInterestRegion)")
 //                    self.user.interestRegion.append(self.subRegion[indexPath].id)
@@ -447,7 +449,7 @@ class LoginViewModel {
                         "Authorization": "Bearer ".appending(kakaoAccessToken)
                     ]
                     ///서버 회원가입 상태 체크
-                    API.session.request(url, method: .get, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+                    AF.request(url, method: .get, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
                         .response { response in
                             switch response.result {
                             case .success(let data):
@@ -569,7 +571,7 @@ class LoginViewModel {
                 "Authorization": "Bearer ".appending(identifyToken)
             ]
             
-            API.session.request(url, method: .get, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+            AF.request(url, method: .get, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
                 .response { response in
                     switch response.result {
                     case .success(let data):
@@ -686,7 +688,7 @@ class LoginViewModel {
         return Observable.create { observer in
             let encodedNickname = self.user.nickname.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
             
-            let url = "https://api.finpo.kr/user/check-duplicate?nickname=\(encodedNickname)"
+            let url = BaseURL.url.appending("user/check-duplicate?nickname=\(encodedNickname)")
             let parameter: Parameters = [
                 "nickname": self.user.nickname
             ]
@@ -780,31 +782,29 @@ class LoginViewModel {
 //    }
     
     func getMainRegionDataToTableView() {
-        let url = "https://api.finpo.kr/region/name"
+        let url = BaseURL.url.appending("region/name")
         
-        DispatchQueue.main.async {
-            AF.request(url).responseJSON { (response) in
-                switch response.result {
-                case .success(let res):
-                    do {
-                        // 반환값을 Data 타입으로 전환
-                        let jsonData = try JSONSerialization.data(withJSONObject: res, options: .prettyPrinted)
-                        var json = try JSONDecoder().decode(MainRegionAPIResponse.self, from: jsonData)
-                                                
-                        for _ in 0..<json.data.count {
-                            json.data.sort {
-                                $0.id < $1.id
-                            }
+        AF.request(url).responseJSON { (response) in
+            switch response.result {
+            case .success(let res):
+                do {
+                    // 반환값을 Data 타입으로 전환
+                    let jsonData = try JSONSerialization.data(withJSONObject: res, options: .prettyPrinted)
+                    var json = try JSONDecoder().decode(MainRegionAPIResponse.self, from: jsonData)
+                    
+                    for _ in 0..<json.data.count {
+                        json.data.sort {
+                            $0.id < $1.id
                         }
-                        self.mainRegion = json.data
-                        self.output.mainRegionUpdate.accept(self.mainRegion)
-                        HomeViewModel.mainRegion = json.data
-                    } catch(let err) {
-                        print(err.localizedDescription)
                     }
-                case .failure(let err):
+                    self.mainRegion = json.data
+                    self.output.mainRegionUpdate.accept(self.mainRegion)
+                    HomeViewModel.mainRegion = json.data
+                } catch(let err) {
                     print(err.localizedDescription)
                 }
+            case .failure(let err):
+                print(err.localizedDescription)
             }
         }
 
@@ -812,71 +812,68 @@ class LoginViewModel {
     
     func getSubRegionDataToTableView(_ parentId: Int = 0) {
         let searchMainRegionNum = (parentId % 100) * 100
-        let url = "https://api.finpo.kr/region/name?parentId=\(searchMainRegionNum)"
+        let url = BaseURL.url.appending("region/name?parentId=\(searchMainRegionNum)")
 
-        DispatchQueue.main.async {
-            AF.request(url).responseJSON { (response) in
-                switch response.result {
-                case .success(let res):
-                    do {
-                        // 반환값을 Data 타입으로 전환
-//                        let jsonData = try JSONSerialization.data(withJSONObject: res, options: .prettyPrinted)
-                        let jsonData = try JSONSerialization.data(withJSONObject: res, options: [])
-                        var json = try JSONDecoder().decode(SubRegionAPIRsponse.self, from: jsonData)
-                        json.data.append(SubRegion(id: parentId, name: "\(self.mainRegion[parentId].name) 전체"))
-                        for _ in 0..<json.data.count {
-                            json.data.sort {
-                                $0.id < $1.id
-                            }
+        AF.request(url).responseJSON { (response) in
+            switch response.result {
+            case .success(let res):
+                do {
+                    // 반환값을 Data 타입으로 전환
+                    //                        let jsonData = try JSONSerialization.data(withJSONObject: res, options: .prettyPrinted)
+                    let jsonData = try JSONSerialization.data(withJSONObject: res, options: [])
+                    var json = try JSONDecoder().decode(SubRegionAPIRsponse.self, from: jsonData)
+                    json.data.append(SubRegion(id: parentId, name: "\(self.mainRegion[parentId].name) 전체"))
+                    for _ in 0..<json.data.count {
+                        json.data.sort {
+                            $0.id < $1.id
                         }
-                        self.subRegion = json.data                        
-                        self.output.subRegionUpdate.accept(self.subRegion)
-                        HomeViewModel.subRegion = json.data
-                    } catch(let err) {
-                        print(err.localizedDescription)
                     }
-                case .failure(let err):
+                    self.subRegion = json.data
+                    self.output.subRegionUpdate.accept(self.subRegion)
+                    HomeViewModel.subRegion = json.data
+                } catch(let err) {
                     print(err.localizedDescription)
                 }
+            case .failure(let err):
+                print(err.localizedDescription)
             }
         }
+        
 
     }
     
     func getInterestCVMenuData() {
-        let url = "https://api.finpo.kr/policy/category/name"
-
-        DispatchQueue.main.async {
-            AF.request(url).responseJSON { (response) in
-                switch response.result {
-                case .success(let data):
-                    do {
-                        let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
-                        var json = try JSONDecoder().decode(InterestingAPIResponse.self, from: jsonData)
-                        for _ in 0..<json.data.count {
-                            json.data.sort {
-                                $0.id < $1.id
-                            }
+        let url = BaseURL.url.appending("policy/category/name")
+        
+        AF.request(url).responseJSON { (response) in
+            switch response.result {
+            case .success(let data):
+                do {
+                    let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
+                    var json = try JSONDecoder().decode(InterestingAPIResponse.self, from: jsonData)
+                    for _ in 0..<json.data.count {
+                        json.data.sort {
+                            $0.id < $1.id
                         }
-                        self.interested = json.data //[(id: 1, name: "일자리"), (id:2,...)
-                        self.output.interestingNameOutput.accept(self.interested)
-                    } catch(let err) {
-                        print(err.localizedDescription)
-                        self.output.errorValue.accept(err)
                     }
-                case .failure(let error):
-                    print(error)
-                    self.output.errorValue.accept(error)
+                    self.interested = json.data //[(id: 1, name: "일자리"), (id:2,...)
+                    self.output.interestingNameOutput.accept(self.interested)
+                } catch(let err) {
+                    print(err.localizedDescription)
+                    self.output.errorValue.accept(err)
                 }
+            case .failure(let error):
+                print(error)
+                self.output.errorValue.accept(error)
             }
         }
+
     }
     
     func semiSignup() -> Observable<User> {
         return Observable.create { observer in
             let socialType = UserDefaults.standard.string(forKey: "socialType") ?? ""
-            let url = "https://api.finpo.kr/oauth/register/".appending(socialType)
-//            let parameter = self.user.toDic()
+            let url = BaseURL.url.appending("oauth/register/\(socialType)")
             
             let parameter: Parameters = [
                 "name": self.user.name,
@@ -894,7 +891,7 @@ class LoginViewModel {
                 "Authorization":"Bearer ".appending((self.user.accessTokenFromSocial))
             ]
             
-            API.session.upload(multipartFormData: { (multipart) in
+            AF.upload(multipartFormData: { (multipart) in
                 for (key, value) in parameter {
                     multipart.append("\(value)".data(using: .utf8, allowLossyConversion: false)!, withName: "\(key)")
                 }
@@ -936,7 +933,7 @@ class LoginViewModel {
                             UserDefaults.standard.set(self.user.accessToken, forKey: "accessToken")
                             UserDefaults.standard.set(self.user.refreshToken, forKey: "refreshToken")
                             UserDefaults.standard.set(accessTokenExpireDate, forKey: "accessTokenExpiresIn")
-//                            _ = MyAuthenticationCredential(accessToken: accessToken ?? "", refreshToken: refreshToken ?? "", expiredAt: accessTokenExpiresIn ?? Date())
+                            
                             observer.onNext(self.user)
                         }
                     } catch { print("알 수 없는 에러 발생") }
@@ -952,7 +949,7 @@ class LoginViewModel {
     
     func getStatus() {
         let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
-        let url = "https://api.finpo.kr/user/status/name"
+        let url = BaseURL.url.appending("user/status/name")
         let header: HTTPHeaders = [
             "Content-Type": "application/json;charset=UTF-8",
             "Authorization":"Bearer ".appending(accessToken)
@@ -984,7 +981,7 @@ class LoginViewModel {
     
     func getPurpose() {
         let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
-        let url = "https://api.finpo.kr/user/purpose/name"
+        let url = BaseURL.url.appending("user/purpose/name")
         let header: HTTPHeaders = [
             "Content-Type": "application/json;charset=UTF-8",
             "Authorization":"Bearer ".appending(accessToken)
@@ -1018,7 +1015,7 @@ class LoginViewModel {
         return Observable.create { [weak self] observer in
             guard let self = self else { return Disposables.create() }
             let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
-            let url = "https://api.finpo.kr/user/me"
+            let url = BaseURL.url.appending("user/me")
             let header: HTTPHeaders = [
                 "Content-Type": "application/json;charset=UTF-8",
                 "Authorization":"Bearer ".appending(accessToken)

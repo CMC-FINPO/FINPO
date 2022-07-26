@@ -217,7 +217,7 @@ class LoginViewController: UIViewController {
     @objc private func appleSignUpButtonPressed() {
         let appleIDProvider = ASAuthorizationAppleIDProvider()
         let request = appleIDProvider.createRequest()
-        request.requestedScopes = [.fullName, .email]
+        request.requestedScopes = [.fullName]
 
         let authorizationController = ASAuthorizationController(authorizationRequests: [request])
         authorizationController.delegate = self
@@ -285,8 +285,12 @@ extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizatio
         case let appleIDCredential as ASAuthorizationAppleIDCredential:
             ///Create an account in system
             let userIdentifier = appleIDCredential.user
-            let nickName = appleIDCredential.fullName?.nickname
+//            let nickName = appleIDCredential.fullName? -> 조회안됨...
+            guard let givenName = appleIDCredential.fullName?.givenName else { return }
             
+            guard let familyName = appleIDCredential.fullName?.familyName else { return }
+            viewModel.user.nickname = familyName + givenName
+
 //            let email = appleIDCredential.email
 
             if let authorizationCode = appleIDCredential.authorizationCode,
@@ -299,21 +303,6 @@ extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizatio
                 
                 ///performRequests()시 여기로 들어옴
                 self.viewModel.input.finalSocialSignupCheckObserver.accept(.apple(tokenString))
-                
-                ///회원가입 진행
-//                DispatchQueue.main.async {
-//                    UserDefaults.standard.setValue("apple", forKey: "socialType")
-//                    UserDefaults.standard.setValue(authString, forKey: "authorizationCode")
-//                    self.viewModel.input.nickNameObserver.accept(nickName ?? "")
-//                    ///애플 액세스 토큰(=tokenString)
-//                    self.viewModel.user.accessTokenFromSocial = tokenString
-//                    print("애플 회원가입 로직 실행")
-//                    print("애플 액세스 토큰: \(tokenString)")
-//                    if(userIdentifier != "") {
-//                        self.viewModel.input.appleSignUpObserver.accept(())
-//                    }
-//                }
-
             }
         case let passwordCredential as ASPasswordCredential:
             let userName = passwordCredential.user

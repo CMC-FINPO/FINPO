@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 
+
 class MainRegionTableViewCell: UITableViewCell {
 
     public var mainRegionLabel: UILabel = {
@@ -18,10 +19,28 @@ class MainRegionTableViewCell: UITableViewCell {
         return label
     }()
     
+    public var notReadyRegionLabel: PaddingLabel = {
+        let label = PaddingLabel()
+        label.textAlignment = .center
+        label.textColor = UIColor(hexString: "FFFFFF")
+        label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
+        label.layer.masksToBounds = true
+        label.layer.cornerRadius = 5
+        label.backgroundColor = UIColor(hexString: "C4C4C5")
+        label.text = "준비중"
+        label.isHidden = true
+        label.topInset = 5
+        label.leftInset = 3
+        label.rightInset = 3
+        label.bottomInset = 5
+        return label
+    }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.backgroundColor = UIColor(hexString: "F9F9F9", alpha: 1)
         contentView.addSubview(mainRegionLabel)
+        contentView.addSubview(notReadyRegionLabel)
     }
     
     required init?(coder: NSCoder) {
@@ -34,6 +53,30 @@ class MainRegionTableViewCell: UITableViewCell {
         //property layout here
         mainRegionLabel.snp.makeConstraints {
             $0.center.equalTo(contentView.snp.center)
+        }
+        
+    }
+    
+    func setRegionLayout() {
+        mainRegionLabel.snp.remakeConstraints {
+            $0.center.equalTo(contentView.snp.center)
+        }
+        mainRegionLabel.layoutIfNeeded()
+    }
+    
+    func setLayout() {
+        mainRegionLabel.textColor = UIColor(hexString: "C4C4C5")
+        mainRegionLabel.textAlignment = .left
+        mainRegionLabel.snp.makeConstraints {
+            $0.leading.equalTo(contentView.snp.leading).offset(15)
+            $0.centerY.equalTo(contentView.snp.centerY)
+        }
+        mainRegionLabel.layoutIfNeeded()
+        
+        notReadyRegionLabel.isHidden = false
+        notReadyRegionLabel.snp.makeConstraints {
+            $0.trailing.equalTo(contentView.snp.trailing).inset(10)
+            $0.centerY.equalTo(contentView.snp.centerY)
         }
     }
     

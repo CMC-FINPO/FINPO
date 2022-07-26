@@ -18,6 +18,7 @@ class MemoViewController: UIViewController {
     let disposeBag = DisposeBag()
     var viewModel: HomeViewModel?
     var id: Int?
+    var participatedPolicyId: Int?
     
     var containerViewHeightConstraint: NSLayoutConstraint?
     var containerViewBottomConstraint: NSLayoutConstraint?
@@ -42,9 +43,39 @@ class MemoViewController: UIViewController {
         animatePresentContainer()
     }
     
-    func setupProperty(id: Int, on viewModel: HomeViewModel) {
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardUp), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardDown), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    @objc func keyboardUp(notification:NSNotification) {
+        if let keyboardFrame:NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+           let keyboardRectangle = keyboardFrame.cgRectValue
+       
+            UIView.animate(
+                withDuration: 0.3
+                , animations: {
+                    self.view.transform = CGAffineTransform(translationX: 0, y: -keyboardRectangle.height)
+                }
+            )
+        }
+    }
+    
+    @objc func keyboardDown() {
+        self.view.transform = .identity
+    }
+    
+    func setupProperty(id: Int, on viewModel: HomeViewModel, participatedId: Int) {
         self.id = id
         self.viewModel = viewModel
+        self.participatedPolicyId = participatedId
     }
     
     func animatePresentContainer() {
@@ -77,7 +108,7 @@ class MemoViewController: UIViewController {
         return view
     }()
     
-    private var titleLabel: UILabel = {
+    public var titleLabel: UILabel = {
         let label = UILabel()
         label.text = "메모 작성"
         label.textColor = UIColor(hexString: "000000")
@@ -192,6 +223,13 @@ class MemoViewController: UIViewController {
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
                 self.viewModel?.input.memoTextObserver.accept(self.memoTextView.text)
+                self.viewModel?.input.participatedId.accept(self.participatedPolicyId ?? -1)
+            }).disposed(by: disposeBag)
+        
+        cancelButton.rx.tap
+            .asDriver()
+            .drive(onNext: { [weak self] _ in
+                self?.animateDismissView()
             }).disposed(by: disposeBag)
         
     }
@@ -201,7 +239,9 @@ class MemoViewController: UIViewController {
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: { [weak self] _ in
                 print("메모 후 종료")
-                self?.dismiss(animated: true)
+//                self?.dismiss(animated: true)
+                self?.animateDismissView()
+                self?.viewModel?.input.memoCheckObserver.accept(())
             }).disposed(by: disposeBag)
     }
     
@@ -218,7 +258,7 @@ class MemoViewController: UIViewController {
             // once done, dismiss without animation
             NotificationCenter.default.post(name: NSNotification.Name("DismissDetailView"), object: nil, userInfo: nil)
             self.dismiss(animated: false)
-
+            
         }
     }
     

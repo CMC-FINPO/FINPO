@@ -24,9 +24,21 @@ class LoginSemiCompleteViewController: UIViewController {
         setOutputBind()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+//        navigationItem.setHidesBackButton(true, animated: false)
+        self.navigationController?.isNavigationBarHidden = true
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+//        navigationItem.setHidesBackButton(false, animated: false)
+//        self.navigationController?.isNavigationBarHidden = false
+    }
+    
     private var imageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.backgroundColor = .blue
+        imageView.image = UIImage(named: "semisignupconfirm")
         return imageView
     }()
     
@@ -68,7 +80,7 @@ class LoginSemiCompleteViewController: UIViewController {
     }()
     
     fileprivate func setAttribute() {
-        navigationController?.navigationBar.topItem?.backButtonTitle = ""
+//        navigationItem.setHidesBackButton(true, animated: false)
         view.backgroundColor = UIColor(hexString: "FFFFFF")
     }
     
@@ -77,8 +89,8 @@ class LoginSemiCompleteViewController: UIViewController {
         imageView.snp.makeConstraints {
             $0.centerX.equalToSuperview()
             $0.centerY.equalToSuperview().offset(-50)
-            $0.width.equalTo(90)
-            $0.height.equalTo(80)
+            $0.width.equalTo(60)
+            $0.height.equalTo(60)
         }
         
         view.addSubview(titleLabel)
@@ -113,13 +125,24 @@ class LoginSemiCompleteViewController: UIViewController {
         addInfoButton.rx.tap
             .asDriver(onErrorJustReturn: ())
             .drive(onNext: { [weak self] in
-                
+                guard let self = self else { return }
+                ///온보딩 해제
+                UserDefaults.standard.set(false, forKey: "isOnboarding")
+                let vc = AddPurposeViewController()
+                vc.modalPresentationStyle = .fullScreen
+                self.navigationController?.pushViewController(vc, animated: true)                
             }).disposed(by: disposeBag)
         
         laterButton.rx.tap
             .asDriver(onErrorJustReturn: ())
             .drive(onNext: { [weak self] in
-                self?.dismiss(animated: true)
+                guard let self = self else { return }
+                ///온보딩 해제
+                UserDefaults.standard.set(false, forKey: "isOnboarding")
+                ///홈 이동
+                let vc = HomeTapViewController()
+                vc.modalPresentationStyle = .fullScreen
+                self.present(vc, animated: true)
             }).disposed(by: disposeBag)
     }
     

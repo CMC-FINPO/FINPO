@@ -75,7 +75,15 @@ class RegionAlarmViewController: UIViewController {
         self.alarmSwitch.rx.isOn.changed
             .asDriver()
             .drive(onNext: { [weak self] boolean in
-                self?.viewModel.input.didTappedWholeSwitchObserver.accept(boolean)
+                guard let self = self else { return }
+                self.viewModel.input.didTappedWholeSwitchObserver.accept(boolean)
+                if(self.alarmSwitch.isOn) {
+                    self.alarmSwitch.thumbTintColor = UIColor(hexString: "5B43EF")
+                    self.alarmSwitch.onTintColor = UIColor(hexString: "F0F0F0")
+                } else {
+                    self.alarmSwitch.thumbTintColor = UIColor(hexString: "C4C4C5")
+                    self.alarmSwitch.onTintColor = UIColor(hexString: "F0F0F0")
+                }
             }).disposed(by: disposeBag)
     }
     
@@ -92,9 +100,18 @@ class RegionAlarmViewController: UIViewController {
             .observe(on: MainScheduler.instance)
             .bind(to: self.AlarmTableView.rx.items(cellIdentifier: "InterestRegionTableViewCell", cellType: SettingTableViewCell.self)) {
                 (index: Int, element: MyAlarmInterestRegion, cell) in
+                cell.selectionStyle = .none
                 cell.settingNameLabel.text = element.region.name
                 cell.controlSwitch.isHidden = false
                 cell.controlSwitch.isOn = element.subscribe
+                
+                if(cell.controlSwitch.isOn) {
+                    cell.controlSwitch.thumbTintColor = UIColor(hexString: "5B43EF")
+                    cell.controlSwitch.onTintColor = UIColor(hexString: "F0F0F0")
+                } else if(!cell.controlSwitch.isOn) {
+                    cell.controlSwitch.thumbTintColor = UIColor(hexString: "C4C4C5")
+                    cell.controlSwitch.onTintColor = UIColor(hexString: "F0F0F0")
+                }
                 
                 cell.controlSwitch.rx.isOn.changed
                     .asDriver()
@@ -117,22 +134,28 @@ extension RegionAlarmViewController: UITableViewDelegate {
         label.font = UIFont(name: "AppleSDGothicNeo-Semibold", size: 18)
         label.textColor = .black
         
-        
         DispatchQueue.main.async {
             self.alarmSwitch.isHidden = false
-            self.alarmSwitch.thumbTintColor = UIColor(hexString: "5B43EF")
-            self.alarmSwitch.onTintColor = UIColor(hexString: "F0F0F0")
             self.alarmSwitch.layer.masksToBounds = true
-            self.alarmSwitch.layer.cornerRadius = 10
+            self.alarmSwitch.layer.cornerRadius = 15
             self.alarmSwitch.layer.borderWidth = 1
             self.alarmSwitch.layer.borderColor = UIColor(hexString: "D9D9D9").cgColor
         }
         
-        
         self.viewModel.output.sendResultRegion
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] data in
-                self?.alarmSwitch.isOn = data.data.subscribe
+                guard let self = self else { return }
+                self.alarmSwitch.isOn = data.data.subscribe
+                if(data.data.subscribe) {
+                    self.alarmSwitch.isOn = true
+                    self.alarmSwitch.thumbTintColor = UIColor(hexString: "5B43EF")
+                    self.alarmSwitch.onTintColor = UIColor(hexString: "F0F0F0")
+                } else {
+                    self.alarmSwitch.isOn = false
+                    self.alarmSwitch.thumbTintColor = UIColor(hexString: "C4C4C5")
+                    self.alarmSwitch.onTintColor = UIColor(hexString: "F0F0F0")
+                }
             }).disposed(by: disposeBag)
         
         headerView.addSubview(label)
@@ -151,5 +174,11 @@ extension RegionAlarmViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 50
+    }
+    
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let cell = AlarmTableView.dequeueReusableCell(withIdentifier: "InterestRegionTableViewCell", for: indexPath) as? SettingTableViewCell else { return }
+        
+        cell.disposeBag = DisposeBag()
     }
 }

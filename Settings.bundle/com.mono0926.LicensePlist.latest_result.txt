@@ -1,0 +1,142 @@
+name: Alamofire, nameSpecified: 
+body: Copyright (c) 2014-2…
+version: 5.6.1
+
+name: AppAuth, nameSpecified: 
+body: 
+                   …
+version: 1.5.0
+
+name: GoogleSignIn, nameSpecified: 
+body: 
+                   …
+version: 6.2.2
+
+name: GTMAppAuth, nameSpecified: 
+body: 
+                   …
+version: 1.3.0
+
+name: GTMSessionFetcher, nameSpecified: 
+body: 
+                   …
+version: 1.7.2
+
+name: KakaoSDKAuth, nameSpecified: 
+body:                     …
+version: 2.10.0
+
+name: KakaoSDKCommon, nameSpecified: 
+body:                     …
+version: 2.10.0
+
+name: KakaoSDKLink, nameSpecified: 
+body:                     …
+version: 2.10.0
+
+name: KakaoSDKStory, nameSpecified: 
+body:                     …
+version: 2.10.0
+
+name: KakaoSDKTalk, nameSpecified: 
+body:                     …
+version: 2.10.0
+
+name: KakaoSDKTemplate, nameSpecified: 
+body:                     …
+version: 2.10.0
+
+name: KakaoSDKUser, nameSpecified: 
+body:                     …
+version: 2.10.0
+
+name: RxAlamofire, nameSpecified: 
+body: The MIT License (MIT…
+version: 6.1.1
+
+name: RxCocoa, nameSpecified: 
+body: **The MIT License**
+…
+version: 6.5.0
+
+name: RxGesture, nameSpecified: 
+body: Copyright (c) RxSwif…
+version: 4.0.4
+
+name: RxKakaoSDKAuth, nameSpecified: 
+body:                     …
+version: 2.10.0
+
+name: RxKakaoSDKCommon, nameSpecified: 
+body:                     …
+version: 2.10.0
+
+name: RxKakaoSDKLink, nameSpecified: 
+body:                     …
+version: 2.10.0
+
+name: RxKakaoSDKStory, nameSpecified: 
+body:                     …
+version: 2.10.0
+
+name: RxKakaoSDKTalk, nameSpecified: 
+body:                     …
+version: 2.10.0
+
+name: RxKakaoSDKUser, nameSpecified: 
+body:                     …
+version: 2.10.0
+
+name: RxRelay, nameSpecified: 
+body: **The MIT License**
+…
+version: 6.5.0
+
+name: RxSwift, nameSpecified: 
+body: **The MIT License**
+…
+version: 6.5.0
+
+name: SnapKit, nameSpecified: 
+body: Copyright (c) 2011-P…
+version: 5.6.0
+
+name: Then, nameSpecified: 
+body: The MIT License (MIT…
+version: 3.0.0
+
+name: TTGTagCollectionView, nameSpecified: 
+body: Copyright (c) 2015 z…
+version: 2.1.0
+
+name: abseil-cpp-SwiftPM, nameSpecified: abseil-cpp-swiftpm, owner: firebase, version: 0.20220203.1, source: https://github.com/firebase/abseil-cpp-SwiftPM
+
+name: boringssl-SwiftPM, nameSpecified: boringssl-swiftpm, owner: firebase, version: 0.9.0, source: https://github.com/firebase/boringssl-SwiftPM
+
+name: firebase-ios-sdk, nameSpecified: firebase-ios-sdk, owner: firebase, version: 9.2.0, source: https://github.com/firebase/firebase-ios-sdk
+
+name: GoogleAppMeasurement, nameSpecified: googleappmeasurement, owner: google, version: 9.1.0, source: https://github.com/google/GoogleAppMeasurement
+
+name: GoogleDataTransport, nameSpecified: googledatatransport, owner: google, version: 9.1.4, source: https://github.com/google/GoogleDataTransport
+
+name: GoogleUtilities, nameSpecified: googleutilities, owner: google, version: 7.7.1, source: https://github.com/google/GoogleUtilities
+
+name: grpc-ios, nameSpecified: grpc-ios, owner: grpc, version: 1.44.2-grpc, source: https://github.com/grpc/grpc-ios
+
+name: gtm-session-fetcher, nameSpecified: gtm-session-fetcher, owner: google, version: 2.0.0, source: https://github.com/google/gtm-session-fetcher
+
+name: Kingfisher, nameSpecified: kingfisher, owner: onevcat, version: , source: https://github.com/onevcat/Kingfisher
+
+name: leveldb, nameSpecified: leveldb, owner: firebase, version: 1.22.2, source: https://github.com/firebase/leveldb
+
+name: nanopb, nameSpecified: nanopb, owner: firebase, version: 2.30909.0, source: https://github.com/firebase/nanopb
+
+name: promises, nameSpecified: promises, owner: google, version: 2.1.1, source: https://github.com/google/promises
+
+name: swift-docc-plugin, nameSpecified: swift-docc-plugin, owner: apple, version: 1.0.0, source: https://github.com/apple/swift-docc-plugin
+
+name: swift-protobuf, nameSpecified: swift-protobuf, owner: apple, version: 1.19.0, source: https://github.com/apple/swift-protobuf
+
+add-version-numbers: false
+
+LicensePlist Version: 3.22.0

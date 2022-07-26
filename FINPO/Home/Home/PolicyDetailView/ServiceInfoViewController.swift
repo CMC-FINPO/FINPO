@@ -22,6 +22,25 @@ class ServiceInfoViewController: UIViewController {
         print("서비스 인포 뷰 받은 아이디값: \(self.acceptedDetailId)")
     }
     
+    private var scrollView: UIScrollView = {
+        let sv = UIScrollView(frame: .zero)
+        sv.showsVerticalScrollIndicator = false
+        sv.showsHorizontalScrollIndicator = false
+        return sv
+    }()
+    
+    private var contentView: UIView = {
+        let view = UIView()
+        return view
+    }()
+    
+    private var verticalStackView: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .vertical
+        
+        return sv
+    }()
+    
     private let policyTypeLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "AppleSDGothicNeo-Semibold", size: 16)
@@ -33,12 +52,13 @@ class ServiceInfoViewController: UIViewController {
     
     public var policyTypeCollectionView: UICollectionView = {
         let flow = UICollectionViewFlowLayout()
-        flow.sectionInset = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
-        flow.minimumInteritemSpacing = 5
-        flow.minimumLineSpacing = 3
+//        flow.sectionInset = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
+//        flow.minimumInteritemSpacing = 5
+//        flow.minimumLineSpacing = 3
         let cv = UICollectionView(frame: .init(x: 0, y: 0, width: 100, height: 100), collectionViewLayout: flow)
         cv.showsVerticalScrollIndicator = false
         cv.showsLargeContentViewer = false
+        cv.isUserInteractionEnabled = false
         return cv
     }()
     
@@ -51,18 +71,33 @@ class ServiceInfoViewController: UIViewController {
     }()
     
     public var serviceInfoCollectionView: UICollectionView = {
-        let flow = UICollectionViewFlowLayout()
-        flow.sectionInset = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
-        flow.scrollDirection = .horizontal
+        let flow = LeftAlignedCollectionViewFlowLayout()
+        flow.sectionInset = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 50)
+        flow.scrollDirection = .vertical
         flow.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         let cv = UICollectionView(frame: .init(x: 0, y: 0, width: 100, height: 100), collectionViewLayout: flow)
         cv.showsVerticalScrollIndicator = false
         cv.showsHorizontalScrollIndicator = false
         cv.layer.masksToBounds = true
         cv.layer.cornerRadius = 5
-        cv.isScrollEnabled = false
         cv.backgroundColor = UIColor(hexString: "5B43EF").withAlphaComponent(0.3)
         return cv
+    }()
+    
+    public var serviceInfoTableView: UITableView = {
+        let tv = UITableView()
+        tv.rowHeight = UITableView.automaticDimension
+        tv.estimatedRowHeight = 50
+        tv.separatorInset.left = 0
+        tv.bounces = false
+        tv.backgroundColor = UIColor(hexString: "5B43EF").withAlphaComponent(0.3)
+        tv.layer.masksToBounds = true
+        tv.layer.cornerRadius = 5
+        tv.separatorInset.left = 0
+        tv.separatorStyle = UITableViewCell.SeparatorStyle.none
+        tv.showsVerticalScrollIndicator = false
+        tv.showsHorizontalScrollIndicator = false
+        return tv
     }()
     
     private let institutionTitleLabel: UILabel = {
@@ -73,9 +108,9 @@ class ServiceInfoViewController: UIViewController {
         return label
     }()
     
-    var institutionNameValueLabel: UILabel = {
+    public var institutionNameValueLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "AppleSDGothicNeo-Semibold", size: 16)
+        label.font = UIFont(name: "AppleSDGothicNeo-Semibold", size: 18)
         label.textColor = UIColor(hexString: "000000")
         label.numberOfLines = 0
         return label
@@ -97,7 +132,7 @@ class ServiceInfoViewController: UIViewController {
     
     var scaleValueLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "AppleSDGothicNeo-Semibold", size: 16)
+        label.font = UIFont(name: "AppleSDGothicNeo-Semibold", size: 18)
         label.textColor = UIColor(hexString: "000000")
         label.numberOfLines = 0
         return label
@@ -113,7 +148,7 @@ class ServiceInfoViewController: UIViewController {
     
      var supportPeriodValueLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "AppleSDGothicNeo-Semibold", size: 16)
+        label.font = UIFont(name: "AppleSDGothicNeo-Semibold", size: 18)
         label.textColor = UIColor(hexString: "000000")
         return label
     }()
@@ -130,106 +165,125 @@ class ServiceInfoViewController: UIViewController {
 
     fileprivate func setAttribute() {
 //        self.serviceInfoCollectionView.register(ServiceTypeCollectionViewCell.self, forCellWithReuseIdentifier: "ServiceTypeCollectionViewCell")
+        
+        
     }
     
     fileprivate func setLayout() {
-        view.addSubview(policyTypeLabel)
+        
+        view.addSubview(scrollView)
+        scrollView.snp.makeConstraints {
+            $0.edges.equalTo(view.safeAreaLayoutGuide)
+//            $0.top.leading.trailing.equalToSuperview()
+        }
+        
+        scrollView.addSubview(contentView)
+        contentView.snp.makeConstraints {
+            $0.top.equalTo(scrollView.contentLayoutGuide.snp.top)
+            $0.leading.trailing.bottom.equalTo(scrollView.contentLayoutGuide)
+            $0.width.equalTo(scrollView.snp.width)
+            $0.height.equalTo(view.bounds.height/2 + 100)
+        }
+//        let contentViewHeight = contentView.heightAnchor.constraint(greaterThanOrEqualTo: view.heightAnchor)
+//        contentViewHeight.priority = .defaultLow
+//        contentViewHeight.isActive = true
+        
+        
+//        verticalStackView.addArrangedSubview(policyTypeLabel)
+        contentView.addSubview(policyTypeLabel)
         policyTypeLabel.snp.makeConstraints {
             $0.top.equalToSuperview().offset(20)
             $0.leading.equalToSuperview().inset(20)
             $0.trailing.equalToSuperview().inset(20)
         }
         
-        view.addSubview(policyTypeCollectionView)
+//        verticalStackView.addArrangedSubview(policyTypeCollectionView)
+        contentView.addSubview(policyTypeCollectionView)
         policyTypeCollectionView.snp.makeConstraints {
             $0.top.equalTo(policyTypeLabel.snp.bottom).offset(5)
             $0.leading.equalTo(policyTypeLabel.snp.leading)
-            $0.trailing.equalToSuperview().inset(20)
+            $0.trailing.equalToSuperview()
             $0.height.equalTo(24) //cell 23
         }
         
-        view.addSubview(serviceInfoLabel)
+//        verticalStackView.addArrangedSubview(serviceInfoLabel)
+        contentView.addSubview(serviceInfoLabel)
         serviceInfoLabel.snp.makeConstraints {
             $0.top.equalTo(policyTypeCollectionView.snp.bottom).offset(15)
             $0.leading.equalTo(policyTypeLabel.snp.leading)
         }
         
-        view.addSubview(serviceInfoCollectionView)
-        serviceInfoCollectionView.snp.makeConstraints {
+//        verticalStackView.addArrangedSubview(serviceInfoCollectionView)
+        contentView.addSubview(serviceInfoTableView)
+        serviceInfoTableView.snp.makeConstraints {
             $0.top.equalTo(serviceInfoLabel.snp.bottom).offset(15)
             $0.leading.equalTo(policyTypeLabel.snp.leading)
-            $0.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(160)
+            $0.trailing.equalTo(view.snp.trailing).inset(20)
+//            $0.height.greaterThanOrEqualTo(50)
+            $0.bottom.equalTo(serviceInfoLabel.snp.bottom).offset(100)
         }
         
-        view.addSubview(verticalSeparatorLineView)
+//        verticalStackView.addArrangedSubview(verticalSeparatorLineView)
+        contentView.addSubview(verticalSeparatorLineView)
         verticalSeparatorLineView.snp.makeConstraints {
-            $0.top.equalTo(serviceInfoCollectionView.snp.bottom).offset(25)
+            $0.top.equalTo(serviceInfoTableView.snp.bottom).offset(25)
             $0.centerX.equalToSuperview()
             $0.width.equalTo(1)
             $0.height.equalTo(60)
         }
         
-        view.addSubview(institutionTitleLabel)
+//        verticalStackView.addArrangedSubview(institutionTitleLabel)
+        contentView.addSubview(institutionTitleLabel)
         institutionTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(serviceInfoCollectionView.snp.bottom).offset(25)
+            $0.top.equalTo(serviceInfoTableView.snp.bottom).offset(25)
             $0.leading.equalTo(policyTypeLabel.snp.leading)
         }
         
-        view.addSubview(institutionNameValueLabel)
+//        verticalStackView.addArrangedSubview(institutionNameValueLabel)
+        contentView.addSubview(institutionNameValueLabel)
         institutionNameValueLabel.snp.makeConstraints {
             $0.top.equalTo(institutionTitleLabel.snp.bottom).offset(8)
             $0.leading.equalTo(institutionTitleLabel.snp.leading)
             $0.trailing.equalTo(verticalSeparatorLineView.snp.leading).inset(5)
         }
         
-        view.addSubview(scaleTitleLabel)
+//        verticalStackView.addArrangedSubview(scaleTitleLabel)
+        contentView.addSubview(scaleTitleLabel)
         scaleTitleLabel.snp.makeConstraints {
             $0.top.equalTo(institutionTitleLabel.snp.top)
             $0.leading.equalTo(verticalSeparatorLineView.snp.trailing).offset(25)
         }
         
-        view.addSubview(scaleValueLabel)
+//        verticalStackView.addArrangedSubview(scaleValueLabel)
+        contentView.addSubview(scaleValueLabel)
         scaleValueLabel.snp.makeConstraints {
             $0.top.equalTo(scaleTitleLabel.snp.bottom).offset(8).priority(999)
             $0.leading.equalTo(scaleTitleLabel.snp.leading)
             $0.trailing.equalToSuperview().inset(5)
         }
         
-        view.addSubview(supportPeriodTitleLabel)
+//        verticalStackView.addArrangedSubview(supportPeriodTitleLabel)
+        contentView.addSubview(supportPeriodTitleLabel)
         supportPeriodTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(institutionNameValueLabel.snp.bottom).offset(25)
+            $0.top.equalTo(institutionNameValueLabel.snp.bottom).offset(35)
             $0.leading.equalTo(institutionTitleLabel.snp.leading)
         }
         
-        view.addSubview(supportPeriodValueLabel)
+//        verticalStackView.addArrangedSubview(supportPeriodValueLabel)
+        contentView.addSubview(supportPeriodValueLabel)
         supportPeriodValueLabel.snp.makeConstraints {
             $0.top.equalTo(supportPeriodTitleLabel.snp.bottom).offset(8)
             $0.leading.equalTo(supportPeriodTitleLabel.snp.leading)
+            $0.bottom.equalToSuperview()
         }
         
     }
     
     fileprivate func setInputBind() {
-        rx.viewWillAppear.take(1).asDriver{ _ in return .never()}
-            .drive(onNext: { [weak self] _ in
-                guard let self = self else { return }
-//                guard let id = self.acceptedDetailId else { return }
-//                self.viewModel.input.serviceInfoObserver.accept(self.acceptedDetailId ?? 1000)
-//                self.viewModel.input.serviceInfoObserver.accept(id)
-            }).disposed(by: disposeBag)
         
     }
     
     fileprivate func setOutputBind() {
-//        viewModel.output.serviceInfoOutput
-//            .asObservable()
-//            .observe(on: MainScheduler.instance)
-//            .subscribe(onNext: { [weak self] data in
-//                guard let self = self else { return }
-//                self.institutionNameValueLabel.text = data.data.institution ?? ""
-//                self.scaleValueLabel.text = "총 \(data.data.supportScale ?? "")"
-//                self.supportPeriodValueLabel.text = data.data.modifiedAt ?? "123123"
-//            }).disposed(by: disposeBag)
+
     }
 }

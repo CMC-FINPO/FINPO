@@ -21,10 +21,16 @@ class AddPurposeViewController: UIViewController {
         
         view.backgroundColor = .white
         
+        self.navigationController?.isNavigationBarHidden = false
         setAttribute()
         setLayout()
         setInputBind()
         setOutputBind()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
     }
     
     private var progressBar: UIProgressView = {
@@ -33,15 +39,16 @@ class AddPurposeViewController: UIViewController {
         progressBar.progressTintColor = UIColor(hexString: "5B43EF", alpha: 1)
         progressBar.progress = 5/6
         progressBar.clipsToBounds = true
+        progressBar.layer.cornerRadius = 3
         return progressBar
     }()
     
     private var progressLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
-        label.text = "5/6"
         label.textAlignment = .center
         label.textColor = UIColor(hexString: "C4C4C4")
+        label.text = "5/6"
         return label
     }()
     
@@ -94,6 +101,7 @@ class AddPurposeViewController: UIViewController {
         cv.backgroundColor = .white
         cv.showsVerticalScrollIndicator = false
         cv.showsHorizontalScrollIndicator = false
+        cv.allowsMultipleSelection = true
         return cv
     }()
     
@@ -104,7 +112,7 @@ class AddPurposeViewController: UIViewController {
         button.setTitleColor(UIColor(hexString: "616161"), for: .normal)
         button.backgroundColor = UIColor(hexString: "F0F0F0")
         button.layer.cornerRadius = 5
-        button.isEnabled = true //TEST용 true 설정
+        button.isEnabled = false
         button.layer.masksToBounds = true
         return button
     }()
@@ -114,8 +122,9 @@ class AddPurposeViewController: UIViewController {
         navigationController?.navigationBar.topItem?.backButtonTitle = ""
         navigationController?.navigationBar.topItem?.rightBarButtonItem = UIBarButtonItem(title: "나중에 할게요", style: .plain, target: self, action: #selector(skipThisView))
         self.navigationItem.rightBarButtonItem?.tintColor = UIColor(hexString: "999999")
-        let attributes = [NSAttributedString.Key.font: UIFont(name: "AppleSDGothicNeo-Medium", size: 14)!]
-        self.navigationController?.navigationBar.titleTextAttributes = attributes
+        let attributes = [NSAttributedString.Key.font: UIFont(name: "AppleSDGothicNeo-Medium", size: 10)!]
+//        self.navigationController?.navigationBar.titleTextAttributes = attributes
+        self.navigationController?.navigationItem.rightBarButtonItem?.setTitleTextAttributes(attributes, for: [.normal, .selected])
         
         statusCollectionView.delegate = self
         statusCollectionView.register(AddPurposeCollectionViewCell.self, forCellWithReuseIdentifier: "AddStatusCollectionViewCell")
@@ -130,7 +139,9 @@ class AddPurposeViewController: UIViewController {
     }
     
     @objc private func skipThisView() {
-        
+        let vc = HomeTapViewController()
+        vc.modalPresentationStyle = .fullScreen
+        self.present(vc, animated: true)
     }
     
     fileprivate func setLayout() {
@@ -146,8 +157,8 @@ class AddPurposeViewController: UIViewController {
         view.addSubview(progressLabel)
         progressLabel.snp.makeConstraints {
             $0.centerY.equalTo(progressBar.snp.centerY)
-            $0.leading.equalTo(progressBar.snp.trailing).offset(10)
-            $0.height.equalTo(10)
+            $0.leading.equalTo(progressBar.snp.trailing).offset(15)
+            $0.height.equalTo(15)
         }
         
         view.addSubview(titleLabel)
@@ -209,12 +220,41 @@ class AddPurposeViewController: UIViewController {
                 self.viewModel.getPurpose()
             }).disposed(by: disposeBag)
         
+        statusCollectionView.rx.itemSelected
+            .subscribe(onNext: { [weak self] indexPath in
+                guard let self = self else { return }
+                self.viewModel.input.statusButtonTapped.accept(indexPath.row+1)
+            }).disposed(by: disposeBag)
+        
+        purposeCollectionView.rx.itemSelected
+            .subscribe(onNext: { [weak self] indexPath in
+                guard let self = self else { return }
+                self.viewModel.purposeBag.append(indexPath.row+1)
+                self.viewModel.input.purposeButtonTapped.accept(true)
+                print("이용 목적 저장됨!!!: \(self.viewModel.purposeBag)")
+            }).disposed(by: disposeBag)
+        
+        purposeCollectionView.rx.itemDeselected
+            .subscribe(onNext: { [weak self] indexPath in
+                guard let self = self else { return }
+                if(self.viewModel.purposeBag.contains(indexPath.row+1)) {
+                    let array = self.viewModel.purposeBag.filter { $0 != indexPath.row+1 }
+                    self.viewModel.purposeBag = array
+                    if(self.viewModel.purposeBag.count == 0) {
+                        self.viewModel.input.purposeButtonTapped.accept(false)
+                    }
+                    print("이용 목적 삭제됨!!: \(self.viewModel.purposeBag)")
+                }
+            }).disposed(by: disposeBag)
+        
         confirmButton.rx.tap
             .asDriver(onErrorJustReturn: ())
             .drive(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                self.viewModel.input.statusPurposeButtonTapped.accept(())
                 let vc = AddRegionViewController()
                 vc.modalPresentationStyle = .fullScreen
-                self?.navigationController?.pushViewController(vc, animated: true)
+                self.navigationController?.pushViewController(vc, animated: true)
             }).disposed(by: disposeBag)
         
     }
@@ -226,9 +266,15 @@ class AddPurposeViewController: UIViewController {
                 (index: Int, element: UserStatus, cell: AddPurposeCollectionViewCell) in
                 cell.setup()
                 cell.statusButton.setTitle(element.name, for: .normal)
+                
 //                cell.statusButton.sizeToFit()
 //                let cellWidth = cell.statusLabel.frame.width + 10
 //                cell.layer.frame.size = CGSize(width: cellWidth, height: 40)
+//                cell.statusButton.rx.tap
+//                    .asDriver()
+//                    .drive(onNext: { [weak self] in
+//                        self?.viewModel.input.statusButtonTapped.accept(element.id)
+//                    }).disposed(by: cell.bag)
             }.disposed(by: disposeBag)
         
         viewModel.output.getPurpose
@@ -237,8 +283,25 @@ class AddPurposeViewController: UIViewController {
                 (index: Int, element: UserPurpose, cell: AddPurposeCollectionViewCell) in
                 cell.setup()
                 cell.statusButton.setTitle(element.name, for: .normal)
-//                cell.statusButton.sizeToFit()
+                
             }.disposed(by: disposeBag)
+        
+        viewModel.output.statusPurposeButtonValid
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: { [weak self] valid in
+                guard let self = self else { return }
+                if valid {
+                    print("버튼 활성화")
+                    self.confirmButton.isEnabled = valid
+                    self.confirmButton.backgroundColor = UIColor(hexString: "5B43EF")
+                    self.confirmButton.setTitleColor(UIColor(hexString: "FFFFFF"), for: .normal)
+                } else {
+                    print("버튼 비활성화")
+                    self.confirmButton.isEnabled = valid
+                    self.confirmButton.backgroundColor = UIColor(hexString: "F0F0F0")
+                    self.confirmButton.setTitleColor(UIColor(hexString: "616161"), for: .normal)
+                }
+            }).disposed(by: disposeBag)
     }
 }
 

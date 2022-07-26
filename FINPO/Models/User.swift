@@ -8,6 +8,7 @@
 import Foundation
 import Alamofire
 
+
 class User: Codable {
     
     static var instance = User()
@@ -16,26 +17,25 @@ class User: Codable {
     var nickname: String = ""
     var birth: String = ""
     var gender: String = ""
-    var email: String = ""
-    var region: [Int] = []
+    var region: [Int] = [] //메인 거주지역
+    var interestRegion: [Int] = []//추가 거주지역
     var category: [Int] = []
-//    var region1: String = ""
-//    var region2: String = ""
-//    var profileImg: String = ""
+    var status: Int = 0
+    var accessToken: String = ""
+    var accessTokenFromSocial: String = ""
+    var refreshToken: String = ""
+    var profileImg: URL?
     
     func toDic() -> Parameters {
         let parameter:Parameters = [
             "name": self.name,
             "nickname" : self.nickname,
             "birth":self.birth,
-            "gender": self.gender, //Male, Female, Private(아직 미정상태)
-            "email": self.email,
-//            "region": self.region
-//            "region1": self.region1,
-//            "region2": self.region2,
-//            "profileImg": self.profileImg
+            "gender": self.gender, //Male, Female
+            "regionId": self.region[0], //메인 지역 (추가 전)
+            "status": self.status,
+            "profileImg": self.profileImg
         ]
-                
         return parameter
     }
 }
@@ -56,7 +56,6 @@ struct MainRegion: Codable {
     var name: String
 }
 
-
 ///Sub Region
 struct SubRegionAPIRsponse: Codable {
     var data: [SubRegion]
@@ -65,12 +64,11 @@ struct SubRegionAPIRsponse: Codable {
 struct SubRegion: Codable {
     var id: Int
     var name: String
-//    var parent: [SubParent]
-//
-//    struct SubParent: Codable {
-//        var id: Int
-//        var name: String
-//    }
+
+}
+
+struct UniouRegion: Codable {
+    var unionRegionName: String
 }
 
 struct InterestingAPIResponse: Codable {
@@ -81,7 +79,6 @@ struct MainInterest: Codable {
     var id: Int
     var name: String
 //    var name: Interesting
-
 }
 
 ///user's interest area
@@ -112,4 +109,27 @@ enum Interesting {
         case space
         case extracurricular
     }
+}
+
+struct UserStatusAPIResponse: Codable {
+    var data: [UserStatus]
+}
+
+struct UserStatus: Codable {
+    var id: Int
+    var name: String
+}
+
+///이용목적 전체 조회 모델
+struct UserPurposeAPIResponse: Codable {
+    var data: [UserPurpose]
+}
+
+struct UserPurpose: Codable {
+    var id: Int
+    var name: String
+}
+///내 이용목적 조회 모델
+struct MyPurposeAPIResponse: Codable {
+    var data: [Int]
 }

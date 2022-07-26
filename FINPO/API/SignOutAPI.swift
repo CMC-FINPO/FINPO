@@ -13,7 +13,7 @@ import Alamofire
 struct SignOutAPI {
     static func signoutWithAuthGoogle(accessToken: String, completion: @escaping (Result<Bool, Error>) -> Void) {
         var valid: Bool = false
-        let url = "https://dev.finpo.kr/user/me"
+        let url = BaseURL.url.appending("user/me")
         let header: HTTPHeaders = [
             "Content-Type": "application/json;charset=UTF-8",
             "Authorization": "Bearer ".appending(accessToken)
@@ -22,7 +22,7 @@ struct SignOutAPI {
             "access_token": UserDefaults.standard.string(forKey: "SocialAccessToken") ?? ""
         ]
         
-        AF.request(url, method: .delete, parameters: parameter, encoding: JSONEncoding.default, headers: header)
+        AF.request(url, method: .delete, parameters: parameter, encoding: JSONEncoding.default, headers: header, interceptor: MyRequestInterceptor())
             .validate()
             .response { response in
                 switch response.result {
@@ -46,13 +46,13 @@ struct SignOutAPI {
     
     static func signoutWithAuthKakao(accessToken: String, completion: @escaping (Result<Bool, Error>) -> Void) {
         var valid: Bool = false
-        let url = "https://dev.finpo.kr/user/me"
+        let url = BaseURL.url.appending("user/me")
         let header: HTTPHeaders = [
             "Content-Type": "application/json;charset=UTF-8",
             "Authorization": "Bearer ".appending(accessToken)
         ]
         
-        AF.request(url, method: .delete, parameters: nil, encoding: URLEncoding.default, headers: header)
+        AF.request(url, method: .delete, parameters: nil, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
             .validate()
             .response { response in
                 switch response.result {
@@ -75,13 +75,17 @@ struct SignOutAPI {
     
     static func signoutWithAuthApple(accessToken: String, completion: @escaping (Result<Bool, Error>) -> Void) {
         var valid: Bool = false
-        let url = "https://dev.finpo.kr/user/me"
+        let url = BaseURL.url.appending("user/me")
         let header: HTTPHeaders = [
             "Content-Type": "application/json;charset=UTF-8",
             "Authorization": "Bearer ".appending(accessToken)
         ]
         
-        AF.request(url, method: .delete, parameters: nil, encoding: URLEncoding.default, headers: header)
+        let parameter: Parameters = [
+            "code": UserDefaults.standard.string(forKey: "authorizationCode") ?? ""
+        ]
+        
+        AF.request(url, method: .delete, parameters: parameter, encoding: JSONEncoding.default, headers: header, interceptor: MyRequestInterceptor())
             .validate()
             .response { response in
                 switch response.result {

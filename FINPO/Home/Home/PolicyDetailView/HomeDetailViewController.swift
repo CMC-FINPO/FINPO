@@ -293,7 +293,7 @@ class HomeDetailViewController: UIViewController {
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] data in
                 guard let self = self else { return }
-                self.regionLabel.text = (data.data.region?.parent?.name ?? "") + ( data.data.region?.name ?? "")
+                self.regionLabel.text = (data.data.region?.parent?.name ?? "") + " " + ( data.data.region?.name ?? "")
                 self.policyNameLabel.text = data.data.title ?? "공고명 없음"
                 self.policySubscriptionLabel.text = data.data.content ?? "표시할 내용이 없습니다."
                 self.scrapCountLabel.text = "스크랩수 \(data.data.countOfInterest ?? 0)"
@@ -321,11 +321,12 @@ class HomeDetailViewController: UIViewController {
                 
                 self.applyInfoVC.policyProcedureValueLabel.text = data.data.process ?? "자세한 신청 절차는 홈페이지를 참고해주세요"
                 self.applyInfoVC.announcementValueLabel.text = data.data.process ?? "자세한 심사 및 발표는 홈페이지를 참고해주세요"
+                self.applyInfoVC.etcValueLabel.text = "문의하기"
                 
                 ///사업 내용
-                self.serviceInforVC.institutionNameValueLabel.text = data.data.institution ?? ""
+                self.serviceInforVC.institutionNameValueLabel.text = data.data.institution ?? "지자체"
                 //TODO: 지원규모 없을 때 예외처리 할 것
-                self.serviceInforVC.scaleValueLabel.text = "총 \(data.data.supportScale ?? "")"
+                self.serviceInforVC.scaleValueLabel.text = "\(data.data.supportScale ?? "")"
                 ///Date
                 let format = DateFormatter()
                 format.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"

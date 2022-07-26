@@ -38,15 +38,16 @@ class LoginRegionViewController: UIViewController {
         progressBar.progressTintColor = UIColor(hexString: "5B43EF", alpha: 1)
         progressBar.progress = 3/6
         progressBar.clipsToBounds = true
+        progressBar.layer.cornerRadius = 3
         return progressBar
     }()
     
     private var progressLabel: UILabel = {
         let label = UILabel()
-        label.text = "3/6"
         label.textAlignment = .center
-        label.textColor = UIColor.systemGray.withAlphaComponent(0.5)
-        label.font = .systemFont(ofSize: 13, weight: .semibold)
+        label.textColor = UIColor(hexString: "C4C4C5")
+        label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
+        label.text = "3/6"
         return label
     }()
     
@@ -63,12 +64,8 @@ class LoginRegionViewController: UIViewController {
         let flow = UICollectionViewFlowLayout()
         let cv = UICollectionView(frame: .init(x: 0, y: 0, width: 100, height: 100), collectionViewLayout: flow)
         cv.backgroundColor = .white
-//        cv.alignment = .left
-//        cv.selectionLimit = 1
         cv.showsVerticalScrollIndicator = false
         cv.showsHorizontalScrollIndicator = false
-        cv.layer.masksToBounds = true
-        cv.layer.cornerRadius = 3
         return cv
     }()
 
@@ -148,7 +145,7 @@ class LoginRegionViewController: UIViewController {
         
         view.addSubview(progressBar)
         progressBar.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(10)
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(15)
             $0.leading.equalToSuperview().inset(20)
             $0.trailing.equalToSuperview().inset(50)
             $0.height.equalTo(5)
@@ -156,9 +153,9 @@ class LoginRegionViewController: UIViewController {
         
         view.addSubview(progressLabel)
         progressLabel.snp.makeConstraints {
-            $0.top.equalTo(progressBar.snp.top)
+            $0.centerY.equalTo(progressBar.snp.centerY)
             $0.leading.equalTo(progressBar.snp.trailing).offset(15)
-            $0.height.equalTo(10)
+            $0.height.equalTo(15)
         }
         
         view.addSubview(titleLabel)
@@ -182,9 +179,7 @@ class LoginRegionViewController: UIViewController {
             $0.top.equalTo(tagCollectionView.snp.bottom).offset(30)
             $0.leading.equalToSuperview().inset(15)
             $0.width.equalTo(100)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-150)
-//            $0.height.equalTo(view.frame.size.height/2)
-//            $0.height.equalTo(180)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-100)
         }
         
         view.addSubview(localRegionTableView)
@@ -192,7 +187,7 @@ class LoginRegionViewController: UIViewController {
             $0.top.equalTo(mainRegionTableView.snp.top)
             $0.leading.equalTo(mainRegionTableView.snp.trailing)
             $0.trailing.equalToSuperview().inset(15)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-150)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-100)
         }
         
         view.addSubview(confirmButton)
@@ -253,7 +248,6 @@ class LoginRegionViewController: UIViewController {
                 } else {
                     self?.isSelected = false
                 }
-
             }).disposed(by: disposeBag)
                         
         confirmButton.rx.tap
@@ -337,7 +331,7 @@ extension LoginRegionViewController: UICollectionViewDelegateFlowLayout {
 
         let dummyLabel = UILabel().then {
             $0.font = .systemFont(ofSize: 16)
-            $0.text = "길이 측정용 "
+            $0.text = "길이 측정용    "
             $0.sizeToFit()
         }
         let size = dummyLabel.frame.size

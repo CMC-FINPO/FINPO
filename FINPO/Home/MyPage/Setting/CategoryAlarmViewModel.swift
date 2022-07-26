@@ -20,6 +20,12 @@ class CategoryAlarmViewModel {
         case parent(MyAlarmIsOnModel)
     }
     
+    ///오픈 API 구분
+    enum APICategory {
+        case ios
+        case server(OpenAPIModel)
+    }
+    
     ///INPUT
     struct INPUT {
         ///관심 카테고리 알람 Part
@@ -40,6 +46,9 @@ class CategoryAlarmViewModel {
         ///개별 지역 스위치 조작
         let didTappedRegionCellSwtichIdObserver = PublishRelay<Int>()
         let didTappedRegionCellSwitchSubsObserver = PublishRelay<Bool>()
+        
+        ///오픈API 정보 가져오기
+        let openAPIObserver = PublishRelay<Void>()
     }
         
     ///OUTPUT
@@ -49,6 +58,9 @@ class CategoryAlarmViewModel {
         
         ///지역 종합한거 뷰컨 전달
         var sendResultRegion = PublishRelay<MyAlarmIsOnModel>()
+        
+        ///오픈소스 방출
+        var sendOpenAPI = PublishRelay<APICategory>()
     }
     
     init() {
@@ -148,5 +160,12 @@ class CategoryAlarmViewModel {
         .subscribe(onNext: {
             print("지역 개별 셀 구독 여부 방출 완료")
         }).disposed(by: disposeBag)
+        
+        ///오픈소스 가져오기
+        input.openAPIObserver
+            .flatMap {  OpenAPI.getOpenSourceAPI() }
+            .subscribe(onNext: { openData in
+                self.output.sendOpenAPI.accept(.server(openData))
+            }).disposed(by: disposeBag)
     }
 }

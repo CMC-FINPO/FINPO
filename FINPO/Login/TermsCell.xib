@@ -17,47 +17,84 @@
                 <rect key="frame" x="0.0" y="0.0" width="320" height="56"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wOD-Ka-zUI">
-                        <rect key="frame" x="12" y="17" width="21" height="22"/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="21" id="o1n-SG-N6r"/>
-                        </constraints>
-                        <state key="normal" title="Button" image="circle" catalog="system"/>
-                    </button>
                     <stackView opaque="NO" contentMode="scaleToFill" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="TfE-Tv-77F">
-                        <rect key="frame" x="38" y="14" width="246" height="28"/>
+                        <rect key="frame" x="42" y="14" width="242" height="22"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" text="(필수)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="utS-Vd-OJX">
-                                <rect key="frame" x="0.0" y="0.0" width="42" height="28"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" text="필수" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="utS-Vd-OJX" customClass="PaddingLabel" customModule="FINPO" customModuleProvider="target">
+                                <rect key="frame" x="15" y="0.0" width="34" height="22"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="22" id="1QU-of-OYW"/>
+                                    <constraint firstAttribute="height" constant="22" id="UnS-uo-Z5L"/>
+                                    <constraint firstAttribute="width" constant="34" id="mVs-6c-rH6"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="AppleSDGothicNeo-Medium" family="Apple SD Gothic Neo" pointSize="14"/>
                                 <color key="textColor" systemColor="systemGray2Color"/>
                                 <nil key="highlightedColor"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                        <color key="value" red="0.63529411764705879" green="0.63529411764705879" blue="0.63529411764705879" alpha="0.84705882352941175" colorSpace="calibratedRGB"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                        <real key="value" value="1"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="3"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="topInset">
+                                        <real key="value" value="2"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="bottomInset">
+                                        <real key="value" value="2"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="leftInset">
+                                        <real key="value" value="3"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="rightInset">
+                                        <real key="value" value="3"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="위치기반 서비스 이용약관" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dXD-7K-PUn">
-                                <rect key="frame" x="54" y="0.0" width="192" height="28"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="위치기반 서비스 이용약관" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dXD-7K-PUn">
+                                <rect key="frame" x="59" y="0.0" width="183" height="22"/>
+                                <fontDescription key="fontDescription" name="AppleSDGothicNeo-SemiBold" family="Apple SD Gothic Neo" pointSize="18"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
+                        <constraints>
+                            <constraint firstItem="utS-Vd-OJX" firstAttribute="leading" secondItem="TfE-Tv-77F" secondAttribute="leading" constant="15" id="0rf-J2-bph"/>
+                            <constraint firstItem="dXD-7K-PUn" firstAttribute="leading" secondItem="utS-Vd-OJX" secondAttribute="trailing" constant="10" id="6bg-ye-H5b"/>
+                            <constraint firstItem="dXD-7K-PUn" firstAttribute="leading" secondItem="utS-Vd-OJX" secondAttribute="trailing" constant="10" id="xzG-wl-T6r"/>
+                        </constraints>
                     </stackView>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b8v-iL-IZQ">
-                        <rect key="frame" x="296" y="17" width="12" height="22"/>
+                        <rect key="frame" x="296" y="14" width="12" height="22"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="12" id="i0G-Od-20M"/>
                         </constraints>
                         <color key="tintColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <state key="normal" title="Button" image="chevron.right" catalog="system"/>
                     </button>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wOD-Ka-zUI">
+                        <rect key="frame" x="12" y="12.5" width="25" height="25"/>
+                        <constraints>
+                            <constraint firstAttribute="width" relation="lessThanOrEqual" constant="25" id="foP-3q-4fh"/>
+                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="25" id="rDV-PR-1jZ"/>
+                            <constraint firstAttribute="height" constant="25" id="tUl-QX-d86"/>
+                        </constraints>
+                        <state key="normal" title="Button" image="circle" catalog="system"/>
+                    </button>
                 </subviews>
                 <constraints>
                     <constraint firstAttribute="bottom" secondItem="TfE-Tv-77F" secondAttribute="bottom" constant="14" id="4oo-DJ-CMm"/>
                     <constraint firstItem="b8v-iL-IZQ" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="90u-Mf-keS"/>
+                    <constraint firstItem="TfE-Tv-77F" firstAttribute="leading" secondItem="wOD-Ka-zUI" secondAttribute="trailing" constant="15" id="Jwz-T8-DBJ"/>
                     <constraint firstItem="TfE-Tv-77F" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="14" id="P1V-Sh-8Q9"/>
                     <constraint firstAttribute="trailing" secondItem="b8v-iL-IZQ" secondAttribute="trailing" constant="12" id="efe-wO-COn"/>
                     <constraint firstItem="wOD-Ka-zUI" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="fON-Ae-8Xq"/>
                     <constraint firstItem="b8v-iL-IZQ" firstAttribute="leading" secondItem="TfE-Tv-77F" secondAttribute="trailing" constant="12" id="lYx-OM-Ru3"/>
                     <constraint firstItem="TfE-Tv-77F" firstAttribute="leading" secondItem="wOD-Ka-zUI" secondAttribute="trailing" constant="5" id="rzs-lW-yMt"/>
+                    <constraint firstItem="wOD-Ka-zUI" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="21" id="uUj-uy-O0R"/>
                     <constraint firstItem="wOD-Ka-zUI" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="12" id="ySF-Uz-8bi"/>
                 </constraints>
             </tableViewCellContentView>
@@ -69,11 +106,17 @@
                 <outlet property="lblOption" destination="utS-Vd-OJX" id="jIv-sL-Ne5"/>
                 <outlet property="lblTitle" destination="dXD-7K-PUn" id="vV5-Ex-3PG"/>
                 <outlet property="leadingConstraint" destination="ySF-Uz-8bi" id="6g3-Ch-1n9"/>
+                <outlet property="moveToButton" destination="b8v-iL-IZQ" id="SZH-eJ-mcV"/>
                 <outlet property="topConstraint" destination="P1V-Sh-8Q9" id="VFh-i0-I5h"/>
             </connections>
             <point key="canvasLocation" x="140.57971014492756" y="148.66071428571428"/>
         </tableViewCell>
     </objects>
+    <designables>
+        <designable name="utS-Vd-OJX">
+            <size key="intrinsicContentSize" width="24.5" height="17"/>
+        </designable>
+    </designables>
     <resources>
         <image name="chevron.right" catalog="system" width="96" height="128"/>
         <image name="circle" catalog="system" width="128" height="121"/>

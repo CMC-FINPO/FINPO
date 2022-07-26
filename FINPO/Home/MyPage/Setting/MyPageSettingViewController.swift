@@ -10,16 +10,22 @@ import UIKit
 import SnapKit
 import KakaoSDKUser
 import GoogleSignIn
+import RxSwift
+import RxCocoa
 
 class MyPageSettingViewController: UIViewController {
     
-    var listData = ["내 정보 수정", "광고성 정보 수신", "관심 분야 알림 설정", "지역 알림 설정", "커뮤니티 이용 수칙", "신고 이유", "이용 약관", "문의하기", "개인정보 처리 방침", "오픈 소스 라이브러리", "로그아웃", "회원 탈퇴"]
+    let disposeBag = DisposeBag()
+    let viewModel = CategoryAlarmViewModel()
+    
+    var listData = ["내 정보 수정", "광고성 정보 수신", "관심 분야 알림 설정", "지역 알림 설정", "이용 약관", "문의하기", "개인정보 처리 방침", "로그아웃", "회원 탈퇴"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setAttribute()
         setLayout()
+        setIntputBind()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -55,6 +61,13 @@ class MyPageSettingViewController: UIViewController {
         }
     }
     
+    fileprivate func setIntputBind() {
+        rx.viewWillAppear.asDriver { _ in return .never()}
+            .drive(onNext: { [weak self] _ in
+                self?.viewModel.input.myInterestCategoryObserver.accept(())
+            }).disposed(by: disposeBag)
+    }
+    
 }
 
 extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSource {
@@ -66,17 +79,51 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
         let cell = settingTableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! SettingTableViewCell
         cell.settingNameLabel.text = listData[indexPath.row]
         if(indexPath.row == 1) {
+//            cell.controlSwitch.transform = CGAffineTransform(scaleX: 1.1, y: 1)
             cell.controlSwitch.isHidden = false
+            viewModel.output.sendResultCategory
+                .subscribe(onNext: { interestModels in
+                    cell.controlSwitch.isOn = interestModels.data.adSubscribe
+                    print("광고성 정보 수신여부: \(interestModels.data.adSubscribe)")
+                    if(interestModels.data.adSubscribe) {
+                        cell.controlSwitch.thumbTintColor = UIColor(hexString: "5B43EF")
+                        cell.controlSwitch.onTintColor = UIColor(hexString: "F0F0F0")
+                    } else {
+                        cell.controlSwitch.thumbTintColor = UIColor(hexString: "C4C4C5")
+                        cell.controlSwitch.onTintColor = UIColor(hexString: "F0F0F0")
+                    }
+                }).disposed(by: self.disposeBag)
+            cell.controlSwitch.rx.isOn.changed
+                .asDriver()
+                .drive(onNext: { boolean in
+                    boolean ? FCMAPI.adSubscribe(valid: boolean) : FCMAPI.adSubscribe(valid: boolean)
+                    if(boolean) {
+                        cell.controlSwitch.thumbTintColor = UIColor(hexString: "5B43EF")
+                        cell.controlSwitch.onTintColor = UIColor(hexString: "F0F0F0")
+                    } else {
+                        cell.controlSwitch.thumbTintColor = UIColor(hexString: "C4C4C5")
+                        cell.controlSwitch.onTintColor = UIColor(hexString: "F0F0F0")
+                    }
+                }).disposed(by: cell.disposeBag)
         }
-        if(indexPath.row == 11) {
+        if(indexPath.row == 8) {
             cell.settingNameLabel.textColor = UIColor(hexString: "999999")
         }
+        cell.selectionStyle = .none
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //로그아웃
         let socialType = UserDefaults.standard.string(forKey: "socialType")
+        
+        ///내 정보 수정
+        if(indexPath.row == 0) {
+            let vc = EditUserInfoViewController()
+            vc.modalPresentationStyle = .fullScreen
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
+        
         
         ///관심분야(카테고리) 알림 설정
         if(indexPath.row == 2) {
@@ -91,35 +138,71 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
             self.navigationController?.pushViewController(vc, animated: true)
         }
         
-        if (indexPath.row == 10) {
+        ///이용약관
+        if(indexPath.row == 4) {
+            let link = BaseURL.agreement
+            if let url = URL(string: link) {
+                UIApplication.shared.open(url, options: [:])
+            }
+        }
+        
+        ///문의하기
+        if(indexPath.row == 5) {
+            let link = BaseURL.ask
+            if let url = URL(string: link) {
+                UIApplication.shared.open(url, options: [:])
+            }
+        }
+        
+        ///개인정보 처리 방침
+        if(indexPath.row == 6) {
+            let link = BaseURL.personalInfo
+            if let url = URL(string: link) {
+                UIApplication.shared.open(url, options: [:])
+            }
+        }
+        
+        ///오픈 소스 라이브러리
+//        if(indexPath.row == 7) {
+//            
+//        }
+        
+        if(indexPath.row == 7) {
             let ac = UIAlertController(title: "로그아웃", message: "로그아웃 하시겠습니까?", preferredStyle: .actionSheet)
             ac.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
                 if(socialType == "kakao") {
-                    UserApi.shared.logout { error in
-                        if let error = error { print(error) }
-                        else {
+//                    UserApi.shared.logout { error in
+//                        if let error = error { print(error) }
+//                        else {
                             print("logout() success.")
-//                            UserDefaults.standard.setValue(nil, forKey: "accessToken")
-//                            UserDefaults.standard.setValue(nil, forKey: "refreshToken")
+                            UserDefaults.standard.setValue(nil, forKey: "accessToken")
+                            UserDefaults.standard.setValue(nil, forKey: "refreshToken")
                             let vc = LoginViewController()
-                            vc.modalPresentationStyle = .fullScreen
-                            self.present(vc, animated: true)
-                        }
-                    }
+                            let navVc = UINavigationController(rootViewController: vc)
+                            navVc.modalPresentationStyle = .fullScreen
+                            self.present(navVc, animated: true)
+//                        }
+//                    }
                 }
                 
                 else if(socialType == "google") {
-                    GIDSignIn.sharedInstance.signOut()
-//                    UserDefaults.standard.setValue(nil, forKey: "accessToken")
-//                    UserDefaults.standard.setValue(nil, forKey: "refreshToken")
+//                    GIDSignIn.sharedInstance.signOut()
+                    UserDefaults.standard.setValue(nil, forKey: "accessToken")
+                    UserDefaults.standard.setValue(nil, forKey: "refreshToken")
                     print("구글 서버 로그아웃 및 로그아웃 성공! ")
                     let vc = LoginViewController()
-                    self.dismiss(animated: true)
-//                    self.navigationController?.pushViewController(vc, animated: true)
-                    self.present(vc, animated: true)
+                    let navVc = UINavigationController(rootViewController: vc)
+                    navVc.modalPresentationStyle = .fullScreen
+                    self.present(navVc, animated: true)
                 }
                 else if(socialType == "apple") {
-                    
+                    UserDefaults.standard.setValue(nil, forKey: "accessToken")
+                    UserDefaults.standard.setValue(nil, forKey: "refreshToken")
+                    print("애플 서버 로그아웃 및 로그아웃 성공! ")
+                    let vc = LoginViewController()
+                    let navVc = UINavigationController(rootViewController: vc)
+                    navVc.modalPresentationStyle = .fullScreen
+                    self.present(navVc, animated: true)
                 }
             }))
             ac.addAction(UIAlertAction(title: "취소", style: .destructive))
@@ -127,7 +210,7 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
         }
     
         //회원탈퇴
-        if (indexPath.row == 11) {
+        if (indexPath.row == 8) {
             let ac = UIAlertController(title: "회원 탈퇴", message: "저장된 정보가 모두 사라집니다", preferredStyle: .alert)
             ac.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
                 if(socialType == "kakao") {
@@ -135,17 +218,13 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
                         switch valid {
                         case .success(let value):
                             if value {
-                                UserApi.shared.unlink { error in
-                                    if let error = error { print(error) }
-                                    else {
-                                        print("logout() success.")
-                                        UserDefaults.standard.setValue(nil, forKey: "accessToken")
-                                        UserDefaults.standard.setValue(nil, forKey: "refreshToken")
-                                        let vc = LoginViewController()
-                                        vc.modalPresentationStyle = .fullScreen
-                                        self.present(vc, animated: true)
-                                    }
-                                }
+                                print("logout() success.")
+                                UserDefaults.standard.setValue(nil, forKey: "accessToken")
+                                UserDefaults.standard.setValue(nil, forKey: "refreshToken")
+                                let vc = LoginViewController()
+                                let navVc = UINavigationController(rootViewController: vc)
+                                navVc.modalPresentationStyle = .fullScreen
+                                self.present(navVc, animated: true)
                             } else { return }
                         case .failure(let error):
                             print("에러 발생: \(error.localizedDescription)")
@@ -157,14 +236,14 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
                         switch valid {
                         case .success(let value):
                             if value {
-//                                GIDSignIn.sharedInstance.disconnect()
                                 print("구글 서버 탈퇴 및 구글 연동 해지 성공! ")
                                 UserDefaults.standard.setValue(nil, forKey: "accessToken")
                                 UserDefaults.standard.setValue(nil, forKey: "refreshToken")
                                 UserDefaults.standard.setValue(nil, forKey: "SocialAccessToken")
                                 let vc = LoginViewController()
-                                vc.modalPresentationStyle = .fullScreen
-                                self.present(vc, animated: true)
+                                let navVc = UINavigationController(rootViewController: vc)
+                                navVc.modalPresentationStyle = .fullScreen
+                                self.present(navVc, animated: true)
                             } else {
                                 return
                             }
@@ -183,8 +262,9 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
                                 UserDefaults.standard.setValue(nil, forKey: "refreshToken")
                                 UserDefaults.standard.setValue(nil, forKey: "SocialAccessToken")
                                 let vc = LoginViewController()
-                                vc.modalPresentationStyle = .fullScreen
-                                self.present(vc, animated: true)
+                                let navVC = UINavigationController(rootViewController: vc)
+                                navVC.modalPresentationStyle = .fullScreen
+                                self.present(navVC, animated: true)
                             } else { return }
                         case .failure(let error):
                             print("에러 발생: \(error.localizedDescription)")

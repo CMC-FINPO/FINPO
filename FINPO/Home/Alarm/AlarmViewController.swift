@@ -54,6 +54,36 @@ class AlarmViewController: UIViewController {
         return tv
     }()
     
+    private var defaultView: UIView = {
+        let view = UIView()
+        
+        return view
+    }()
+    
+    private var noAlarmImageView: UIImageView = {
+        let view = UIImageView()
+        view.image = UIImage(named: "Group 456")?.withRenderingMode(.alwaysOriginal)
+        return view
+    }()
+    
+    private var titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "도착한 알람이 없어요.."
+        label.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 32)
+        label.textColor = .black
+        return label
+    }()
+    
+    private var descriptionLabel: UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.text = "원하는 지역의 관심 분야\n청년정책 알림을 제공해드립니다"
+        label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 18)
+        label.textColor = .black
+        return label
+    }()
+    
     fileprivate func setAttribute() {
         view.backgroundColor = UIColor(hexString: "F9F9F9")
         ///네비게이션
@@ -90,6 +120,31 @@ class AlarmViewController: UIViewController {
             $0.trailing.leading.equalToSuperview().inset(21)
             $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-50)
         }
+        
+        view.addSubview(defaultView)
+        defaultView.snp.makeConstraints {
+            $0.edges.equalTo(view.safeAreaLayoutGuide.snp.edges)
+        }
+        
+        defaultView.addSubview(noAlarmImageView)
+        noAlarmImageView.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(90)
+            $0.leading.equalToSuperview().offset(115)
+            $0.trailing.equalToSuperview().inset(74)
+        }
+        
+        defaultView.addSubview(titleLabel)
+        titleLabel.snp.makeConstraints {
+            $0.top.equalTo(noAlarmImageView.snp.bottom).offset(75)
+            $0.centerX.equalToSuperview()
+        }
+        
+        defaultView.addSubview(descriptionLabel)
+        descriptionLabel.snp.makeConstraints {
+            $0.top.equalTo(titleLabel.snp.bottom).offset(21)
+            $0.centerX.equalToSuperview()
+        }
+        
     }
     
     fileprivate func setInputBind() {
@@ -124,19 +179,23 @@ class AlarmViewController: UIViewController {
     
     fileprivate func setOutputBind() {
         viewModel.output.sendAlarmList
-            .scan(into: [AlarmContentDetail]()) { alarmDatas, alarmModel in
+            .scan(into: [AlarmContentDetail]()) { [weak self] alarmDatas, alarmModel in
                 alarmDatas.removeAll()
                 switch alarmModel {
                 case .first(let data):
+                    if(data.data.content.count == 0) { self?.defaultView.isHidden = false }
+                    else { self?.defaultView.isHidden = true }
+                    
                     for i in 0..<(data.data.content.count) {
                         alarmDatas.append(data.data.content[i])
                     }
-                    self.isDelete = false
+                    self?.isDelete = false
                 case .delete(let data):
+                    if(data.data.content.count == 0) { self?.defaultView.isHidden = false }
                     for i in 0..<(data.data.content.count) {
                         alarmDatas.append(data.data.content[i])
                     }
-                    self.isDelete = true
+                    self?.isDelete = true
                 }
             }
             .asObservable()

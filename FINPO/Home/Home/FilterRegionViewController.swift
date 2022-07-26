@@ -256,7 +256,8 @@ class FilterRegionViewController: UIViewController {
         localRegionTableView.register(SubRegionTableViewCell.self, forCellReuseIdentifier: "cell")
         
         let gesture = UITapGestureRecognizer(target: self, action: #selector(animateDismissView))
-        dimmedView.addGestureRecognizer(gesture)
+        //수정 안하고 바깥 클릭종료 막기
+//        dimmedView.addGestureRecognizer(gesture) 
     }
     
     fileprivate func setLayout() {
@@ -381,7 +382,9 @@ class FilterRegionViewController: UIViewController {
                     self.createDefaultTag()
                     self.isSelected = false
                     self.viewModel.input.confirmButtonValid.accept(false)
-                }
+                } else {
+                    self.viewModel.input.confirmButtonValid.accept(true)
+                }                
                 self.viewModel.input.deleteTagObserver.accept(indexPath.row)
             }).disposed(by: disposeBag)
         
@@ -484,7 +487,7 @@ extension FilterRegionViewController: UICollectionViewDelegateFlowLayout {
 
         let dummyLabel = UILabel().then {
             $0.font = .systemFont(ofSize: 16)
-            $0.text = "길이 측정용 "
+            $0.text = "길이 측정용   "
             $0.sizeToFit()
         }
         let size = dummyLabel.frame.size

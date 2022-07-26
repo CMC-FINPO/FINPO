@@ -23,17 +23,19 @@ class FilterCollectionViewCell: UICollectionViewCell {
         contentView.backgroundColor = UIColor(hexString: "F0F0F0")
         contentView.layer.masksToBounds = true
         contentView.layer.cornerRadius = 3
+        tagLabel.snp.makeConstraints {
+            $0.center.equalTo(contentView.snp.center)
+        }
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+ 
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        tagLabel.snp.makeConstraints {
-            $0.center.equalTo(contentView.snp.center)
-        }
+
     }
     
     override var isSelected: Bool {

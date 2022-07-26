@@ -7,13 +7,24 @@
 
 import Foundation
 import UIKit
+import RxSwift
 
 class HomeTableViewCell: UITableViewCell {
-    public var regionLabel: UILabel = {
-        let label = UILabel()
+    
+    var disposeBag = DisposeBag()
+    
+    public var regionLabel: PaddingLabel = {
+        let label = PaddingLabel()
         label.textAlignment = .left
         label.textColor = UIColor(hexString: "5B43EF")
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
+        label.rightInset = 3
+        label.leftInset = 3
+        label.topInset = 3
+        label.bottomInset = 3
+        label.backgroundColor = UIColor(hexString: "5B43EF").withAlphaComponent(0.1)
+        label.layer.masksToBounds = true
+        label.layer.cornerRadius = 5
         return label
     }()
     
@@ -48,19 +59,11 @@ class HomeTableViewCell: UITableViewCell {
         contentView.addSubview(policyNameLabel)
         contentView.addSubview(organizationLabel)
         contentView.addSubview(bookMarkButton)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
         regionLabel.snp.makeConstraints {
             $0.top.equalToSuperview().inset(17)
             $0.leading.equalToSuperview().inset(20)
-            $0.trailing.equalToSuperview().inset(70)
+//            $0.trailing.equalToSuperview().inset(250)
+            $0.trailing.greaterThanOrEqualToSuperview().inset(270)
         }
         
         policyNameLabel.snp.makeConstraints {
@@ -77,10 +80,25 @@ class HomeTableViewCell: UITableViewCell {
         
         bookMarkButton.snp.makeConstraints {
             $0.top.equalTo(regionLabel.snp.top)
-//            $0.leading.equalTo(regionLabel.snp.trailing).offset(5)
             $0.trailing.equalToSuperview().inset(10)
             $0.height.equalTo(25)
             $0.width.equalTo(26)
         }
+        
+        
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        disposeBag = DisposeBag()
     }
 }

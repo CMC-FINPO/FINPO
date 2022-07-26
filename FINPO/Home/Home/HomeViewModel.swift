@@ -161,6 +161,9 @@ class HomeViewModel {
         var getLowCategory = PublishRelay<LowCategoryModel>()
         ///전체 카테고리 + 관심 카테고리(일자리)
         var interestCategoryOutput = PublishRelay<isMyInterestCategory>()
+        
+        ///전체 카테고리 + 관심 카테고리(생활안정)
+        var interestLivingOutput = PublishRelay<isMyInterestCategory>()
         ///전체 카테고리 + 관심 카테고리(교육문화)
         var interestEducationCategoryOutput = PublishRelay<isMyInterestCategory>()
         ///전체 카테고리 + 관심 카테고리(참여공간)
@@ -248,6 +251,10 @@ class HomeViewModel {
                 ///참여 공간 라벨 레이아웃 조정용
                 for i in 0..<(data.data[3].childs.count) {
                     FilterViewController.participationTagStr.append(data.data[3].childs[i].name)
+                }
+                ///생활 안정 라벨 레이아웃 조정용
+                for i in 0..<(data.data[1].childs.count) {
+                    FilterViewController.livingTagStr.append(data.data[1].childs[i].name)
                 }
             }).disposed(by: disposeBag)
         
@@ -393,7 +400,7 @@ class HomeViewModel {
         _ = Observable.combineLatest(
             input.myPolicyTrigger.asObservable(),
             input.loadMoreObserver.asObservable(),
-            input.currentPage.asObservable(),
+//            input.currentPage.asObservable(),
             input.sortActionObserver.asObservable(),
             input.selectedCategoryObserver.asObservable(),
             input.filteredRegionObserver.asObservable()
@@ -402,7 +409,7 @@ class HomeViewModel {
 //        .take(while: { _, can, _, _, _, _ in
 //            can == true //여기서 disposed 됨(loadmore -> sort 변경 시)
 //        })
-        .flatMap({ (myPolicy, isReload, page, action, categories, filteredRegions) -> Observable<SearchPolicyResponse> in
+        .flatMap({ (myPolicy, isReload, action, categories, filteredRegions) -> Observable<SearchPolicyResponse> in
             print("추가 데이터 불러오기")
             if isReload {
                 switch myPolicy {
@@ -410,26 +417,26 @@ class HomeViewModel {
                     switch action {
                     case .latest:
                         self.loadMore = true
-                        return MyPolicySearchAPI.searchMyPolicy(at: page)
+                        return MyPolicySearchAPI.searchMyPolicy(at: self.currentPage)
                     case .popular:
                         self.loadMore = true
-                        return MyPolicySearchAPI.searchMyPolicyAsPopular(at: page)
+                        return MyPolicySearchAPI.searchMyPolicyAsPopular(at: self.currentPage)
                     }
                 case .notMyPolicy:
                     switch action {
                     case .latest:
                         self.loadMore = true
-                        return SearchPolicyAPI.searchPolicyAPI(title: self.currentText, at: page, to: categories, in: filteredRegions)
+                        return SearchPolicyAPI.searchPolicyAPI(title: self.currentText, at: self.currentPage, to: categories, in: filteredRegions)
                     case .popular:
                         self.loadMore = true
-                        return SearchPolicyAPI.searchPolicyAsPopular(title: self.currentText, at: page, to: categories, in: filteredRegions)
+                        return SearchPolicyAPI.searchPolicyAsPopular(title: self.currentText, at: self.currentPage, to: categories, in: filteredRegions)
                     }
                 }
             }
             else {
                 //dummy data
                 self.loadMore = false
-                return MyPolicySearchAPI.searchMyPolicy(at: page)
+                return MyPolicySearchAPI.searchMyPolicy(at: self.currentPage)
             }
             
         })
@@ -463,6 +470,12 @@ class HomeViewModel {
                             self.output.interestCategoryOutput.accept(.right(ChildDetail(id: all.data[i].id, name: all.data[i].name)))
                             InterestCategoryViewController.confirmJobLabelSize.append(all.data[i].name)
                         }
+                        ///생활안정 분기
+                        if(all.data[i].parent.id == 2) {
+                            self.output.interestLivingOutput.accept(.right(ChildDetail(id: all.data[i].id, name: all.data[i].name)))
+                            InterestCategoryViewController.confirmLivingLabelSize.append(all.data[i].name)
+                        }
+                        
                         ///교육문화 분기
                         else if(all.data[i].parent.id == 3) {
                             self.output.interestEducationCategoryOutput.accept(.right(ChildDetail(id: all.data[i].id, name: all.data[i].name)))
@@ -482,6 +495,12 @@ class HomeViewModel {
                             self.output.interestCategoryOutput.accept(.notYet(ChildDetail(id: all.data[i].id, name: all.data[i].name)))
                             InterestCategoryViewController.confirmJobLabelSize.append(all.data[i].name)
                         }
+                        ///생활안정 분기
+                        if(all.data[i].parent.id == 2) {
+                            self.output.interestLivingOutput.accept(.notYet(ChildDetail(id: all.data[i].id, name: all.data[i].name)))
+                            InterestCategoryViewController.confirmLivingLabelSize.append(all.data[i].name)
+                        }
+                        
                         ///교육문화 분기
                         else if(all.data[i].parent.id == 3) {
                             self.output.interestEducationCategoryOutput.accept(.notYet(ChildDetail(id: all.data[i].id, name: all.data[i].name)))
@@ -504,7 +523,10 @@ class HomeViewModel {
             for i in 0..<(all.data.count) {
                 if(all.data[i].parent.id == 1) {
                     self.output.interestCategoryOutput.accept(.clear(true))
-                } else if(all.data[i].parent.id == 3) {
+                } else if(all.data[i].parent.id == 2) {
+                    self.output.interestLivingOutput.accept(.clear(true))
+                }
+                else if(all.data[i].parent.id == 3) {
                     self.output.interestEducationCategoryOutput.accept(.clear(true))
                 } else if(all.data[i].parent.id == 4) {
                     self.output.participationCategoryOutput.accept(.clear(true))

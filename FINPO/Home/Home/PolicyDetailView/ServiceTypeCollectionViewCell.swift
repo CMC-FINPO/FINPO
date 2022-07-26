@@ -11,27 +11,60 @@ import SnapKit
 
 class ServiceTypeCollectionViewCell: UICollectionViewCell {
     
-    var checkImageView: UIImageView = {
+    public var checkImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "check")
         return imageView
     }()
     
-    var tagLabel: UILabel = {
+    private var tagView: UIView = {
+        let tagView = UIView()
+        tagView.layer.maskedCorners = [.layerMinXMinYCorner,.layerMinXMaxYCorner,.layerMaxXMinYCorner]
+        tagView.layer.masksToBounds = true
+        tagView.translatesAutoresizingMaskIntoConstraints = false
+        return tagView
+    }()
+    
+    public var tagLabel: UILabel = {
         let label = UILabel()
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        label.setContentCompressionResistancePriority(UILayoutPriority.required, for: .vertical)
         label.font = UIFont(name: "AppleSDGothicNeo-Semibold", size: 14)
         label.textColor = UIColor(hexString: "000000")
-        label.numberOfLines = 0
         return label
+    }()
+    
+    public var memoStackView: UIStackView = {
+        let view = UIStackView()
+//        view.axis = .vertical
+        view.axis = .horizontal
+        view.backgroundColor = .clear
+        view.spacing = 5
+        view.alignment = .leading
+        return view
     }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        contentView.addSubview(checkImageView)
-        contentView.addSubview(tagLabel)
-        contentView.layer.masksToBounds = true
         
+        contentView.addSubview(memoStackView)
+        memoStackView.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(19)
+            $0.leading.equalToSuperview().inset(10)
+            $0.width.lessThanOrEqualTo(UIScreen.main.bounds.width-100)
+            $0.bottom.equalToSuperview()
+//            $0.bottom.greaterThanOrEqualToSuperview()
+        }
         
+        memoStackView.addArrangedSubview(checkImageView)
+        
+//        memoStackView.addArrangedSubview(tagLabel)
+        tagView.addSubview(tagLabel)
+        tagLabel.snp.makeConstraints {
+            $0.size.equalToSuperview()
+        }
+        memoStackView.addArrangedSubview(tagView)
     }
     
     required init?(coder: NSCoder) {
@@ -41,24 +74,10 @@ class ServiceTypeCollectionViewCell: UICollectionViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        tagLabel.preferredMaxLayoutWidth = tagLabel.frame.size.width
-        super.layoutSubviews()
     }
     
     func configureLabels() {
-        checkImageView.snp.makeConstraints {
-            $0.leading.equalTo(contentView.snp.leading).offset(16)
-            $0.centerY.equalTo(contentView.snp.centerY)
-            $0.width.height.equalTo(25)
-        }
-        tagLabel.snp.makeConstraints {
-            $0.top.equalTo(contentView.snp.top).priority(999)
-            $0.leading.equalTo(checkImageView.snp.trailing).offset(12)
-            $0.bottom.equalTo(contentView.snp.bottom)
-//            $0.centerY.equalTo(contentView.snp.centerY)
-            $0.trailing.equalTo(contentView.snp.trailing).inset(17)
-            $0.height.greaterThanOrEqualTo(24)
-        }
+        
     }
     
     func sizeFittingWith(cellHeight: CGFloat, text: String) -> CGSize {

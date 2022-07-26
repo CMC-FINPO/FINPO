@@ -8,8 +8,12 @@
 import Foundation
 import UIKit
 import SnapKit
+import RxSwift
 
 class AddPurposeCollectionViewCell: UICollectionViewCell {
+    
+    var bag = DisposeBag()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
     }
@@ -20,11 +24,10 @@ class AddPurposeCollectionViewCell: UICollectionViewCell {
     
     public var statusButton: UIButton = {
         let button = UIButton()
-        button.setTitleColor(UIColor(hexString: "000000"), for: .normal)
-        button.setTitleColor(UIColor(hexString: "FFFFFF"), for: .selected)
-        button.setBackgroundColor(UIColor(hexString: "F0F0F0"), for: .normal)
-        button.setBackgroundColor(UIColor(hexString: "5B43EF"), for: .selected)
+        button.isUserInteractionEnabled = false
         button.titleLabel?.font = UIFont(name: "AppleSDGothicNeo-SemiBold", size: 16)
+        button.setTitleColor(UIColor(hexString: "000000"), for: .normal)
+        button.isEnabled = false
         return button
     }()
     
@@ -44,8 +47,22 @@ class AddPurposeCollectionViewCell: UICollectionViewCell {
     
     override var isSelected: Bool {
         didSet {
-            
+            if isSelected {
+                contentView.backgroundColor = UIColor(hexString: "5B43EF")
+                statusButton.setBackgroundColor(UIColor(hexString: "5B43EF"), for: .normal)
+                statusButton.setTitleColor(UIColor(hexString: "FFFFFF"), for: .normal)
+            } else {
+                contentView.backgroundColor = UIColor(hexString: "F0F0F0")
+                statusButton.setBackgroundColor(UIColor(hexString: "F0F0F0"), for: .normal)
+                statusButton.setTitleColor(UIColor(hexString: "000000"), for: .normal)
+            }
         }
+    }
+    
+    override func prepareForReuse() {
+        self.prepareForReuse()
+        
+        bag = DisposeBag()
     }
     
 }

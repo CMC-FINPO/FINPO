@@ -14,12 +14,14 @@ import RxCocoa
 
 class LoginDetailViewController: UIViewController {
     
+    static var isCMAllow = false
+    
     var viewModel = LoginDetailViewModel()
     let disposebag = DisposeBag()
     var isCheckedBtnAllAccept: Bool = false {
         didSet {
-            let checkImageName = isCheckedBtnAllAccept ? "checkmark.circle.fill" : "checkmark.circle"
-            allAcceptButton.setImage(UIImage(systemName: checkImageName), for: .normal)
+            let checkImageName = isCheckedBtnAllAccept ? "check1_active" : "check1_inactive"
+            allAcceptButton.setImage(UIImage(named: checkImageName), for: .normal)
         }
     }
     
@@ -34,33 +36,33 @@ class LoginDetailViewController: UIViewController {
     
     private var progressBar: UIProgressView = {
         let progressBar = UIProgressView()
-        progressBar.trackTintColor = .lightGray.withAlphaComponent(0.5)
-        progressBar.progressTintColor = .systemPurple
-        progressBar.progress = 0.2
+        progressBar.trackTintColor = UIColor(hexString: "C4C4C5", alpha: 1)
+        progressBar.progressTintColor = UIColor(hexString: "5B43EF", alpha: 1)
+        progressBar.progress = 1/6
         progressBar.clipsToBounds = true
         return progressBar
     }()
     
     private var progressLabel: UILabel = {
         let label = UILabel()
-        label.text = "1/6"
         label.textAlignment = .center
-        label.textColor = UIColor.systemGray.withAlphaComponent(0.5)
-        label.font = .systemFont(ofSize: 13, weight: .semibold)
+        label.textColor = UIColor(hexString: "C4C4C5")
+        label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
+        label.text = "1/6"
         return label
     }()
         
     private var titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "약관에 동의해주세요"
         label.textColor = .black
-        label.font = .systemFont(ofSize: 25, weight: .bold)
+        label.font = UIFont(name: "AppleSDGothicNeo-SemiBold", size: 27)
+        label.text = "약관에 동의해주세요"
         return label
     }()
     
     private var allAcceptButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "checkmark.circle"), for: .normal)
+        button.setImage(UIImage(named: "check1_inactive"), for: .normal)
         return button
     }()
     
@@ -88,56 +90,62 @@ class LoginDetailViewController: UIViewController {
         let button = UIButton()
         button.setTitle("동의하기", for: .normal)
         button.clipsToBounds = true
-        button.layer.cornerRadius = 20
+        button.layer.cornerRadius = 5
+        button.isEnabled = false
+        button.backgroundColor = UIColor(hexString: "F0F0F0")
         return button
     }()
     
-    
-    private func setAttribute() {
+    fileprivate func setAttribute() {
+        navigationController?.navigationBar.tintColor = .black
+        navigationController?.navigationBar.topItem?.backButtonTitle = ""
         tableView.delegate = self
         tableView.dataSource = self
         let nibName = String(describing: TermsCell.self)
         tableView.register(UINib(nibName: nibName, bundle: nil), forCellReuseIdentifier: nibName)
-        acceptButton.setBackgroundColor(.systemBlue, for: .normal)
-        acceptButton.setBackgroundColor(.lightGray.withAlphaComponent(0.6), for: .disabled)
+        acceptButton.setBackgroundColor(UIColor(hexString: "5B43EF"), for: .normal)
+        acceptButton.setTitleColor(UIColor(hexString: "FFFFFF"), for: .normal)
+        acceptButton.setBackgroundColor(UIColor(hexString: "F0F0F0"), for: .disabled)
+        acceptButton.setTitleColor(UIColor(hexString: "616161"), for: .disabled)
     }
     
-    private func setLayout() {
+    fileprivate func setLayout() {
         view.backgroundColor = .white
         
         view.addSubview(progressBar)
+        progressBar.layer.cornerRadius = 3
         progressBar.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(10)
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(15)
             $0.leading.equalToSuperview().inset(20)
             $0.trailing.equalToSuperview().inset(50)
-            $0.height.equalTo(10)
+            $0.height.equalTo(5)
         }
-        progressBar.layer.cornerRadius = 5
         
         view.addSubview(progressLabel)
         progressLabel.snp.makeConstraints {
-            $0.top.equalTo(progressBar.snp.top)
+            $0.centerY.equalTo(progressBar.snp.centerY)
             $0.leading.equalTo(progressBar.snp.trailing).offset(15)
-            $0.height.equalTo(10)
+            $0.height.equalTo(15)
         }
         
         view.addSubview(titleLabel)
         titleLabel.snp.makeConstraints {
             $0.top.equalTo(progressBar.snp.bottom).offset(30)
-            $0.leading.equalToSuperview().offset(15)
+            $0.leading.equalToSuperview().offset(21)
         }
         
         view.addSubview(allAcceptButton)
         allAcceptButton.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(35)
             $0.leading.equalTo(titleLabel.snp.leading)
-            $0.height.equalTo(30)
+            $0.height.equalTo(25)
+            $0.width.equalTo(25)
         }
-        allAcceptButton.layer.cornerRadius = 15
+//        allAcceptButton.layer.cornerRadius = 15
         
         view.addSubview(allAcceptLabel)
         allAcceptLabel.snp.makeConstraints {
-            $0.leading.equalTo(allAcceptButton.snp.trailing).offset(10)
+            $0.leading.equalTo(allAcceptButton.snp.trailing).offset(15)
             $0.centerY.equalTo(allAcceptButton.snp.centerY)
         }
         
@@ -164,7 +172,7 @@ class LoginDetailViewController: UIViewController {
 
     }
     
-    private func setInputBind() {
+    fileprivate func setInputBind() {
         rx.viewWillAppear.take(1).asDriver(onErrorRecover: { _ in
             return .never()})
         .drive(onNext: { [weak self] _ in
@@ -177,9 +185,18 @@ class LoginDetailViewController: UIViewController {
             self?.isCheckedBtnAllAccept.toggle()
             self?.viewModel.accpetAllTerms(self?.isCheckedBtnAllAccept)
         }).disposed(by: disposebag)
+        
+        acceptButton.rx.tap
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                let vc = LoginBasicInfoViewController()
+                vc.modalPresentationStyle = .fullScreen
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }).disposed(by: disposebag)
+                        
     }
     
-    private func setOutputBind() {
+    fileprivate func setOutputBind() {
         viewModel.updateTermsContents.asDriver(onErrorRecover: { _ in
             return .never()})
         .drive(onNext: { [weak self] in
@@ -213,6 +230,30 @@ extension LoginDetailViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: TermsCell.self)) as! TermsCell
         cell.selectionStyle = .none
+        
+        if(indexPath.section == 0) {
+            cell.moveToButton.rx.tap.asDriver { _ in return .never()}
+                .drive(onNext: { _ in
+                    let link = BaseURL.agreement
+                    if let url = URL(string: link) {
+                        UIApplication.shared.open(url, options: [:])
+                    }
+                }).disposed(by: cell.bag)
+        }
+        
+        if(indexPath.section == 1) {
+            cell.moveToButton.rx.tap.asDriver { _ in return .never()}
+                .drive(onNext: { _ in
+                    let link = BaseURL.personalInfo
+                    if let url = URL(string: link) {
+                        UIApplication.shared.open(url, options: [:])
+                    }
+                }).disposed(by: cell.bag)
+        }
+        
+        if(indexPath.section == 2) {
+            cell.moveToButton.isHidden = true
+        }
 
         cell.bind(viewModel.dataSource[indexPath.section][indexPath.row])
         cell.btnCheck.rx.tap.asDriver(onErrorRecover: { _ in return .never()})
@@ -225,4 +266,5 @@ extension LoginDetailViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         viewModel.didSelectTermsCell(indexPath: indexPath)
     }
+    
 }

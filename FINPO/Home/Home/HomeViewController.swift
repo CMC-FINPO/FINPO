@@ -45,6 +45,7 @@ class HomeViewController: UIViewController {
         self.viewModel.input.selectedCategoryObserver.accept(FilterViewController.selectedCategories)
         self.viewModel.input.filteredRegionObserver.accept(FilterViewController.selectedRegions)
         //필터링 했으므로 나의 정책 결과는 아님
+        self.currenetPage = 0
         self.viewModel.input.textFieldObserver.accept("") // 검색 초기화
         self.viewModel.input.myPolicyTrigger.accept(.notMyPolicy)
         
@@ -89,7 +90,8 @@ class HomeViewController: UIViewController {
         tv.backgroundColor = .clear
         tv.layer.masksToBounds = true
         tv.layer.cornerRadius = 5
-        
+        tv.showsVerticalScrollIndicator = false
+        tv.showsHorizontalScrollIndicator = false
 //        tv.bounces = false
         return tv
     }()
@@ -162,7 +164,7 @@ class HomeViewController: UIViewController {
     }
     
     fileprivate func setInputBind() {
-        rx.viewWillAppear.take(1).asDriver{ _ in return .never()}
+        rx.viewWillAppear.asDriver{ _ in return .never()}
             .drive(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 ///유저 정보 가져오기
@@ -212,17 +214,8 @@ class HomeViewController: UIViewController {
                     //최신순 - 최신순 했을 때 page 0 중복 방지
                     self.viewModel.currentPage = 0
                     self.viewModel.input.loadMoreObserver.accept(false) //구독 해지됨
-                    self.viewModel.input.currentPage.accept(self.viewModel.currentPage)
+//                    self.viewModel.input.currentPage.accept(self.viewModel.currentPage)
                     self.viewModel.input.sortActionObserver.accept(.latest)
-                    ///다시 구독해주기(loadMore), if 필터링 된 정보가 있다면
-                    if(FilterViewController.selectedCategories.count > 0) {
-                        self.viewModel.input.selectedCategoryObserver.accept(FilterViewController.selectedCategories)
-                        self.viewModel.input.filteredRegionObserver.accept(FilterViewController.selectedCategories)
-                        self.viewModel.input.myPolicyTrigger.accept(.notMyPolicy)
-                    } else {
-                        self.viewModel.input.getUserInfo.accept(())
-                        self.viewModel.input.myPolicyTrigger.accept(.mypolicy)
-                    }
                     DispatchQueue.main.async {
                         self.sortPolicyButton.setImage(UIImage(named: "chip=chip4"), for: .normal)
                     }
@@ -231,25 +224,19 @@ class HomeViewController: UIViewController {
                     guard let self = self else { return }
                     self.viewModel.currentPage = 0
                     self.viewModel.input.loadMoreObserver.accept(false)
-                    self.viewModel.input.currentPage.accept(self.viewModel.currentPage)
+//                    self.viewModel.input.currentPage.accept(self.viewModel.currentPage)
                     self.viewModel.input.sortActionObserver.accept(.popular)
-                    ///필터링 된 정보가 있다면 다시 구독해주기(loadMore)
-                    if(FilterViewController.selectedCategories.count > 0) {
-                        self.viewModel.input.selectedCategoryObserver.accept(FilterViewController.selectedCategories)
-                        self.viewModel.input.filteredRegionObserver.accept(FilterViewController.selectedCategories)
-                        self.viewModel.input.myPolicyTrigger.accept(.notMyPolicy)
-                    } else {
-                        self.viewModel.input.getUserInfo.accept(())
-                        self.viewModel.input.myPolicyTrigger.accept(.mypolicy)
-                    }
                     DispatchQueue.main.async {
                         self.sortPolicyButton.setImage(UIImage(named: "chip=chip13"), for: .normal)
                     }
                 }
+                let cancelAction = UIAlertAction(title: "취소", style: .destructive)
+                
                 latestAction.setValue(UIColor(hexString: "5B43EF"), forKey: "titleTextColor")
                 popularAction.setValue(UIColor(hexString: "5B43EF"), forKey: "titleTextColor")
                 alertVC.addAction(latestAction)
                 alertVC.addAction(popularAction)
+                alertVC.addAction(cancelAction)
                 alertVC.view.layer.masksToBounds = true
                 alertVC.view.layer.cornerRadius = 5
                 self?.present(alertVC, animated: true)

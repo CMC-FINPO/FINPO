@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>117946457305-47qsmc20fgcrbs4j06d41e0opmqangjr.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.117946457305-47qsmc20fgcrbs4j06d41e0opmqangjr</string>
+	<key>API_KEY</key>
+	<string>AIzaSyA4zaNxZRCb7hzKZokUnUGvIyYYyiIuTTk</string>
+	<key>GCM_SENDER_ID</key>
+	<string>117946457305</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>LeePaper.FINPO</string>
+	<key>PROJECT_ID</key>
+	<string>finpo-7882d</string>
+	<key>STORAGE_BUCKET</key>
+	<string>finpo-7882d.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:117946457305:ios:4c45224e87dd4639abf2c8</string>
+</dict>
+</plist>

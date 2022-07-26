@@ -30,7 +30,7 @@ class LoginDetailViewModel {
                 dataSource[section][row].isAccept = isCheckedBtnAllAccept
             }
         }
-        
+        isCheckedBtnAllAccept ? (LoginDetailViewController.isCMAllow = true) : (LoginDetailViewController.isCMAllow = false)
         updateTermsContents.accept(())
         satisfyTermsPermission.accept(isCheckedBtnAllAccept)
     }
@@ -56,12 +56,26 @@ class LoginDetailViewModel {
                 dataSource[indexPath.section][0].isAccept = true
             }
         }
+         
         updateTermsContents.accept(())
         checkSatisfyTerms()
         checkAcceptAllTerms()
+        checkCMAcceptedTerms()
     }
     
-    private func checkSatisfyTerms() {
+    func checkCMAcceptedTerms() {
+        for termsList in dataSource {
+            for terms in termsList where !terms.isMandatory && terms.isAccept {
+                print("마케팅 정보 수신 동의")
+                LoginDetailViewController.isCMAllow = true
+                return
+            }
+        }
+        LoginDetailViewController.isCMAllow = false
+        print("마케팅 정보 수신 거부")
+    }
+    
+    func checkSatisfyTerms() {
         for termsList in dataSource {
             for terms in termsList where terms.isMandatory && !terms.isAccept {
                 satisfyTermsPermission.accept(false)

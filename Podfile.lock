@@ -1,5 +1,19 @@
 PODS:
   - Alamofire (5.6.1)
+  - AppAuth (1.5.0):
+    - AppAuth/Core (= 1.5.0)
+    - AppAuth/ExternalUserAgent (= 1.5.0)
+  - AppAuth/Core (1.5.0)
+  - AppAuth/ExternalUserAgent (1.5.0):
+    - AppAuth/Core
+  - GoogleSignIn (6.2.2):
+    - AppAuth (~> 1.5)
+    - GTMAppAuth (~> 1.3)
+    - GTMSessionFetcher/Core (~> 1.1)
+  - GTMAppAuth (1.3.0):
+    - AppAuth/Core (~> 1.4)
+    - GTMSessionFetcher/Core (~> 1.5)
+  - GTMSessionFetcher/Core (1.7.2)
   - KakaoSDKAuth (2.10.0):
     - KakaoSDKCommon (= 2.10.0)
   - KakaoSDKCommon (2.10.0):
@@ -12,6 +26,8 @@ PODS:
   - KakaoSDKLink (2.10.0):
     - KakaoSDKCommon (= 2.10.0)
     - KakaoSDKTemplate (= 2.10.0)
+  - KakaoSDKStory (2.10.0):
+    - KakaoSDKUser (= 2.10.0)
   - KakaoSDKTalk (2.10.0):
     - KakaoSDKTemplate (= 2.10.0)
     - KakaoSDKUser (= 2.10.0)
@@ -19,38 +35,127 @@ PODS:
     - KakaoSDKCommon/Common (= 2.10.0)
   - KakaoSDKUser (2.10.0):
     - KakaoSDKAuth (= 2.10.0)
+  - RxAlamofire (6.1.1):
+    - RxAlamofire/Core (= 6.1.1)
+  - RxAlamofire/Core (6.1.1):
+    - Alamofire (~> 5.4)
+    - RxSwift (~> 6.0)
+  - RxCocoa (6.5.0):
+    - RxRelay (= 6.5.0)
+    - RxSwift (= 6.5.0)
+  - RxGesture (4.0.4):
+    - RxCocoa (~> 6.0)
+    - RxSwift (~> 6.0)
+  - RxKakaoSDKAuth (2.10.0):
+    - KakaoSDKAuth (= 2.10.0)
+    - RxKakaoSDKCommon (= 2.10.0)
+  - RxKakaoSDKCommon (2.10.0):
+    - RxKakaoSDKCommon/Common (= 2.10.0)
+    - RxKakaoSDKCommon/Network (= 2.10.0)
+  - RxKakaoSDKCommon/Common (2.10.0):
+    - KakaoSDKCommon/Common (= 2.10.0)
+    - RxCocoa
+    - RxSwift (~> 6.0)
+  - RxKakaoSDKCommon/Network (2.10.0):
+    - KakaoSDKCommon/Network (= 2.10.0)
+    - RxAlamofire (~> 6.0)
+    - RxKakaoSDKCommon/Common (= 2.10.0)
+  - RxKakaoSDKLink (2.10.0):
+    - KakaoSDKLink (= 2.10.0)
+    - RxKakaoSDKCommon (= 2.10.0)
+  - RxKakaoSDKStory (2.10.0):
+    - KakaoSDKStory (= 2.10.0)
+    - RxKakaoSDKUser (= 2.10.0)
+  - RxKakaoSDKTalk (2.10.0):
+    - KakaoSDKTalk (= 2.10.0)
+    - KakaoSDKTemplate (= 2.10.0)
+    - RxKakaoSDKUser (= 2.10.0)
+  - RxKakaoSDKUser (2.10.0):
+    - KakaoSDKUser (= 2.10.0)
+    - RxKakaoSDKAuth (= 2.10.0)
+  - RxRelay (6.5.0):
+    - RxSwift (= 6.5.0)
+  - RxSwift (6.5.0)
+  - SnapKit (5.6.0)
   - Then (3.0.0)
+  - TTGTagCollectionView (2.1.0)
 
 DEPENDENCIES:
+  - GoogleSignIn (= 6.2.2)
   - KakaoSDKAuth
   - KakaoSDKCommon
   - KakaoSDKLink
   - KakaoSDKTalk
   - KakaoSDKTemplate
   - KakaoSDKUser
+  - RxGesture
+  - RxKakaoSDKAuth
+  - RxKakaoSDKCommon
+  - RxKakaoSDKLink
+  - RxKakaoSDKStory
+  - RxKakaoSDKTalk
+  - RxKakaoSDKUser
+  - SnapKit (~> 5.6.0)
   - Then
+  - TTGTagCollectionView
 
 SPEC REPOS:
   trunk:
     - Alamofire
+    - AppAuth
+    - GoogleSignIn
+    - GTMAppAuth
+    - GTMSessionFetcher
     - KakaoSDKAuth
     - KakaoSDKCommon
     - KakaoSDKLink
+    - KakaoSDKStory
     - KakaoSDKTalk
     - KakaoSDKTemplate
     - KakaoSDKUser
+    - RxAlamofire
+    - RxCocoa
+    - RxGesture
+    - RxKakaoSDKAuth
+    - RxKakaoSDKCommon
+    - RxKakaoSDKLink
+    - RxKakaoSDKStory
+    - RxKakaoSDKTalk
+    - RxKakaoSDKUser
+    - RxRelay
+    - RxSwift
+    - SnapKit
     - Then
+    - TTGTagCollectionView
 
 SPEC CHECKSUMS:
   Alamofire: 87bd8c952f9a4454320fce00d9cc3de57bcadaf5
+  AppAuth: 80317d99ac7ff2801a2f18ff86b48cd315ed465d
+  GoogleSignIn: 3c68388ac221f379676e8f1cb115df3aaf73b93f
+  GTMAppAuth: 4d8f864896f3646f0c33baf38a28362f4c601e15
+  GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
   KakaoSDKAuth: 94cdbd864a6e1b5691c11aba09d769ea91be107a
   KakaoSDKCommon: 9edbf77ef59c8594412908e023e64ef07f75db08
   KakaoSDKLink: 697e65a55869d4af625af8f0ed38af0a4b2d6cf2
+  KakaoSDKStory: c10624da2d89480dff119264ea312f1c2c5eae37
   KakaoSDKTalk: fb8ec6e81a9491758a90434940fc7a39bab31448
   KakaoSDKTemplate: 8c666f742624834ac94151d70821f006af6f3e51
   KakaoSDKUser: 7969a38f9ccfd788140fa799b6bbaa223f62683e
+  RxAlamofire: beb75a1c452d0de225651db4903f5d29d034a620
+  RxCocoa: 94f817b71c07517321eb4f9ad299112ca8af743b
+  RxGesture: f3efb47ed2d26a8082f7b660d4a59970e275a7f8
+  RxKakaoSDKAuth: 9af5b70d22e6eeebbd4f06b89509b4cfb86eed40
+  RxKakaoSDKCommon: 4090745c7ddf1b65588fc9f00af0468e384f9082
+  RxKakaoSDKLink: 3f9a72efcc2fc70f6be0fbae7c06e2b7b7ce243f
+  RxKakaoSDKStory: 0df448c213bfe864414d4b703aa235bd92c65373
+  RxKakaoSDKTalk: edd58e30bb8d0ea0968b7452e7d7e5226ddd26b8
+  RxKakaoSDKUser: f016671c27bac562eaa447cf4e04647cb171ac42
+  RxRelay: 1de1523e604c72b6c68feadedd1af3b1b4d0ecbd
+  RxSwift: 5710a9e6b17f3c3d6e40d6e559b9fa1e813b2ef8
+  SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
   Then: 844265ae87834bbe1147d91d5d41a404da2ec27d
+  TTGTagCollectionView: a2a8668c659b39e7a6ffd6590475ea53a7ae95f7
 
-PODFILE CHECKSUM: 42637c64747716667b29a4f8537748fa4c3e3e27
+PODFILE CHECKSUM: da82d07f62e156950607b87838712a1dab8ac33a
 
 COCOAPODS: 1.11.2

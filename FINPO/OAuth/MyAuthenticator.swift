@@ -45,7 +45,7 @@ class MyAuthenticator: Authenticator {
     func refresh(_ credential: Credential, for session: Session, completion: @escaping (Result<Credential, Error>) -> Void) {
         // 4. token을 refresh
         
-        let url = "https://dev.finpo.kr/oauth/reissue"
+        let url = BaseURL.url.appending("oauth/reissue")
         let parameter: Parameters = [
             "accessToken": UserDefaults.standard.string(forKey: "accessToken") ?? "",
             "refreshToken": UserDefaults.standard.string(forKey: "refreshToken") ?? ""
@@ -67,17 +67,15 @@ class MyAuthenticator: Authenticator {
                                 let result = json?["data"] as? [String: Any] ?? [:]
                                 let accessToken = result["accessToken"] as? String ?? ""
                                 let refreshToken = result["refreshToken"] as? String ?? ""
-                                let accessTokenExpiresIn = result["accessTokenExpiresIn"] as? String ?? ""
+                                let accessTokenExpiresIn = result["accessTokenExpiresIn"] as? Int ?? Int()
+                                let accessTokenExpireDate = Date(milliseconds: Int64(accessTokenExpiresIn))
                                 UserDefaults.standard.set(accessToken, forKey: "accessToken")
                                 UserDefaults.standard.set(refreshToken, forKey: "refreshToken")
-                                UserDefaults.standard.set(accessTokenExpiresIn, forKey: "accessTokenExpiresIn")
-//                                let credential = MyAuthenticationCredential(
-//                                    accessToken: accessToken,
-//                                    refreshToken: refreshToken,
-//                                    expiredAt: accessTokenExpiresIn)
+                                UserDefaults.standard.set(accessTokenExpireDate, forKey: "accessTokenExpiresIn")
                                 let credential = MyAuthenticationCredential(
                                     accessToken: accessToken,
-                                    refreshToken: refreshToken)
+                                    refreshToken: refreshToken,
+                                    expiredAt: accessTokenExpireDate)
                                 completion(.success(credential))
                              }
                         }

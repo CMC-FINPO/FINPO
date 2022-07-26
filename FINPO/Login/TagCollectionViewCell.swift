@@ -9,9 +9,12 @@ import Foundation
 import UIKit
 
 class TagCollectionViewCell: UICollectionViewCell {
-    let tagLabel = UILabel().then {
+    let tagLabel = PaddingLabel().then {
         $0.font = UIFont(name: "AppleSDGothicNeo-SemiBold", size: 16)
         $0.textColor = UIColor(hexString: "5B43EF")
+        $0.leftInset = 9
+        $0.topInset = 8
+        $0.bottomInset = 7
     }
     
     private let imageView: UIImageView = {
@@ -35,7 +38,7 @@ class TagCollectionViewCell: UICollectionViewCell {
         imageView.snp.makeConstraints {
             $0.trailing.equalToSuperview()
             $0.centerY.equalTo(tagLabel.snp.centerY)
-            $0.width.height.equalTo(25)
+            $0.width.height.equalTo(24)
         }
         
     }

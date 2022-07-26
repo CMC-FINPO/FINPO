@@ -27,6 +27,9 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
     ///참여 공간 라벨 레이아웃 조정용
     static var participationTagStr = [String]()
     
+    ///생활 안정 라벨 레이아웃 조정용
+    static var livingTagStr = [String]()
+    
     ///필터 리셋 시 FilterRegionVC에 전달
     static var isFilterResetBtnTapped = false
     
@@ -65,6 +68,18 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
     override func viewDidDisappear(_ animated: Bool) {
 //        FilterViewController.isFirstLoad = true
     }
+    
+    private var scrollView: UIScrollView = {
+        let sv = UIScrollView(frame: .zero)
+        sv.showsVerticalScrollIndicator = false
+        sv.showsHorizontalScrollIndicator = false
+        return sv
+    }()
+    
+    private var contentView: UIView = {
+        let view = UIView()
+        return view
+    }()
     
     private lazy var backdropView: UIView = {
         let bdView = UIView(frame: self.view.bounds)
@@ -139,6 +154,28 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         cv.showsVerticalScrollIndicator = false
         cv.showsHorizontalScrollIndicator = false
         cv.allowsMultipleSelection = true
+        cv.isScrollEnabled = false
+        return cv
+    }()
+    
+    private var livingTitleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "생활안정"
+        label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
+        label.textColor = UIColor(hexString: "000000")
+        return label
+    }()
+    
+    private var livingCategoryCollectionView: UICollectionView = {
+        let flow = LeftAlignedCollectionViewFlowLayout()
+        flow.minimumLineSpacing = 3
+        flow.minimumInteritemSpacing = 20
+        flow.sectionInset = UIEdgeInsets(top: 5, left: 2, bottom: 5, right: 2)
+        let cv = UICollectionView(frame: .init(x: 0, y: 0, width: 100, height: 100), collectionViewLayout: flow)
+        cv.showsVerticalScrollIndicator = false
+        cv.showsHorizontalScrollIndicator = false
+        cv.allowsMultipleSelection = true
+        cv.isScrollEnabled = false
         return cv
     }()
     
@@ -160,6 +197,7 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         cv.showsVerticalScrollIndicator = false
         cv.showsHorizontalScrollIndicator = false
         cv.allowsMultipleSelection = true
+        cv.isScrollEnabled = false
         return cv
     }()
     
@@ -177,11 +215,11 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         flow.minimumLineSpacing = 3
         flow.minimumInteritemSpacing = 20
         flow.sectionInset = UIEdgeInsets(top: 5, left: 2, bottom: 5, right: 20)
-        
         let cv = UICollectionView(frame: .init(x: 0, y: 0, width: 100, height: 100), collectionViewLayout: flow)
         cv.showsVerticalScrollIndicator = false
         cv.showsHorizontalScrollIndicator = false
         cv.allowsMultipleSelection = true
+        cv.isScrollEnabled = false
         return cv
     }()
     
@@ -221,6 +259,9 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         ///카테고리 Collection view
         jobCategoryCollectionView.register(FilterCollectionViewCell.self, forCellWithReuseIdentifier: "jobCategoryCollectionView")
         
+        livingCategoryCollectionView.register(FilterCollectionViewCell.self, forCellWithReuseIdentifier: "livingCategoryCollectionView")
+        livingCategoryCollectionView.delegate = self
+        
         educationCategoryCollectionView.register(FilterCollectionViewCell.self, forCellWithReuseIdentifier: "educationCategoryCollectionView")
 
         participationCategoryCollectionView.register(FilterCollectionViewCell.self, forCellWithReuseIdentifier: "participationCategoryCollectionView")
@@ -241,14 +282,30 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         self.viewModel.input.categoryObserver.accept(())
     }
     
-    fileprivate func setLayout() {  
-        view.addSubview(regionTitleLabel)
+    fileprivate func setLayout() {
+        view.addSubview(scrollView)
+        scrollView.snp.makeConstraints {
+            $0.edges.equalTo(view.safeAreaLayoutGuide)
+        }
+        
+        scrollView.addSubview(contentView)
+        contentView.snp.makeConstraints {
+            $0.top.equalTo(scrollView.contentLayoutGuide.snp.top)
+            $0.leading.equalTo(scrollView.contentLayoutGuide.snp.leading)
+            $0.trailing.equalTo(scrollView.contentLayoutGuide.snp.trailing)
+            $0.bottom.equalTo(scrollView.contentLayoutGuide.snp.bottom)
+            $0.width.equalTo(scrollView.frameLayoutGuide.snp.width)
+            $0.height.equalTo(view.bounds.height+50)
+        }
+        
+        contentView.addSubview(regionTitleLabel)
         regionTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(15)
+            $0.top.equalTo(contentView.snp.top).offset(15)
+            $0.height.equalTo(15)
             $0.leading.equalToSuperview().inset(21)
         }
         
-        view.addSubview(regionTagCollectionView)
+        contentView.addSubview(regionTagCollectionView)
         regionTagCollectionView.snp.makeConstraints {
             $0.top.equalTo(regionTitleLabel.snp.bottom).offset(10)
             $0.leading.equalTo(regionTitleLabel.snp.leading)
@@ -256,7 +313,7 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
             $0.height.equalTo(100)
         }
           
-        view.addSubview(guideForAddRegionView)
+        contentView.addSubview(guideForAddRegionView)
         guideForAddRegionView.snp.makeConstraints {
             $0.top.equalTo(regionTagCollectionView.snp.bottom).offset(20)
             $0.leading.equalTo(regionTagCollectionView.snp.leading)
@@ -264,20 +321,22 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
             $0.height.equalTo(55)
         }
         
-        view.addSubview(separatorLineView)
+        contentView.addSubview(separatorLineView)
         separatorLineView.snp.makeConstraints {
             $0.top.equalTo(guideForAddRegionView.snp.bottom).offset(20)
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(1)
         }
         
-        view.addSubview(jobTitleLabel)
+        ///일자리
+        contentView.addSubview(jobTitleLabel)
         jobTitleLabel.snp.makeConstraints {
             $0.top.equalTo(separatorLineView.snp.bottom).offset(15)
+            $0.height.equalTo(15)
             $0.leading.equalTo(guideForAddRegionView.snp.leading)
         }
         
-        view.addSubview(jobCategoryCollectionView)
+        contentView.addSubview(jobCategoryCollectionView)
         jobCategoryCollectionView.snp.makeConstraints {
             $0.top.equalTo(jobTitleLabel.snp.bottom).offset(10)
             $0.leading.equalTo(jobTitleLabel.snp.leading)
@@ -285,13 +344,31 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
             $0.height.equalTo(50)
         }
         
-        view.addSubview(educationTitleLabel)
-        educationTitleLabel.snp.makeConstraints {
+        ///생활안정
+        contentView.addSubview(livingTitleLabel)
+        livingTitleLabel.snp.makeConstraints {
             $0.top.equalTo(jobCategoryCollectionView.snp.bottom).offset(15)
+            $0.height.equalTo(15)
             $0.leading.equalTo(jobTitleLabel.snp.leading)
         }
         
-        view.addSubview(educationCategoryCollectionView)
+        contentView.addSubview(livingCategoryCollectionView)
+        livingCategoryCollectionView.snp.makeConstraints {
+            $0.top.equalTo(livingTitleLabel.snp.bottom).offset(10)
+            $0.leading.equalTo(livingTitleLabel.snp.leading)
+            $0.trailing.equalToSuperview().inset(50)
+            $0.height.equalTo(50)
+        }
+        
+        ///교육문화
+        contentView.addSubview(educationTitleLabel)
+        educationTitleLabel.snp.makeConstraints {
+            $0.top.equalTo(livingCategoryCollectionView.snp.bottom).offset(15)
+            $0.height.equalTo(15)
+            $0.leading.equalTo(livingTitleLabel.snp.leading)
+        }
+        
+        contentView.addSubview(educationCategoryCollectionView)
         educationCategoryCollectionView.snp.makeConstraints {
             $0.top.equalTo(educationTitleLabel.snp.bottom).offset(10)
             $0.leading.equalTo(educationTitleLabel.snp.leading)
@@ -299,13 +376,15 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
             $0.height.equalTo(50)
         }
         
-        view.addSubview(participationTitleLabel)
+        ///참여공간
+        contentView.addSubview(participationTitleLabel)
         participationTitleLabel.snp.makeConstraints {
             $0.top.equalTo(educationCategoryCollectionView.snp.bottom).offset(15)
+            $0.height.equalTo(15)
             $0.leading.equalTo(jobTitleLabel.snp.leading)
         }
         
-        view.addSubview(participationCategoryCollectionView)
+        contentView.addSubview(participationCategoryCollectionView)
         participationCategoryCollectionView.snp.makeConstraints {
             $0.top.equalTo(participationTitleLabel.snp.bottom).offset(10)
             $0.leading.equalTo(jobTitleLabel.snp.leading)
@@ -313,9 +392,10 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
             $0.height.equalTo(50)
         }
         
-        view.addSubview(confirmButton)
+        contentView.addSubview(confirmButton)
         confirmButton.snp.makeConstraints {
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-30)
+//            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-30)
+            $0.top.equalTo(participationCategoryCollectionView.snp.bottom).offset(15)
             $0.leading.trailing.equalToSuperview().inset(15)
             $0.height.equalTo(50)
         }
@@ -374,6 +454,29 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
                     self.selectedCategory = self.selectedCategory.filter { $0 != 6}
                 } else {
                     self.selectedCategory = self.selectedCategory.filter { $0 != 7}
+                }
+            }).disposed(by: disposeBag)
+        
+        ///생활안정
+        livingCategoryCollectionView.rx.itemSelected
+            .subscribe(onNext: { [weak self] indexPath in
+                guard let self = self else { return }
+                FilterViewController.isFilterResetBtnTapped = false
+                self.viewModel.input.confirmButtonValid.accept(true)
+                if indexPath.row == 0 {
+                    self.selectedCategory.append(8)
+                } else {
+                    self.selectedCategory.append(9)
+                }
+            }).disposed(by: disposeBag)
+        
+        livingCategoryCollectionView.rx.itemDeselected
+            .subscribe(onNext: { [weak self] indexPath in
+                guard let self = self else { return }
+                if indexPath.row == 0 {
+                    self.selectedCategory = self.selectedCategory.filter { $0 != 8}
+                } else {
+                    self.selectedCategory = self.selectedCategory.filter { $0 != 9}
                 }
             }).disposed(by: disposeBag)
         
@@ -521,6 +624,27 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         viewModel.output.getJobData
             .scan(into: [ChildDetail](), accumulator: { childDatail, arrays in
                 childDatail.removeAll()
+                print("생활안정 태그 개수: \(arrays.data[1].childs.count)")
+                for i in 0..<arrays.data[1].childs.count {
+                    childDatail.append(arrays.data[1].childs[i])
+                }
+            })
+            .debug()
+            .asObservable()
+            .observe(on: MainScheduler.instance)
+            .bind(to: livingCategoryCollectionView.rx.items(cellIdentifier: "livingCategoryCollectionView", cellType: FilterCollectionViewCell.self)) { (index: Int, element: ChildDetail, cell) in
+                if(FilterViewController.isFilterResetBtnTapped) {
+                    self.selectedCategory.removeAll()
+                    cell.isSelected = false
+                }
+                cell.tagLabel.text = element.name
+                cell.tagLabel.sizeToFit()
+                cell.frame.size = CGSize(width: cell.tagLabel.frame.width+20, height: 40)
+            }.disposed(by: disposeBag)
+        
+        viewModel.output.getJobData
+            .scan(into: [ChildDetail](), accumulator: { childDatail, arrays in
+                childDatail.removeAll()
                 for i in 0..<arrays.data[2].childs.count {
                     childDatail.append(arrays.data[2].childs[i])
                 }
@@ -620,7 +744,7 @@ extension FilterViewController: UICollectionViewDelegateFlowLayout {
         if collectionView == regionTagCollectionView {
             let dummyLabel = UILabel().then {
                 $0.font = .systemFont(ofSize: 16)
-                $0.text = "길이 측정용 "
+                $0.text = "길이 측정용   "
                 $0.sizeToFit()
             }
             let size = dummyLabel.frame.size
@@ -642,6 +766,16 @@ extension FilterViewController: UICollectionViewDelegateFlowLayout {
             let dummyLabel = UILabel().then {
                 $0.font = .systemFont(ofSize: 16)
                 $0.text = FilterViewController.participationTagStr[indexPath.row]
+                $0.sizeToFit()
+            }
+            let size = dummyLabel.frame.size
+            return CGSize(width: size.width+10, height: size.height+5)
+        }
+        
+        else if(collectionView == livingCategoryCollectionView) {
+            let dummyLabel = UILabel().then {
+                $0.font = .systemFont(ofSize: 16)
+                $0.text = FilterViewController.livingTagStr[indexPath.row]
                 $0.sizeToFit()
             }
             let size = dummyLabel.frame.size

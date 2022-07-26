@@ -15,6 +15,7 @@ class LoginBasicInfoViewController: UIViewController {
     
     let disposeBag = DisposeBag()
     let viewModel = LoginViewModel()
+    var user = User.instance
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,9 +27,9 @@ class LoginBasicInfoViewController: UIViewController {
     }
     
     override func viewDidLayoutSubviews() {
-        nameTextField.addBottomBorder(color: UIColor.systemGray.withAlphaComponent(0.3).cgColor)
-        nickNameTextField.addBottomBorder(color: UIColor.systemGray.withAlphaComponent(0.3).cgColor)
-        birthTextField.addBottomBorder(color: UIColor.systemGray.withAlphaComponent(0.3).cgColor)
+        nameTextField.addBottomBorder(color: UIColor(hexString: "EBEBEB").cgColor)
+        nickNameTextField.addBottomBorder(color: UIColor(hexString: "EBEBEB").cgColor)
+        birthTextField.addBottomBorder(color: UIColor(hexString: "EBEBEB").cgColor)
 //        emailTextField.addBottomBorder(color: UIColor.systemGray.withAlphaComponent(0.3).cgColor)
     }
     
@@ -43,51 +44,63 @@ class LoginBasicInfoViewController: UIViewController {
     
     private var progressLabel: UILabel = {
         let label = UILabel()
-        label.text = "2/6"
         label.textAlignment = .center
-        label.textColor = UIColor.systemGray.withAlphaComponent(0.5)
-        label.font = .systemFont(ofSize: 13, weight: .semibold)
+        label.textColor = UIColor(hexString: "C4C4C5")
+        label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
+        label.text = "2/6"
         return label
     }()
     
     private var titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "기본 정보를 입력해주세요"
+        label.font = UIFont(name: "AppleSDGothicNeo-SemiBold", size: 27)
         label.textColor = .black
-        label.font = .systemFont(ofSize: 25, weight: .bold)
+        label.text = "기본 정보를 입력해주세요"
         return label
     }()
     
     private var nameLabel: UILabel = {
         let label = UILabel()
-        label.text = "이름"
         label.textAlignment = .center
-        label.font = .systemFont(ofSize: 15, weight: .medium)
+        label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
+        label.textColor = UIColor(hexString: "494949")
+        label.text = "이름"
         return label
     }()
     
     private var nameTextField: UITextField = {
         let tf = UITextField()
         tf.textAlignment = .left
-        tf.font = .systemFont(ofSize: 20, weight: .bold)
+        tf.font = UIFont(name: "AppleSDGothicNeo-Regular", size: 18)
         tf.borderStyle = .none
-        tf.textColor = UIColor.black
+        tf.textColor = UIColor(hexString: "000000")
         tf.becomeFirstResponder()
         return tf
+    }()
+    
+    private var nameAlertLabel: UILabel = {
+        let label = UILabel()
+        label.isHidden = true
+        label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
+        label.textAlignment = .center
+        label.textColor = UIColor(hexString: "FF3C00")
+        label.text = "13자 이하만 가능해요"
+        return label
     }()
     
     private var nickNameLabel: UILabel = {
         let label = UILabel()
         label.text = "닉네임"
         label.textAlignment = .center
-        label.font = .systemFont(ofSize: 15, weight: .medium)
+        label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
+        label.textColor = UIColor(hexString: "494949")
         return label
     }()
     
     private var nickNameTextField: UITextField = {
         let tf = UITextField()
         tf.textAlignment = .left
-        tf.font = .systemFont(ofSize: 20, weight: .bold)
+        tf.font = UIFont(name: "AppleSDGothicNeo-Regular", size: 18)
         tf.borderStyle = .none
         tf.textColor = UIColor.black
         return tf
@@ -96,7 +109,9 @@ class LoginBasicInfoViewController: UIViewController {
     private var nickNameAlertLabel: UILabel = {
         let label = UILabel()
         label.textColor = .red
-        label.font = .systemFont(ofSize: 12, weight: .light)
+        label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
+        label.textAlignment = .center
+        label.textColor = UIColor(hexString: "FF3C00")
         return label
     }()
     
@@ -106,6 +121,7 @@ class LoginBasicInfoViewController: UIViewController {
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 15, weight: .medium)
         label.text = "생년월일"
+        label.textColor = UIColor(hexString: "494949")
         return label
     }()
     
@@ -117,20 +133,31 @@ class LoginBasicInfoViewController: UIViewController {
     
     private var genderLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .black
         label.textAlignment = .center
-        label.font = .systemFont(ofSize: 15, weight: .medium)
+        label.textColor = UIColor(hexString: "494949")
+        label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
         label.text = "성별"
         return label
     }()
     
     private var maleButton: UIButton = {
         let button = UIButton()
+//        button.setTitle("남성", for: .normal)
+//        button.setTitleColor(UIColor(hexString: "616161"), for: .normal)
+//        button.layer.cornerRadius = 5
+//        button.layer.borderColor = UIColor(hexString: "D9D9D9").cgColor
+//        button.layer.borderWidth = 1
+//        button.layer.masksToBounds = true
+//        button.isUserInteractionEnabled = true
         button.setTitle("남성", for: .normal)
-        button.setTitleColor(UIColor.systemGray.withAlphaComponent(0.5), for: .normal)
-        button.layer.cornerRadius = 10
-        button.layer.borderColor = UIColor.systemGray.withAlphaComponent(0.5).cgColor
-        button.layer.borderWidth = 1.5
+        button.setTitleColor(UIColor(hexString: "616161"), for: .normal)
+        button.setTitleColor(UIColor(hexString: "616161"), for: .disabled)
+        button.setTitleColor(UIColor(hexString: "5B43EF"), for: .selected)
+        button.setBackgroundColor(UIColor(hexString: "5B43EF").withAlphaComponent(0.1), for: .selected)
+        button.setBackgroundColor(UIColor.white, for: .normal)
+        button.layer.cornerRadius = 5
+        button.layer.borderColor = UIColor(hexString: "D9D9D9").cgColor
+        button.layer.borderWidth = 1
         button.layer.masksToBounds = true
         button.isUserInteractionEnabled = true
         return button
@@ -139,10 +166,20 @@ class LoginBasicInfoViewController: UIViewController {
     private var femaleButton: UIButton = {
         let button = UIButton()
         button.setTitle("여성", for: .normal)
-        button.setTitleColor(UIColor.systemGray.withAlphaComponent(0.5), for: .normal)
-        button.layer.cornerRadius = 10
-        button.layer.borderColor = UIColor.systemGray.withAlphaComponent(0.5).cgColor
-        button.layer.borderWidth = 1.5
+//        button.setTitleColor(UIColor(hexString: "616161"), for: .normal)
+//        button.layer.cornerRadius = 5
+//        button.layer.borderColor = UIColor(hexString: "D9D9D9").cgColor
+//        button.layer.borderWidth = 1
+//        button.layer.masksToBounds = true
+//        button.isUserInteractionEnabled = true
+        button.setTitleColor(UIColor(hexString: "616161"), for: .normal)
+        button.setTitleColor(UIColor(hexString: "616161"), for: .disabled)
+        button.setTitleColor(UIColor(hexString: "5B43EF"), for: .selected)
+        button.setBackgroundColor(UIColor(hexString: "5B43EF").withAlphaComponent(0.1), for: .selected)
+        button.setBackgroundColor(UIColor.white, for: .normal)
+        button.layer.cornerRadius = 5
+        button.layer.borderColor = UIColor(hexString: "D9D9D9").cgColor
+        button.layer.borderWidth = 1
         button.layer.masksToBounds = true
         button.isUserInteractionEnabled = true
         return button
@@ -177,13 +214,14 @@ class LoginBasicInfoViewController: UIViewController {
         button.setTitle("다음", for: .normal)
         button.titleLabel?.textColor = UIColor(hexString: "616161")
         button.backgroundColor = UIColor(hexString: "F0F0F0")
-        button.layer.cornerRadius = 20
+        button.layer.cornerRadius = 5
         button.isEnabled = false
         button.layer.masksToBounds = true
         return button
     }()
         
     fileprivate func setAttribute() {
+        navigationController?.navigationBar.tintColor = .black
         navigationController?.navigationBar.topItem?.backButtonTitle = ""
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
         [nameTextField, nickNameTextField, birthTextField].forEach {
@@ -195,19 +233,19 @@ class LoginBasicInfoViewController: UIViewController {
         view.backgroundColor = .white
         
         view.addSubview(progressBar)
-        progressBar.layer.cornerRadius = 5
+        progressBar.layer.cornerRadius = 3
         progressBar.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(10)
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(15)
             $0.leading.equalToSuperview().inset(20)
             $0.trailing.equalToSuperview().inset(50)
-            $0.height.equalTo(10)
+            $0.height.equalTo(5)
         }
         
         view.addSubview(progressLabel)
         progressLabel.snp.makeConstraints {
-            $0.top.equalTo(progressBar.snp.top)
+            $0.centerY.equalTo(progressBar.snp.centerY)
             $0.leading.equalTo(progressBar.snp.trailing).offset(15)
-            $0.height.equalTo(10)
+            $0.height.equalTo(15)
         }
         
         view.addSubview(titleLabel)
@@ -224,8 +262,14 @@ class LoginBasicInfoViewController: UIViewController {
         
         view.addSubview(nameTextField)
         nameTextField.snp.makeConstraints {
-            $0.top.equalTo(nameLabel.snp.bottom).offset(10)
+            $0.top.equalTo(nameLabel.snp.bottom).offset(6)
             $0.leading.trailing.equalToSuperview().inset(15)
+        }
+        
+        view.addSubview(nameAlertLabel)
+        nameAlertLabel.snp.makeConstraints {
+            $0.top.equalTo(nameTextField.snp.bottom).offset(5)
+            $0.leading.equalTo(nameTextField.snp.leading)
         }
         
         view.addSubview(nickNameLabel)
@@ -236,7 +280,7 @@ class LoginBasicInfoViewController: UIViewController {
         
         view.addSubview(nickNameTextField)
         nickNameTextField.snp.makeConstraints {
-            $0.top.equalTo(nickNameLabel.snp.bottom).offset(10)
+            $0.top.equalTo(nickNameLabel.snp.bottom).offset(6)
             $0.leading.trailing.equalToSuperview().inset(15)
         }
         
@@ -254,7 +298,7 @@ class LoginBasicInfoViewController: UIViewController {
         
         view.addSubview(birthTextField)
         birthTextField.snp.makeConstraints {
-            $0.top.equalTo(birthLabel.snp.bottom).offset(10)
+            $0.top.equalTo(birthLabel.snp.bottom).offset(6)
             $0.leading.trailing.equalToSuperview().inset(15)
         }
         
@@ -267,11 +311,11 @@ class LoginBasicInfoViewController: UIViewController {
         let genderStackView = UIStackView(arrangedSubviews: [femaleButton, maleButton])
         genderStackView.axis = .horizontal
         genderStackView.distribution = .fillEqually
-        genderStackView.spacing = 28
+        genderStackView.spacing = 15
         
         view.addSubview(genderStackView)
         genderStackView.snp.makeConstraints {
-            $0.top.equalTo(genderLabel.snp.bottom).offset(10)
+            $0.top.equalTo(genderLabel.snp.bottom).offset(8)
             $0.leading.trailing.equalToSuperview().inset(15)
             $0.height.equalTo(50)
         }
@@ -297,7 +341,7 @@ class LoginBasicInfoViewController: UIViewController {
         view.addSubview(confirmButton)
         confirmButton.snp.makeConstraints {
             $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-30)
-            $0.leading.trailing.equalToSuperview().inset(15)
+            $0.leading.trailing.equalToSuperview().inset(21)
             $0.height.equalTo(50)
         }
         
@@ -308,12 +352,12 @@ class LoginBasicInfoViewController: UIViewController {
         rx.viewWillAppear.take(1).asDriver { _ in return .never()}
             .drive(onNext: { [weak self] _ in
                 guard let self = self else { return }
-                self.nameTextField.text = self.viewModel.user.nickname
-//                self.viewModel.input.nameObserver.accept(self.viewModel.user.nickname)
+//                self.nameTextField.text = self.viewModel.user.nickname
+                self.nickNameTextField.text = self.viewModel.user.nickname
             }).disposed(by: disposeBag)
         
-        nameTextField.rx.controlEvent([.editingDidEnd])
-            .map { self.nameTextField.text ?? "" }
+        nameTextField.rx.text
+            .orEmpty
             .bind(to: viewModel.input.nameObserver)
             .disposed(by: disposeBag)
         
@@ -321,6 +365,11 @@ class LoginBasicInfoViewController: UIViewController {
             .map { self.nickNameTextField.text ?? "" }
             .bind(to: viewModel.input.nickNameObserver)
             .disposed(by: disposeBag)
+        
+//        nickNameTextField.rx.text
+//            .orEmpty
+//            .bind(to: viewModel.input.nickNameObserver)
+//            .disposed(by: disposeBag)
         
         birthTextField.rx.controlEvent([.editingDidEnd])
             .map { self.birthTextField.text ?? "" }
@@ -355,44 +404,62 @@ class LoginBasicInfoViewController: UIViewController {
 //        viewModel.input.nickNameObserver
 //            .asDriver(onErrorJustReturn: "")
 //            .drive(onNext: { [weak self] str in
-//                self?.nameTextField.text = str
+//                print("아웃풋 닉네임")
+//                self?.nickNameTextField.text = str
 //            }).disposed(by: disposeBag)
+        
+        viewModel.output.isNameValid
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: { [weak self] valid in
+                if valid {
+//                    self?.nameTextField.setRight()
+                    self?.nameAlertLabel.isHidden = true
+                    self?.nameLabel.textColor = UIColor(hexString: "494949")
+                    self?.nameTextField.addBottomBorder(color: UIColor(hexString: "EBEBEB").cgColor)
+                } else { //13자 이상(false)
+//                    self?.nameTextField.setErrorRight()
+                    self?.nameAlertLabel.isHidden = false
+                    self?.nameLabel.textColor = UIColor(hexString: "FF3C00")
+                    self?.nameTextField.addBottomBorder(color: UIColor(hexString: "FF3C00", alpha: 1.0).cgColor)
+                    self?.nameTextField.layoutIfNeeded()
+                }
+            }).disposed(by: disposeBag)
         
         viewModel.output.isNicknameValid
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: { [weak self] valid in
-                if valid { //TEST
+                if valid {
+                    self?.nickNameAlertLabel.isHidden = false
                     self?.nickNameTextField.setErrorRight()
                     self?.nickNameLabel.textColor = .red
-                    self?.nickNameTextField.addBottomBorder(color: UIColor.red.cgColor)
+                    self?.nickNameTextField.addBottomBorder(color: UIColor(hexString: "FF3C00", alpha: 1.0).cgColor)
                     self?.nickNameAlertLabel.text = "중복된 닉네임입니다"
                     self?.nickNameAlertLabel.textColor = .red
                 } else {
-                    self?.nickNameTextField.setRight()
-                    self?.nickNameLabel.textColor = .black
-                    self?.nickNameTextField.addBottomBorder(color: UIColor.systemGray.withAlphaComponent(0.2).cgColor)
-                    self?.nickNameAlertLabel.text = ""
-                    self?.nickNameAlertLabel.textColor = .black
+                    if(self?.nickNameTextField.text == "") { return }
+                    else {
+                        self?.nickNameTextField.setRight()
+                        self?.nickNameLabel.textColor = UIColor(hexString: "494949")
+                        self?.nickNameTextField.addBottomBorder(color: UIColor(hexString: "EBEBEB").cgColor)
+                        self?.nickNameAlertLabel.isHidden = true
+                    }
                 }
             }).disposed(by: disposeBag)
         
         viewModel.output.genderValid
             .drive(onNext: { [weak self] gender in
+                guard let self = self else { return }
                 switch gender {
                 case .male:
-                    self?.maleButton.setTitleColor(UIColor.rgb(red: 95, green: 88, blue: 234), for: .normal)
-                    self?.maleButton.backgroundColor = UIColor.rgb(red: 247, green: 246, blue: 253)
-                    self?.maleButton.layer.borderColor = UIColor.rgb(red: 203, green: 199, blue: 247).cgColor
-                    self?.femaleButton.setTitleColor(.systemGray.withAlphaComponent(0.4), for: .normal)
-                    self?.femaleButton.backgroundColor = UIColor.white
-                    self?.femaleButton.layer.borderColor = UIColor.systemGray.withAlphaComponent(0.5).cgColor
+                    self.maleButton.isSelected = true
+                    self.maleButton.layer.borderColor = UIColor(hexString: "5B43EF").cgColor
+                    self.femaleButton.isSelected = false
+                    self.femaleButton.layer.borderColor = UIColor(hexString: "D9D9D9").cgColor
                 case .female:
-                    self?.femaleButton.setTitleColor(UIColor.rgb(red: 95, green: 88, blue: 234), for: .normal)
-                    self?.femaleButton.backgroundColor = UIColor.rgb(red: 247, green: 246, blue: 253)
-                    self?.femaleButton.layer.borderColor = UIColor.rgb(red: 203, green: 199, blue: 247).cgColor
-                    self?.maleButton.setTitleColor(.systemGray.withAlphaComponent(0.4), for: .normal)
-                    self?.maleButton.backgroundColor = UIColor.white
-                    self?.maleButton.layer.borderColor = UIColor.systemGray.withAlphaComponent(0.5).cgColor
+                    self.femaleButton.isSelected = true
+                    self.femaleButton.layer.borderColor = UIColor(hexString: "5B43EF").cgColor
+                    self.maleButton.isSelected = false
+                    self.maleButton.layer.borderColor = UIColor(hexString: "D9D9D9").cgColor
                 case .none:
                     break
                 }

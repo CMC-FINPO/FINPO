@@ -110,7 +110,6 @@ class EditUserInfoViewModel {
                                                   input.genderObserver.asDriver(onErrorJustReturn: .none),
                                                   resultSelector: { (a, b, c, d) in
         if a != false && b != true  && c != "" && d != .none {
-                print("버튼 색 변경조건 완료 -> true 방출")
                 return true
             }
             return false

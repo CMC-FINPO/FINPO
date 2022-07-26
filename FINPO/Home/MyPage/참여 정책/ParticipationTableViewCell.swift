@@ -17,10 +17,12 @@ class ParticipationTableViewCell: UITableViewCell {
         label.textAlignment = .left
         label.textColor = UIColor(hexString: "5B43EF")
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
-//        label.rightInset = 2
-//        label.leftInset = 2
-//        label.topInset = 2
-//        label.bottomInset = 2
+        label.rightInset = 3
+        label.leftInset = 3
+        label.topInset = 3
+        label.bottomInset = 3
+        label.layer.masksToBounds = true
+        label.layer.cornerRadius = 5
         label.backgroundColor = UIColor(hexString: "5B43EF").withAlphaComponent(0.1)
         return label
     }()
@@ -101,8 +103,7 @@ class ParticipationTableViewCell: UITableViewCell {
         regionLabel.snp.makeConstraints {
             $0.top.equalToSuperview().inset(17)
             $0.leading.equalToSuperview().inset(20)
-            $0.trailing.equalToSuperview().inset(70)
-            
+            $0.trailing.greaterThanOrEqualToSuperview().inset(270)
         }
         
         policyNameLabel.snp.makeConstraints {

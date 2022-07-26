@@ -24,27 +24,35 @@ class AddRegionViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+//        self.navigationController?.isNavigationBarHidden = false
+        self.navigationController?.isNavigationBarHidden = false
         setAttribute()
         setLayout()
         setInputBind()
         setOutputBind()
+        self.navigationController?.isNavigationBarHidden = false
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.isNavigationBarHidden = false
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
+        self.navigationController?.isNavigationBarHidden = false
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        mainRegionTableView.addBorderTop(size: 1, color: UIColor(hexString: "A2A2A2"))
-        mainRegionTableView.addBorderBottom(size: 1, color: UIColor(hexString: "A2A2A2"))
-        localRegionTableView.addBorderTop(size: 1, color: UIColor(hexString: "A2A2A2"))
-        localRegionTableView.addBorderLeft(size: 1, color: UIColor(hexString: "A2A2A2"))
-        localRegionTableView.addBorderBottom(size: 1, color: UIColor(hexString: "A2A2A2"))
-        mainRegionTableView.reloadData()
-        localRegionTableView.reloadData()
+//        mainRegionTableView.addBorderTop(size: 1, color: UIColor(hexString: "A2A2A2"))
+//        mainRegionTableView.addBorderBottom(size: 1, color: UIColor(hexString: "A2A2A2"))
+//        localRegionTableView.addBorderTop(size: 1, color: UIColor(hexString: "A2A2A2"))
+//        localRegionTableView.addBorderLeft(size: 1, color: UIColor(hexString: "A2A2A2"))
+//        localRegionTableView.addBorderBottom(size: 1, color: UIColor(hexString: "A2A2A2"))
+//        mainRegionTableView.reloadData()
+//        localRegionTableView.reloadData()
     }
 
     private var progressBar: UIProgressView = {
@@ -53,6 +61,7 @@ class AddRegionViewController: UIViewController {
         progressBar.progressTintColor = UIColor(hexString: "5B43EF", alpha: 1)
         progressBar.progress = 6/6
         progressBar.clipsToBounds = true
+        progressBar.layer.cornerRadius = 3
         return progressBar
     }()
     
@@ -122,9 +131,11 @@ class AddRegionViewController: UIViewController {
     fileprivate func setAttribute() {
         navigationController?.navigationBar.topItem?.backButtonTitle = ""
         navigationController?.navigationBar.topItem?.rightBarButtonItem = UIBarButtonItem(title: "나중에 할게요", style: .plain, target: self, action: #selector(skipThisView))
+
         self.navigationItem.rightBarButtonItem?.tintColor = UIColor(hexString: "999999")
-        let attributes = [NSAttributedString.Key.font: UIFont(name: "AppleSDGothicNeo-Medium", size: 14)!]
-        UINavigationBar.appearance().titleTextAttributes = attributes
+        let attributes = [NSAttributedString.Key.font: UIFont(name: "AppleSDGothicNeo-Medium", size: 10)!]
+//        UINavigationBar.appearance().titleTextAttributes = attributes
+        self.navigationController?.navigationItem.rightBarButtonItem?.setTitleTextAttributes(attributes, for: [.normal, .selected])
         
         mainRegionTableView.register(MainRegionTableViewCell.self, forCellReuseIdentifier: "cell")
         localRegionTableView.register(SubRegionTableViewCell.self, forCellReuseIdentifier: "cell")
@@ -132,12 +143,13 @@ class AddRegionViewController: UIViewController {
         tagCollectionView.delegate = self
         tagCollectionView.register(TagCollectionViewCell.self, forCellWithReuseIdentifier: "tagCollectionViewCell")
         
-        
         self.createDefaultTag()
     }
     
     @objc private func skipThisView() {
-        
+        let vc = HomeTapViewController()
+        vc.modalPresentationStyle = .fullScreen
+        self.present(vc, animated: true)
     }
     
     fileprivate func createDefaultTag() {
@@ -172,7 +184,7 @@ class AddRegionViewController: UIViewController {
         
         view.addSubview(progressBar)
         progressBar.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(10)
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(15)
             $0.leading.equalToSuperview().inset(20)
             $0.trailing.equalToSuperview().inset(50)
             $0.height.equalTo(5)
@@ -180,9 +192,9 @@ class AddRegionViewController: UIViewController {
         
         view.addSubview(progressLabel)
         progressLabel.snp.makeConstraints {
-            $0.top.equalTo(progressBar.snp.top)
+            $0.centerY.equalTo(progressBar.snp.centerY)
             $0.leading.equalTo(progressBar.snp.trailing).offset(15)
-            $0.height.equalTo(10)
+            $0.height.equalTo(15)
         }
         
         view.addSubview(titleLabel)
@@ -205,7 +217,7 @@ class AddRegionViewController: UIViewController {
             $0.top.equalTo(tagCollectionView.snp.bottom).offset(30)
             $0.leading.equalToSuperview().inset(15)
             $0.width.equalTo(100)
-            $0.height.equalTo(180)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-150)
         }
         
         view.addSubview(localRegionTableView)
@@ -221,6 +233,7 @@ class AddRegionViewController: UIViewController {
             $0.trailing.equalToSuperview().inset(15)
             $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-150)
         }
+        localRegionTableView.layoutIfNeeded()
         
         view.addSubview(confirmButton)
         confirmButton.snp.makeConstraints {
@@ -263,7 +276,6 @@ class AddRegionViewController: UIViewController {
         	
         tagCollectionView.rx.itemSelected
             .subscribe(onNext: { [weak self] indexPath in
-                //화면상에 보여지는 cell (만약 뷰를 스크롤해서 collectionview가 안보여지게되면 못씀)
                 guard let self = self else { return }
                 if self.tagCollectionView.visibleCells.count <= 1 {
                     self.createDefaultTag()
@@ -274,8 +286,7 @@ class AddRegionViewController: UIViewController {
                     self.isSelected = true
                 }
                 print("선택된 관심 지역 리스트 \(self.viewModel.user.interestRegion)")
-//                self.viewModel.input.deleteTagObserver.accept(indexPath.item)
-                self.viewModel.input.deleteTagObserver.accept(indexPath.row)
+                self.viewModel.input.deleteTagObserver.accept(indexPath)
             }).disposed(by: disposeBag)
         
         confirmButton.rx.tap
@@ -295,6 +306,13 @@ class AddRegionViewController: UIViewController {
             .observe(on: MainScheduler.instance)
             .bind(to: mainRegionTableView.rx.items(cellIdentifier: "cell")) {
                 (index: Int, element: MainRegion, cell: MainRegionTableViewCell) in
+                if index > 2 {
+                    cell.setLayout()
+                }
+                if index == 0 || index == 1 || index == 2 {
+                    cell.setRegionLayout()
+                    cell.notReadyRegionLabel.isHidden = true
+                }
                 cell.selectionStyle = .none
                 cell.mainRegionLabel.text = element.name
             }.disposed(by: disposeBag)
@@ -318,6 +336,8 @@ class AddRegionViewController: UIViewController {
                     newRegions.append(region)
                 case .delete(let index):
                     newRegions.remove(at: index)
+                case .first(let _):
+                    break
                 }
                 return newRegions
             }
@@ -365,7 +385,7 @@ extension AddRegionViewController: UICollectionViewDelegateFlowLayout {
 
         let dummyLabel = UILabel().then {
             $0.font = .systemFont(ofSize: 16)
-            $0.text = "길이 측정용 "
+            $0.text = "길이 측정용    "
             $0.sizeToFit()
         }
         let size = dummyLabel.frame.size

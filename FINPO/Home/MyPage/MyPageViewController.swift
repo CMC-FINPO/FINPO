@@ -223,7 +223,7 @@ class MyPageViewController: UIViewController {
         view.addSubview(profileImageView)
         profileImageView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(5)
-            $0.leading.equalToSuperview().inset(21)
+            $0.leading.equalToSuperview().inset(15)
             $0.height.equalTo(72)
             $0.width.equalTo(72)
         }
@@ -246,16 +246,16 @@ class MyPageViewController: UIViewController {
         
         view.addSubview(interestingAreaLabel)
         interestingAreaLabel.snp.makeConstraints {
-            $0.leading.equalTo(profileImageView.snp.trailing).offset(17)
+            $0.leading.equalTo(profileImageView.snp.trailing).offset(12)
             $0.top.equalTo(nameLabel.snp.bottom).offset(5)
         }
         
         view.addSubview(interestThingsCollectionView)
         interestThingsCollectionView.snp.makeConstraints {
-            $0.leading.equalTo(interestingAreaLabel.snp.trailing).offset(10)
+            $0.leading.equalTo(interestingAreaLabel.snp.trailing).offset(5)
             $0.top.equalTo(interestingAreaLabel.snp.top)
             $0.height.equalTo(23)
-            $0.trailing.equalToSuperview().inset(50)
+            $0.trailing.equalToSuperview()
         }
         
         view.addSubview(interestAreaButton)
@@ -331,13 +331,15 @@ class MyPageViewController: UIViewController {
                 self.viewModel.input.loadUserInterestedThingsObserver.accept(())
             }).disposed(by: disposeBag)
                 
+        ///지역 선택
         interestAreaButton.rx.tap
             .asDriver()
             .drive(onNext: { [weak self] in
+                guard let self = self else { return }
                 let vc = EditRegionViewController()
                 vc.modalPresentationStyle = .fullScreen
-                vc.setViewModel(viewModel: self?.viewModel ?? MyPageViewModel())
-                self?.navigationController?.pushViewController(vc, animated: true)
+                vc.setViewModel(viewModel: self.viewModel)
+                self.navigationController?.pushViewController(vc, animated: true)
             }).disposed(by: disposeBag)
      
         ///관심사 설정

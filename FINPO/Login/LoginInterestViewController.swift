@@ -33,15 +33,16 @@ class LoginInterestViewController: UIViewController, UICollectionViewDelegate {
         progressBar.progressTintColor = UIColor(hexString: "5B43EF", alpha: 1)
         progressBar.progress = 4/6
         progressBar.clipsToBounds = true
+        progressBar.layer.cornerRadius = 3
         return progressBar
     }()
     
     private var progressLabel: UILabel = {
         let label = UILabel()
-        label.text = "4/6"
         label.textAlignment = .center
-        label.textColor = UIColor.systemGray.withAlphaComponent(0.5)
-        label.font = .systemFont(ofSize: 13, weight: .semibold)
+        label.textColor = UIColor(hexString: "C4C4C5")
+        label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
+        label.text = "4/6"
         return label
     }()
     
@@ -99,7 +100,7 @@ class LoginInterestViewController: UIViewController, UICollectionViewDelegate {
         
         view.addSubview(progressBar)
         progressBar.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(10)
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(15)
             $0.leading.equalToSuperview().inset(20)
             $0.trailing.equalToSuperview().inset(50)
             $0.height.equalTo(5)
@@ -107,9 +108,9 @@ class LoginInterestViewController: UIViewController, UICollectionViewDelegate {
         
         view.addSubview(progressLabel)
         progressLabel.snp.makeConstraints {
-            $0.top.equalTo(progressBar.snp.top)
+            $0.centerY.equalTo(progressBar.snp.centerY)
             $0.leading.equalTo(progressBar.snp.trailing).offset(15)
-            $0.height.equalTo(10)
+            $0.height.equalTo(15)
         }
         
         view.addSubview(titleLabel)
@@ -149,7 +150,7 @@ class LoginInterestViewController: UIViewController, UICollectionViewDelegate {
             }).disposed(by: disposeBag)
         
         interestCollectionView.rx.itemSelected
-            .subscribe(onNext: {[weak self] indexPath in
+            .subscribe(onNext: { [weak self] indexPath in
                 self?.viewModel.input.forUserInterestObserver.accept(indexPath.row+1)
                 self?.viewModel.input.interestButtonTapped.accept(())
                 let cell = self?.interestCollectionView.cellForItem(at: indexPath) as? InterestCollectionViewCell
@@ -157,25 +158,6 @@ class LoginInterestViewController: UIViewController, UICollectionViewDelegate {
                 cell?.id = indexPath.row+1
             }).disposed(by: disposeBag)
         
-//        confirmButton.rx.tap
-//            .asDriver(onErrorJustReturn: ())
-//            .drive(onNext: { [weak self] in
-//                guard let self = self else { return }
-//                ///여기서 회원가입 진행
-//                //일단 user data check
-//                print("저장된 엑세스 토큰\(self.viewModel.user.accessTokenFromKAKAO)")
-//                print("여태 저장된 유저 정보 \(self.viewModel.user.name)")
-//                print("여태 저장된 유저 정보 \(self.viewModel.user.nickname)")
-//                print("여태 저장된 유저 정보 \(self.viewModel.user.birth)")
-//                print("여태 저장된 유저 정보 \(self.viewModel.user.gender)")
-//                print("여태 저장된 유저 정보 \(self.viewModel.user.region)")
-//                print("여태 저장된 유저 정보 \(self.viewModel.user.category)")
-//
-//                //TODO: push 부분 회원가입 성공 시로 바꿀 것
-//                let vc = LoginSemiCompleteViewController()
-//                self.navigationController?.pushViewController(vc, animated: true)
-//            }).disposed(by: disposeBag)
-                        
         confirmButton.rx.tap
             .bind(to: viewModel.input.semiSignupConfirmButtonTapped)
             .disposed(by: disposeBag)
@@ -215,6 +197,8 @@ class LoginInterestViewController: UIViewController, UICollectionViewDelegate {
             .emit(onNext: { [weak self] value in
                 guard let self = self else { return }
                 User.instance = value
+                
+                User.instance.profileImg = value.profileImg
                 print("세미회원가입 최종 유저 정보: \(User.instance.name)")
                 print("세미회원가입 최종 유저 정보: \(User.instance.nickname)")
                 print("세미회원가입 최종 유저 정보: \(User.instance.birth)")
@@ -223,7 +207,7 @@ class LoginInterestViewController: UIViewController, UICollectionViewDelegate {
                 print("세미회원가입 최종 유저 정보: \(User.instance.category)")
                 print("세미회원가입 최종 유저 정보: \(User.instance.accessTokenFromSocial)")
                 print("세미회원가입 최종 유저 정보: \(User.instance.refreshToken)")
-                
+
                 let vc = LoginSemiCompleteViewController()
                 self.navigationController?.pushViewController(vc, animated: true)
                 

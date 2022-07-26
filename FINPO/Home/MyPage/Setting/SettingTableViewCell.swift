@@ -7,8 +7,11 @@
 
 import Foundation
 import UIKit
+import RxSwift
 
 class SettingTableViewCell: UITableViewCell {
+    
+    var disposeBag = DisposeBag()
     
     public var settingNameLabel: UILabel = {
         let label = UILabel()
@@ -21,7 +24,12 @@ class SettingTableViewCell: UITableViewCell {
     public var controlSwitch: UISwitch = {
         let st = UISwitch()
         st.isHidden = true
-        
+        st.thumbTintColor = UIColor(hexString: "5B43EF")
+        st.onTintColor = UIColor(hexString: "F0F0F0")
+        st.layer.masksToBounds = true
+        st.layer.cornerRadius = 15
+        st.layer.borderWidth = 1
+        st.layer.borderColor = UIColor(hexString: "D9D9D9").cgColor
         return st
     }()
     
@@ -31,17 +39,7 @@ class SettingTableViewCell: UITableViewCell {
         
         contentView.addSubview(settingNameLabel)
         contentView.addSubview(controlSwitch)
-        
-        controlSwitch.thumbTintColor = UIColor(hexString: "5B43EF")
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
+
         settingNameLabel.snp.makeConstraints {
             $0.leading.equalToSuperview().inset(21)
             $0.centerY.equalToSuperview()
@@ -51,5 +49,21 @@ class SettingTableViewCell: UITableViewCell {
             $0.trailing.equalToSuperview().inset(21)
             $0.centerY.equalToSuperview()
         }
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        self.disposeBag = DisposeBag()
     }
 }
