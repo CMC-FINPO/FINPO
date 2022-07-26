@@ -21,14 +21,16 @@ struct FCMAPI {
                 "Authorization": "Bearer ".appending(accessToken)
             ]
             
+            print("ddddd: \(LoginDetailViewController.isCMAllow)")
             let fcmToken = UserDefaults.standard.string(forKey: "fcmToken")
             let isPermissioned = UserDefaults.standard.bool(forKey: "FCMpermission")
             let parameter: Parameters = [
                 "subscribe": isPermissioned,
-                "registrationToken": fcmToken
+                "registrationToken": fcmToken,
+                "adSubscribe": LoginDetailViewController.isCMAllow
             ]
             
-            AF.request(url, method: .put, parameters: parameter, encoding: JSONEncoding.default, headers: header)
+            API.session.request(url, method: .put, parameters: parameter, encoding: JSONEncoding.default, headers: header)
                 .validate(statusCode: 200..<300)
                 .response { response in
                     switch response.result {
@@ -216,7 +218,7 @@ struct FCMAPI {
             
             request.httpBody = try! JSONSerialization.data(withJSONObject: parameter, options: .prettyPrinted)
             
-            API.session.request(request)
+            AF.request(request)
                 .validate(statusCode: 200..<300)
                 .responseDecodable(of: MyAlarmIsOnModel.self) { response in
                     switch response.result {
@@ -229,5 +231,43 @@ struct FCMAPI {
             
             return Disposables.create()
         }
+    }
+    
+    static func adSubscribe(valid: Bool) {
+        let url = BaseURL.url.appending("notification/me")
+        
+        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+        
+        let header: HTTPHeaders = [
+            "Content-Type": "application/json;charset=UTF-8",
+            "Authorization": "Bearer ".appending(accessToken)
+        ]
+        
+        print("광고수신여부: \(valid)")
+        
+        let parameter: Parameters = [
+            "adSubscribe": valid
+        ]
+        
+        API.session.request(url, method: .put, parameters: parameter, encoding: JSONEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+            .validate(statusCode: 200..<300)
+            .response { response in
+                switch response.result {
+                case .success(let data):
+                    if let data = data {
+                        do {
+                            let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                            let result = json?["data"] as? [String: Any] ?? [:]
+                            let adSubscribe = result["adSubscribe"] as? Bool ?? false
+                            let isSuccess = result["success"] as? Bool ?? false
+                            print("광고 변경 여부: \(isSuccess)")
+                            print("현재 광고 수신 상태: \(adSubscribe)")
+                        }
+                    }
+                case .failure(let err):
+                    print("광고 변경 실패: \(err)")
+                }
+            }
+        
     }
 }
