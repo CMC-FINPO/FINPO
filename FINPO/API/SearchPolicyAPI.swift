@@ -98,19 +98,18 @@ struct SearchPolicyAPI {
                 "Authorization": "Bearer ".appending(accessToken)
             ]
             
-//            let parameter: Parameters = [
-//                "region": user.region,
-//                "category": user.category,
-//                "page": page,
-//                "title": title
-//            ]
+            let stringRegion = region.map { String($0) }
+                .joined(separator: ",")
+            
+            let stringCategory = categories.map { String($0) }
+                .joined(separator: ",")
             
             let parameter: Parameters
             //만약 타이틀이 빈값이면 설정한 거주지역을 넣기
             if title == "" {
                 parameter = [
-                    "region": region,
-                    "category": categories,
+                    "region": stringRegion,
+                    "category": stringCategory,
                     "page": page
                 ]
             } else {
