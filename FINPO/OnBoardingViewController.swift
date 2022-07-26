@@ -150,14 +150,16 @@ class OnBoardingViewController: UIViewController {
             scrollView.addSubview(self.descriptionLabel)
         }
         
-        
+        //ver1.0.1 온보딩 레이아웃 수정
         pageControl.snp.makeConstraints {
-            $0.bottom.equalToSuperview().inset(100)
+//            $0.bottom.equalToSuperview().inset(100)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(100)
             $0.centerX.equalToSuperview()
         }
         
         confirmButton.snp.makeConstraints {
-            $0.top.equalTo(pageControl.snp.bottom).offset(30)
+//            $0.top.equalTo(pageControl.snp.bottom).offset(30)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(30)
             $0.leading.trailing.equalToSuperview().inset(21)
             $0.height.equalTo(50)
         }

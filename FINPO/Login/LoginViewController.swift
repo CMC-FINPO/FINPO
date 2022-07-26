@@ -105,20 +105,11 @@ class LoginViewController: UIViewController {
             $0.top.equalTo(appleSignUpButton.snp.bottom).offset(20)
             $0.leading.trailing.equalToSuperview().inset(21)
             $0.height.equalTo(55)
-        }
-        
+        }        
        
     }
     
     private func setInputBind() {
-        //TODO: 로그아웃 후 재 로그인 했을 때, HomeVC로 이동
-                                
-        //KAKAO
-//        kakaoSignUpButton.rx.tap
-//            .take(1)
-//            .bind(to: viewModel.input.kakaoSignUpObserver)
-//            .disposed(by: disposeBag)
-        
         ///카카오 리팩
         kakaoSignUpButton.rx.tap
             .take(1)
@@ -126,8 +117,7 @@ class LoginViewController: UIViewController {
                 self?.viewModel.input.finalSocialSignupCheckObserver.accept(.kakao)
             }
             .disposed(by: disposeBag)
-        
-        
+                
         ///구글 리팩 완료
         googleSignUpButton.rx.tap
             .bind { [weak self] in
@@ -224,51 +214,6 @@ class LoginViewController: UIViewController {
         authorizationController.presentationContextProvider = self
         //회원가입 시 리퀘스트 요청?
         authorizationController.performRequests() //요청 보냄
-        
-//        let checkValidation = UserDefaults.standard.string(forKey: "appleAccessToken") ?? nil
-//        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? nil
-//        ///재로그인
-//        if checkValidation != nil {
-//            ///탈퇴한 경우
-//            if accessToken != nil {
-//                let url = BaseURL.url.appending("oauth/login/apple")
-//                let appleAccessToken = checkValidation
-//                let header: HTTPHeaders = [
-//                    "Content-Type": "application/json;charset=UTF-8",
-//                    "Authorization": "Bearer ".appending(appleAccessToken ?? "")
-//                ]
-//
-//                API.session.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: header)
-//                    .validate(statusCode: 200..<300)
-//                    .response {
-//                        response in
-//                            switch response.result {
-//                            case .success(let data):
-//                                if let data = data {
-//                                    do {
-//                                        let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-//                                        let result = json?["data"] as? [String:Any]
-//                                        let accessToken = result?["accessToken"] as? String ?? ""
-//                                        let refreshToken = result?["refreshToken"] as? String ?? ""
-//                                        UserDefaults.standard.setValue(accessToken, forKey: "accessToken")
-//                                        UserDefaults.standard.setValue(refreshToken, forKey: "refreshToken")
-//                                        UserDefaults.standard.setValue("apple", forKey: "socialType")
-//                                        LoginViewModel.socialType = "apple"
-//                                        print("애플 재로그인")
-//                                        self.viewModel.output.goAppleLogin.accept(true)
-//                                    }
-//                                }
-//                            case .failure(let err):
-//                                print("애플 재로그인 에러발생: \(err)")
-//                            }
-//                    }
-//            } else {
-//                authorizationController.performRequests() //요청 보냄
-//            }
-//
-//        } else {
-//            authorizationController.performRequests() //요청 보냄
-//        }
     }
 
 }

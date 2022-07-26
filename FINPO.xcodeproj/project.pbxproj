@@ -32,7 +32,6 @@
 		DD5A18D6286D568500903616 /* CategoryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5A18D5286D568500903616 /* CategoryModel.swift */; };
 		DD5A18D8286D577300903616 /* CallCategoryAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5A18D7286D577300903616 /* CallCategoryAPI.swift */; };
 		DD5A18DD286DE16F00903616 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = DD5A18DC286DE16F00903616 /* FirebaseMessaging */; };
-		DD5A18DF286E08F400903616 /* FindFilteredRegionAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5A18DE286E08F400903616 /* FindFilteredRegionAPI.swift */; };
 		DD5A18E1286F321500903616 /* HomeDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5A18E0286F321500903616 /* HomeDetailViewController.swift */; };
 		DD5A18E3286FEAEA00903616 /* ServiceInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5A18E2286FEAEA00903616 /* ServiceInfoViewController.swift */; };
 		DD5A18E5286FEB0300903616 /* ApplyInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5A18E4286FEB0300903616 /* ApplyInfoViewController.swift */; };
@@ -100,7 +99,6 @@
 		DDBFEEB628586A4F003E9662 /* launchScreen_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = DDBFEEB528586A4F003E9662 /* launchScreen_logo.png */; };
 		DDBFEEB82859E162003E9662 /* MyAuthenticationCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBFEEB72859E162003E9662 /* MyAuthenticationCredential.swift */; };
 		DDBFEEBB2859E675003E9662 /* MyAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBFEEBA2859E675003E9662 /* MyAuthenticator.swift */; };
-		DDBFEEBD2859F380003E9662 /* PredictAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBFEEBC2859F380003E9662 /* PredictAPI.swift */; };
 		DDBFEEC0285A21FE003E9662 /* PaddingLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBFEEBF285A21FE003E9662 /* PaddingLabel.swift */; };
 		DDBFEEC2285AEDE3003E9662 /* TagCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBFEEC1285AEDE3003E9662 /* TagCollectionViewCell.swift */; };
 		DDBFEEC4285B4F08003E9662 /* AddRegionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBFEEC3285B4F08003E9662 /* AddRegionViewController.swift */; };
@@ -152,7 +150,6 @@
 		DD5A18D3286D389F00903616 /* FilterCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCollectionViewCell.swift; sourceTree = "<group>"; };
 		DD5A18D5286D568500903616 /* CategoryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryModel.swift; sourceTree = "<group>"; };
 		DD5A18D7286D577300903616 /* CallCategoryAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallCategoryAPI.swift; sourceTree = "<group>"; };
-		DD5A18DE286E08F400903616 /* FindFilteredRegionAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindFilteredRegionAPI.swift; sourceTree = "<group>"; };
 		DD5A18E0286F321500903616 /* HomeDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeDetailViewController.swift; sourceTree = "<group>"; };
 		DD5A18E2286FEAEA00903616 /* ServiceInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceInfoViewController.swift; sourceTree = "<group>"; };
 		DD5A18E4286FEB0300903616 /* ApplyInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplyInfoViewController.swift; sourceTree = "<group>"; };
@@ -219,7 +216,6 @@
 		DDBFEEB528586A4F003E9662 /* launchScreen_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = launchScreen_logo.png; sourceTree = "<group>"; };
 		DDBFEEB72859E162003E9662 /* MyAuthenticationCredential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAuthenticationCredential.swift; sourceTree = "<group>"; };
 		DDBFEEBA2859E675003E9662 /* MyAuthenticator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAuthenticator.swift; sourceTree = "<group>"; };
-		DDBFEEBC2859F380003E9662 /* PredictAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredictAPI.swift; sourceTree = "<group>"; };
 		DDBFEEBF285A21FE003E9662 /* PaddingLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaddingLabel.swift; sourceTree = "<group>"; };
 		DDBFEEC1285AEDE3003E9662 /* TagCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagCollectionViewCell.swift; sourceTree = "<group>"; };
 		DDBFEEC3285B4F08003E9662 /* AddRegionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRegionViewController.swift; sourceTree = "<group>"; };
@@ -530,13 +526,11 @@
 		DDBFEEBE2859F387003E9662 /* API */ = {
 			isa = PBXGroup;
 			children = (
-				DDBFEEBC2859F380003E9662 /* PredictAPI.swift */,
 				DD1EC9702861B23000B58F10 /* SignOutAPI.swift */,
 				DD1BFFBC2863312200ACAAE1 /* SearchPolicyAPI.swift */,
 				DDECAE9B286AF317001C48D3 /* LastSignUpAPI.swift */,
 				DDECAE9D286B2949001C48D3 /* CallMyRegionAPI.swift */,
 				DD5A18D7286D577300903616 /* CallCategoryAPI.swift */,
-				DD5A18DE286E08F400903616 /* FindFilteredRegionAPI.swift */,
 				DD5A18E82870257800903616 /* SearchDetailPolicyAPI.swift */,
 				DD5A18F128731C7600903616 /* AddParticipatedAPI.swift */,
 				DD5A18F52873FB6500903616 /* MyPolicySearchAPI.swift */,
@@ -708,7 +702,6 @@
 			files = (
 				DD5A19072876C83D00903616 /* ParticipationViewController.swift in Sources */,
 				DD5A18E72870227C00903616 /* DetailInfoModel.swift in Sources */,
-				DDBFEEBD2859F380003E9662 /* PredictAPI.swift in Sources */,
 				DDFD6EEA2854B2B000A1706F /* InterestCollectionViewCell.swift in Sources */,
 				DD612576287B0451002FBF4D /* BookmarkCollectionViewCell.swift in Sources */,
 				DDAC8EBF284884F80092CB25 /* LoginViewModel.swift in Sources */,
@@ -777,7 +770,6 @@
 				DDBFEEC8285E25E8003E9662 /* AddPurposeViewController.swift in Sources */,
 				DD50F7AA287DCA1200ADEB09 /* InterestCategoryViewController.swift in Sources */,
 				DDECAEA0286B564B001C48D3 /* FilterRegionViewController.swift in Sources */,
-				DD5A18DF286E08F400903616 /* FindFilteredRegionAPI.swift in Sources */,
 				DDFD6EF62856555700A1706F /* MyPageViewModel.swift in Sources */,
 				DD5A18FC2875AD7B00903616 /* InterestRegionViewController.swift in Sources */,
 				DD5A18F42873484400903616 /* MemoViewController.swift in Sources */,
