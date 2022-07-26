@@ -176,6 +176,11 @@ class EditUserInfoViewController: UIViewController {
         
         ///navigation
         navigationController?.navigationBar.topItem?.backButtonTitle = ""
+        
+        ///TextField 편의성
+        [nameTextField, nickNameTextField, birthTextField].forEach {
+            $0.delegate = self
+        }
     }
     
     fileprivate func setLayout() {
@@ -410,6 +415,11 @@ extension EditUserInfoViewController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+        if(textField == self.nameTextField) {
+            self.nickNameTextField.becomeFirstResponder()
+        } else if(textField == self.nickNameTextField) {
+            self.birthTextField.becomeFirstResponder()
+        }
         return true
     }
 }

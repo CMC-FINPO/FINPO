@@ -518,6 +518,11 @@ extension LoginBasicInfoViewController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+        if(textField == self.nameTextField) {
+            self.nickNameTextField.becomeFirstResponder()
+        } else if(textField == self.nickNameTextField) {
+            self.birthTextField.becomeFirstResponder()
+        }
         return true
     }
 }
