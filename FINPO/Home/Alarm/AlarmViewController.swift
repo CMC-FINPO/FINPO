@@ -231,8 +231,7 @@ class AlarmViewController: UIViewController {
         viewModel.output.didCompletedDelete
             .subscribe(onNext: { valid in
                 self.viewModel.input.getMyDeleteAlarmList.accept(())
-            }).disposed(by: disposeBag)
-        
+            }).disposed(by: disposeBag)        
         
     }
     

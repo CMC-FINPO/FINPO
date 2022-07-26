@@ -75,6 +75,7 @@ class LoginRegionViewController: UIViewController {
         tv.backgroundColor = UIColor(hexString: "F9F9F9")
         tv.bounces = false
         tv.showsHorizontalScrollIndicator = false
+        tv.showsVerticalScrollIndicator = false
         return tv
     }()
     
@@ -84,6 +85,7 @@ class LoginRegionViewController: UIViewController {
         tv.backgroundColor = UIColor(hexString: "F9F9F9")
         tv.bounces = false
         tv.showsHorizontalScrollIndicator = false
+        tv.showsVerticalScrollIndicator = false
         return tv
     }()
     
@@ -214,6 +216,12 @@ class LoginRegionViewController: UIViewController {
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] indexPath in
                 self?.viewModel.getSubRegionDataToTableView(indexPath.row)
+                ///준비중인 지역 유저 선택 불가
+                if(indexPath.row >= 3) {
+                    self?.localRegionTableView.isUserInteractionEnabled = false
+                } else {
+                    self?.localRegionTableView.isUserInteractionEnabled = true
+                }
             }).disposed(by: disposeBag)
         
         localRegionTableView.rx.itemSelected

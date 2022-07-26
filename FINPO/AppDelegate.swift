@@ -21,20 +21,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let googleSiginInConfig = GIDConfiguration.init(clientID: "845892149030-nb47tiirkmtqmgs34f7klha903pip0g2.apps.googleusercontent.com")
     
     ///APNs 성공/실패 함수
-//    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-//        print("Failed to register for notifications: \(error.localizedDescription)")
-//
-//    }
-//    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-//        Messaging.messaging().apnsToken = deviceToken
-//        let tokenParts = deviceToken.map { data in String(format: "%02.2hhx", data) }
-//
-//        //서버로 이 토큰을 보내는가?(디바이스토큰 / FCM 토큰이 있는데 여기선 디바이스 토큰 UserDefaults 저장)
-//        let token = tokenParts.joined()
-//        UserDefaults.standard.setValue(token, forKey: "fcmToken")
-//        print("Device Token: \(token)")
-//
-//    }
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("Failed to register for notifications: \(error.localizedDescription)")
+
+    }
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        Messaging.messaging().apnsToken = deviceToken
+        let tokenParts = deviceToken.map { data in String(format: "%02.2hhx", data) }
+
+        //서버로 이 토큰을 보내는가?(디바이스토큰 / FCM 토큰이 있는데 여기선 디바이스 토큰 UserDefaults 저장)
+        let token = tokenParts.joined()
+        UserDefaults.standard.setValue(token, forKey: "fcmToken")
+        print("Device Token: \(token)")
+
+    }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         var window: UIWindow?
@@ -46,14 +46,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         registerRemoteNotification()
         
         ///APNs
-//        UNUserNotificationCenter.current().delegate = self
-//        UNUserNotificationCenter.current()
-//            .requestAuthorization(options: [.alert, .sound, .badge]) { [weak self] granted, error in
-//                print("APNs permission granted: \(granted)")
-//            }
+        UNUserNotificationCenter.current().delegate = self
+        UNUserNotificationCenter.current()
+            .requestAuthorization(options: [.alert, .sound, .badge]) { [weak self] granted, error in
+                print("APNs permission granted: \(granted)")
+            }
         
         ///APNs 등록
-//        application.registerForRemoteNotifications()        
+        application.registerForRemoteNotifications()
 
         //GID 사용자의 로그인 상태 복원 시도
         GoogleSignIn.GIDSignIn.sharedInstance.restorePreviousSignIn { (user, error) in
@@ -108,7 +108,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
-//    ///FCM
+    ///FCM
 //    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
 //        Messaging.messaging().apnsToken = deviceToken
 //    }
