@@ -13,7 +13,7 @@ import Alamofire
 struct CallCategoryAPI {
     static func callCategory() -> Observable<CategoryModel> {
         return Observable.create { observer in
-            let url = "https://dev.finpo.kr/policy/category/name/child-format"
+            let url = BaseURL.url.appending("policy/category/name/child-format")
             
             let header: HTTPHeaders = [
                 "Content-Type": "application/json;charset=UTF-8",
@@ -125,7 +125,34 @@ struct CallCategoryAPI {
                     case .failure(let err):
                         observer.onError(err)
                     }
-                } 
+                }
+            
+            return Disposables.create()
+        }
+    }
+    
+    static func getParentCategory() -> Observable<InterestingAPIResponse> {
+        return Observable.create { observer in
+            
+            let url = BaseURL.url.appending("policy/category/name")
+            
+            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            
+            let header: HTTPHeaders = [
+                "Content-Type": "application/json;charset=UTF-8",
+                "Authorization": "Bearer ".appending(accessToken)
+            ]
+            
+            AF.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+                .validate(statusCode: 200..<300)
+                .responseDecodable(of: InterestingAPIResponse.self) { response in
+                    switch response.result {
+                    case .success(let parent):
+                        observer.onNext(parent)
+                    case .failure(let err):
+                        observer.onCompleted()
+                    }
+                }
             
             return Disposables.create()
         }
