@@ -188,7 +188,7 @@ struct UserInfoAPI {
     
     static func getMyCategory() -> Observable<MyCategoryModel> {
         return Observable.create { observer in
-            
+                        
             let url = BaseURL.url.appending("policy/category/me/parent")
             let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
             let header: HTTPHeaders = [
@@ -196,18 +196,20 @@ struct UserInfoAPI {
                 "Authorization": "Bearer ".appending(accessToken)
             ]
             
-            AF.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
-                .validate(statusCode: 200..<300)
-                .responseDecodable(of: MyCategoryModel.self) { response in
-                    switch response.value {
-                    case .some(let data):
-                        print("가져온 관심 카테고리 데이터: \(data)")
-                        observer.onNext(data)
-                    case .none:
-                        observer.onCompleted()
+            DispatchQueue.main.async {
+                AF.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+                    .validate(statusCode: 200..<300)
+                    .responseDecodable(of: MyCategoryModel.self) { response in
+                        switch response.value {
+                        case .some(let data):
+                            print("가져온 관심 카테고리 데이터: \(data)")
+                            observer.onNext(data)
+                        case .none:
+                            observer.onCompleted()
+                        }
                     }
-                }
-            
+            }
+                        
             return Disposables.create()
         }
     }

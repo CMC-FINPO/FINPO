@@ -21,23 +21,25 @@ struct SearchDetailPolicyAPI {
                 "Authorization": "Bearer ".appending(accessToken)
             ]
             
-            API.session.request(url, method: .get, parameters: nil, encoding: URLEncoding(destination: .httpBody), headers: header, interceptor: MyRequestInterceptor())
-                .validate(statusCode: 200..<300)
-                .responseJSON { (response) in
-                    switch response.result {
-                    case .success(let data):
-                        do {
-                            let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
-                            let json = try JSONDecoder().decode(DetailInfoModel.self, from: jsonData)
-                            observer.onNext(json)
-                        } catch(let error) {
-                            print("알 수 없는 에러발생: \(error)")
+            DispatchQueue.main.async {
+                AF.request(url, method: .get, parameters: nil, encoding: URLEncoding(destination: .httpBody), headers: header, interceptor: MyRequestInterceptor())
+                    .validate(statusCode: 200..<300)
+                    .responseJSON { (response) in
+                        switch response.result {
+                        case .success(let data):
+                            do {
+                                let jsonData = try JSONSerialization.data(withJSONObject: data, options: [])
+                                let json = try JSONDecoder().decode(DetailInfoModel.self, from: jsonData)
+                                observer.onNext(json)
+                            } catch(let error) {
+                                print("알 수 없는 에러발생: \(error)")
+                            }
+                        case .failure(let error):
+                            print("에러 발생!!: \(error)")
+                            observer.onError(error)
                         }
-                    case .failure(let error):
-                        print("에러 발생!!: \(error)")
-                        observer.onError(error)
                     }
-                }
+            }            
             
             return Disposables.create()
         }

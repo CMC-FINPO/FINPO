@@ -276,7 +276,6 @@ class HomeViewModel {
             .subscribe(onNext: { info in
                 guard let str = info.data.support else { return }
                 HomeViewModel.serviceString.removeAll()
-//                HomeViewModel.serviceString = str.components(separatedBy: ["n", "ㅇ", "\n"])
                 HomeViewModel.serviceString.append(info.data.support ?? "")
                 self.output.serviceInfoOutput.accept(info)
             }).disposed(by: disposeBag)

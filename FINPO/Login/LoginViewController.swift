@@ -232,9 +232,9 @@ extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizatio
             let userIdentifier = appleIDCredential.user
             
             ///ver1.0.2 애플 재로그인 시 유저정보가 제공되지 않음 -> guard 통과 못함
-//            guard let givenName = appleIDCredential.fullName?.givenName else { return }
-//            guard let familyName = appleIDCredential.fullName?.familyName else { return }
-//            viewModel.user.nickname = familyName + givenName
+            let givenName = appleIDCredential.fullName?.givenName ?? ""
+            let familyName = appleIDCredential.fullName?.familyName ?? ""
+            viewModel.user.nickname = familyName + givenName
 
             if let authorizationCode = appleIDCredential.authorizationCode,
                let identifyToken = appleIDCredential.identityToken,

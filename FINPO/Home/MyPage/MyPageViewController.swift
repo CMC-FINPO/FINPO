@@ -54,8 +54,9 @@ class MyPageViewController: UIViewController {
     
     private var profileImageView: UIImageView = {
         let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 72, height: 72))
-        imageView.image = UIImage(named: "profile")
-        imageView.clipsToBounds = true
+        imageView.image = UIImage(named: "profile=Default_72")
+        imageView.layer.masksToBounds = true
+//        imageView.clipsToBounds = true
         imageView.backgroundColor = .white
         return imageView
     }()
@@ -241,7 +242,7 @@ class MyPageViewController: UIViewController {
         view.addSubview(nameLabel)
         nameLabel.snp.makeConstraints {
             $0.top.equalTo(profileImageView.snp.top)
-            $0.leading.equalToSuperview().inset(110)
+            $0.leading.equalTo(profileImageView.snp.trailing).offset(12)
         }
         
         view.addSubview(interestingAreaLabel)
@@ -370,7 +371,7 @@ class MyPageViewController: UIViewController {
                 print("유저 프로필 이미지 url: \(userInfo.profileImg)")
                 self.nameLabel.text = "\(userInfo.nickname)님"
                 guard let profileImg = userInfo.profileImg else {
-                    self.profileImageView.image = UIImage(named: "profile")
+                    self.profileImageView.image = UIImage(named: "profile=Default_72")
                     return
                 }
                 print("마이페이지에서 가져온 프로필 이미지\(profileImg)")

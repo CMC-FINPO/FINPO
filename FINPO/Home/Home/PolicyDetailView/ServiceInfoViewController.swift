@@ -182,7 +182,7 @@ class ServiceInfoViewController: UIViewController {
             $0.top.equalTo(scrollView.contentLayoutGuide.snp.top)
             $0.leading.trailing.bottom.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalTo(scrollView.snp.width)
-            $0.height.equalTo(view.bounds.height/2 + 100)
+            $0.height.equalTo(view.bounds.height/2 + 150)
         }
 //        let contentViewHeight = contentView.heightAnchor.constraint(greaterThanOrEqualTo: view.heightAnchor)
 //        contentViewHeight.priority = .defaultLow
@@ -220,7 +220,7 @@ class ServiceInfoViewController: UIViewController {
             $0.leading.equalTo(policyTypeLabel.snp.leading)
             $0.trailing.equalTo(view.snp.trailing).inset(20)
 //            $0.height.greaterThanOrEqualTo(50)
-            $0.bottom.equalTo(serviceInfoLabel.snp.bottom).offset(100)
+            $0.bottom.equalTo(serviceInfoLabel.snp.bottom).offset(150)
         }
         
 //        verticalStackView.addArrangedSubview(verticalSeparatorLineView)

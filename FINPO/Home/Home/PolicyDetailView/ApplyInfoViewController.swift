@@ -152,7 +152,7 @@ class ApplyInfoViewController: UIViewController {
             $0.top.equalTo(scrollView.contentLayoutGuide.snp.top)
             $0.leading.trailing.bottom.equalTo(scrollView.contentLayoutGuide)
             $0.width.equalTo(scrollView.snp.width)
-            $0.height.equalTo(view.bounds.height/2 + 100)
+            $0.height.equalTo(view.bounds.height/2 + 200)
         }
         
         contentView.addSubview(policyLinkTitleLabel)
