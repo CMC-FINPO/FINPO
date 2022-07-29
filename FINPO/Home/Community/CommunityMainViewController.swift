@@ -15,6 +15,14 @@ class CommunityMainViewController: UIViewController {
     let disposeBag = DisposeBag()
     let viewModel = CommunityViewModel()
     
+    ///test
+    let dummyItems = Observable.just([
+        " Usage of text input box ",
+        " Usage of switch button ",
+        " Usage of progress bar ",
+        " Usage of text labels ",
+        ])
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -46,6 +54,7 @@ class CommunityMainViewController: UIViewController {
         let label = UILabel()
         label.textColor = UIColor(hexString: "000000")
         label.font = UIFont(name: "AppleSDGothicNeo-Semibold", size: 18)
+        label.text = "***개의 글"
         return label
     }()
     
@@ -58,8 +67,10 @@ class CommunityMainViewController: UIViewController {
     
     private var postTableView: UITableView = {
         let tv = UITableView()
+        tv.backgroundColor = .white
         tv.rowHeight = CGFloat(150)
         tv.bounces = false
+        tv.separatorInset.left = 0
         return tv
     }()
     
@@ -100,7 +111,7 @@ class CommunityMainViewController: UIViewController {
                 
         view.addSubview(sumOfPostLabel)
         sumOfPostLabel.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(15)
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(25)
             $0.leading.equalToSuperview().inset(21)
             
         }
@@ -136,7 +147,12 @@ class CommunityMainViewController: UIViewController {
     }
     
     fileprivate func setOutputBind() {
-        
+        dummyItems
+            .observe(on: MainScheduler.instance)
+            .bind(to: postTableView.rx.items(cellIdentifier: "postTableViewCell", cellType: BoardTableViewCell.self)) { (index, element, cell) in
+                cell.selectionStyle = .none
+                cell.contentView.backgroundColor = .white
+            }.disposed(by: disposeBag)
     }
 
 }

@@ -89,7 +89,8 @@ class BoardTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        contentView.backgroundColor = UIColor(hexString: "EBEBEB") // hex 수정
+        contentView.backgroundColor = UIColor(hexString: "F0F0F0") // hex 수정
+        
         [userImageView, userName, dateLabel, contentLabel, likeButton, bookMarkButton, likeCountLabel, commentCountLabel, viewsCountLabel].forEach {
             contentView.addSubview($0)
         }
