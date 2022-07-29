@@ -104,6 +104,7 @@
 		DDBFEEC4285B4F08003E9662 /* AddRegionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBFEEC3285B4F08003E9662 /* AddRegionViewController.swift */; };
 		DDBFEEC6285B5134003E9662 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBFEEC5285B5134003E9662 /* LeftAlignedCollectionViewFlowLayout.swift */; };
 		DDBFEEC8285E25E8003E9662 /* AddPurposeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBFEEC7285E25E8003E9662 /* AddPurposeViewController.swift */; };
+		DDE615CC2894054C0067040B /* CommunityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDE615CB2894054C0067040B /* CommunityViewModel.swift */; };
 		DDECAE952866C28B001C48D3 /* AddPurposeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDECAE942866C28B001C48D3 /* AddPurposeCollectionViewCell.swift */; };
 		DDECAE9728674BCF001C48D3 /* LoginSuccessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDECAE9628674BCF001C48D3 /* LoginSuccessViewController.swift */; };
 		DDECAE9A286AB0E3001C48D3 /* FilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDECAE99286AB0E3001C48D3 /* FilterViewController.swift */; };
@@ -221,6 +222,7 @@
 		DDBFEEC3285B4F08003E9662 /* AddRegionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRegionViewController.swift; sourceTree = "<group>"; };
 		DDBFEEC5285B5134003E9662 /* LeftAlignedCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeftAlignedCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
 		DDBFEEC7285E25E8003E9662 /* AddPurposeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPurposeViewController.swift; sourceTree = "<group>"; };
+		DDE615CB2894054C0067040B /* CommunityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityViewModel.swift; sourceTree = "<group>"; };
 		DDECAE942866C28B001C48D3 /* AddPurposeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPurposeCollectionViewCell.swift; sourceTree = "<group>"; };
 		DDECAE9628674BCF001C48D3 /* LoginSuccessViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSuccessViewController.swift; sourceTree = "<group>"; };
 		DDECAE982867650C001C48D3 /* FINPO.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FINPO.entitlements; sourceTree = "<group>"; };
@@ -340,6 +342,7 @@
 			isa = PBXGroup;
 			children = (
 				DD4D493428856C2A00E25AB6 /* CommunityMainViewController.swift */,
+				DDE615CB2894054C0067040B /* CommunityViewModel.swift */,
 			);
 			path = Community;
 			sourceTree = "<group>";
@@ -712,6 +715,7 @@
 				DD90E99A284B434600B19B8C /* LoginDetailViewModel.swift in Sources */,
 				DD61257F287C3D11002FBF4D /* AlarmAPI.swift in Sources */,
 				DD60A0BC288715B2004E9015 /* ServiceTypeTableViewCell.swift in Sources */,
+				DDE615CC2894054C0067040B /* CommunityViewModel.swift in Sources */,
 				DD5A18F82874309400903616 /* BookMarkAPI.swift in Sources */,
 				DD1BFFB9286307BD00ACAAE1 /* HomeTableViewCell.swift in Sources */,
 				DD60C1E62882D945003B201E /* MyPolicyTestModel.swift in Sources */,

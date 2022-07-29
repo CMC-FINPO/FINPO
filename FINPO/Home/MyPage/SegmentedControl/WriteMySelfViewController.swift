@@ -39,9 +39,7 @@ final class WriteMySelfViewController: UIViewController {
         setInputBind()
         setOutputBind()
     }
-    
-
-    
+        
     fileprivate func setAttribute() {
         view.backgroundColor = .white
         
