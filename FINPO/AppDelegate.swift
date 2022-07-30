@@ -29,7 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Messaging.messaging().apnsToken = deviceToken
         let tokenParts = deviceToken.map { data in String(format: "%02.2hhx", data) }
 
-        //서버로 이 토큰을 보내는가?(디바이스토큰 / FCM 토큰이 있는데 여기선 디바이스 토큰 UserDefaults 저장)
+        //TODO: 서버로 이 토큰을 보내는가?(디바이스토큰 / FCM 토큰이 있는데 여기선 디바이스 토큰 UserDefaults 저장)
         let token = tokenParts.joined()
         UserDefaults.standard.setValue(token, forKey: "fcmToken")
         print("Device Token: \(token)")

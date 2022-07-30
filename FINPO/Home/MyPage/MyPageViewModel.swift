@@ -171,7 +171,7 @@ class MyPageViewModel {
             ]
             
             AF.upload(multipartFormData: { multipart in
-                multipart.append(imageData, withName: "profileImgFile", fileName: "\(self.user.nickname).jpeg", mimeType: "image/jpeg")
+                multipart.append(imageData, withName: "profileImgFile", fileName: "editedProfileImage.jpeg", mimeType: "image/jpeg")
             }, to: url , headers: header, interceptor: MyRequestInterceptor())
             .responseJSON { (response) in
                 guard let statusCode = response.response?.statusCode else { return }
