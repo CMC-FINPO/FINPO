@@ -12,7 +12,8 @@ struct LastSignUpAPI {
     static func lastSignUpAPI(regionId: [Int]) {
 
         let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
-        let urlStr = "https://dev.finpo.kr/region/me"
+//        let urlStr = "https://dev.finpo.kr/region/me"
+        let urlStr = BaseURL.url.appending("region/me")
         
         let url = URL(string: urlStr)
         var request = URLRequest(url: url!)

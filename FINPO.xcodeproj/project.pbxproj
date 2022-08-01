@@ -105,6 +105,7 @@
 		DDBFEEC6285B5134003E9662 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBFEEC5285B5134003E9662 /* LeftAlignedCollectionViewFlowLayout.swift */; };
 		DDBFEEC8285E25E8003E9662 /* AddPurposeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBFEEC7285E25E8003E9662 /* AddPurposeViewController.swift */; };
 		DDE615CC2894054C0067040B /* CommunityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDE615CB2894054C0067040B /* CommunityViewModel.swift */; };
+		DDE615CE2897A4890067040B /* KeyChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDE615CD2897A4890067040B /* KeyChain.swift */; };
 		DDECAE952866C28B001C48D3 /* AddPurposeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDECAE942866C28B001C48D3 /* AddPurposeCollectionViewCell.swift */; };
 		DDECAE9728674BCF001C48D3 /* LoginSuccessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDECAE9628674BCF001C48D3 /* LoginSuccessViewController.swift */; };
 		DDECAE9A286AB0E3001C48D3 /* FilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDECAE99286AB0E3001C48D3 /* FilterViewController.swift */; };
@@ -223,6 +224,7 @@
 		DDBFEEC5285B5134003E9662 /* LeftAlignedCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeftAlignedCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
 		DDBFEEC7285E25E8003E9662 /* AddPurposeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPurposeViewController.swift; sourceTree = "<group>"; };
 		DDE615CB2894054C0067040B /* CommunityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityViewModel.swift; sourceTree = "<group>"; };
+		DDE615CD2897A4890067040B /* KeyChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyChain.swift; sourceTree = "<group>"; };
 		DDECAE942866C28B001C48D3 /* AddPurposeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPurposeCollectionViewCell.swift; sourceTree = "<group>"; };
 		DDECAE9628674BCF001C48D3 /* LoginSuccessViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSuccessViewController.swift; sourceTree = "<group>"; };
 		DDECAE982867650C001C48D3 /* FINPO.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FINPO.entitlements; sourceTree = "<group>"; };
@@ -568,6 +570,7 @@
 			children = (
 				DDFD6EF02856494600A1706F /* MyPageViewController.swift */,
 				DDFD6EF52856555700A1706F /* MyPageViewModel.swift */,
+				DDE615CD2897A4890067040B /* KeyChain.swift */,
 				DD5A19082876CDF000903616 /* 참여 정책 */,
 				DD5A19012875ADFD00903616 /* 지역 수정 */,
 				DDB1CCA5285F4A1C00B42EDC /* Setting */,
@@ -770,6 +773,7 @@
 				DD60C1DA287F130B003B201E /* CategoryAlarmViewController.swift in Sources */,
 				DD2EA46A28487F730004D707 /* LoginViewController.swift in Sources */,
 				DD1BFFBF2863316200ACAAE1 /* SearchModel.swift in Sources */,
+				DDE615CE2897A4890067040B /* KeyChain.swift in Sources */,
 				DD6125722879D953002FBF4D /* BookmarkViewModel.swift in Sources */,
 				DDBFEEC8285E25E8003E9662 /* AddPurposeViewController.swift in Sources */,
 				DD50F7AA287DCA1200ADEB09 /* InterestCategoryViewController.swift in Sources */,
