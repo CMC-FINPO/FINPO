@@ -15,7 +15,9 @@ struct UserInfoAPI {
             
             let url = BaseURL.url.appending("region/me")
             
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> Keychain 수정
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
             
             let header: HTTPHeaders = [
                 "Content-Type": "application/json;charset=UTF-8",
@@ -52,7 +54,9 @@ struct UserInfoAPI {
             let url = URL(string: urlStr)
             var request = URLRequest(url: url!)
             
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
             
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             request.setValue("Bearer ".appending(accessToken), forHTTPHeaderField: "Authorization")
@@ -87,8 +91,10 @@ struct UserInfoAPI {
             let url = URL(string: urlStr)
             var request = URLRequest(url: url!)
             
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
-            
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
+                        
             let parameter: Parameters = [
                 "regionId": mainRegionId
             ]
@@ -123,7 +129,10 @@ struct UserInfoAPI {
         return Observable.create { observer in
             
             let url = BaseURL.url.appending("policy/joined/me")
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
+            
             let header: HTTPHeaders = [
                 "Content-Type": "application/json;charset=UTF-8",
                 "Authorization": "Bearer ".appending(accessToken)
@@ -156,7 +165,10 @@ struct UserInfoAPI {
         return Observable.create { observer in
             
             let url = BaseURL.url.appending("policy/interest/me")
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
+            
             let header: HTTPHeaders = [
                 "Content-Type": "application/json;charset=UTF-8",
                 "Authorization": "Bearer ".appending(accessToken)
@@ -190,7 +202,10 @@ struct UserInfoAPI {
         return Observable.create { observer in
                         
             let url = BaseURL.url.appending("policy/category/me/parent")
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
+            
             let header: HTTPHeaders = [
                 "Content-Type": "application/json;charset=UTF-8",
                 "Authorization": "Bearer ".appending(accessToken)
@@ -218,7 +233,10 @@ struct UserInfoAPI {
         return Observable.create { observer in
             
             let url = BaseURL.url.appending("user/me")
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
+            
             let header: HTTPHeaders = [
                 "Content-Type": "application/json;charset=UTF-8",
                 "Authorization": "Bearer ".appending(accessToken)
@@ -250,7 +268,10 @@ struct UserInfoAPI {
                 "nickname": encodedNickname
             ]
             
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
+            
             let header: HTTPHeaders = [
                 "Content-Type": "application/json;charset=UTF-8",
                 "Authorization": "Bearer ".appending(accessToken)
@@ -289,7 +310,9 @@ struct UserInfoAPI {
             
             let url = BaseURL.url.appending("user/me")
             
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
             
             let header: HTTPHeaders = [
                 "Content-Type": "application/json;charset=UTF-8",

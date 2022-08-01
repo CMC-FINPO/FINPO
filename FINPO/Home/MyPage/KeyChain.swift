@@ -10,6 +10,10 @@ import Alamofire
 import Security
 
 class KeyChain: NSObject {
+    
+    static var accessToken = "accessToken"
+    static var refreshToken = "refreshToken"
+    
     ///create keychain
     class func create(key: String, token: String) {
         let query: NSDictionary = [

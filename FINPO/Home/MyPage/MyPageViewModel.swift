@@ -116,7 +116,9 @@ class MyPageViewModel {
     
     func getProfileInfo() -> Observable<User> {
         return Observable.create { observer in
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
             let url = BaseURL.url.appending("user/me")
             let header: HTTPHeaders = [
                 "Content-Type":"application/json;charset=UTF-8",
@@ -163,7 +165,9 @@ class MyPageViewModel {
     func updateProfileImage(_ image: UIImage) -> Observable<String> {
         return Observable.create { observer in
             let imageData = image.jpegData(compressionQuality: 1)!
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
             let url = BaseURL.url.appending("user/me/profile-img")
             let header: HTTPHeaders = [
                 "Content-Type":"application/x-www-form-urlencoded;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm",

@@ -10,8 +10,8 @@ import Alamofire
 
 class MyRequestInterceptor: RequestInterceptor {
     func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
-        guard urlRequest.url?.absoluteString.hasPrefix("https://api.finpo.kr") == true,
-              let accessToken = UserDefaults.standard.string(forKey: "accessToken") else {
+        guard urlRequest.url?.absoluteString.hasPrefix(BaseURL.url) == true,
+              let accessToken = KeyChain.read(key: KeyChain.accessToken) else {
             completion(.success(urlRequest))
             return
         }
@@ -27,12 +27,17 @@ class MyRequestInterceptor: RequestInterceptor {
             return
         }
         let url = BaseURL.url.appending("oauth/reissue")
+        let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
+        let refreshToken = KeyChain.read(key: KeyChain.refreshToken) ?? ""
+        
         let parameter: Parameters = [
-            "accessToken": UserDefaults.standard.string(forKey: "accessToken") ?? "",
-            "refreshToken": UserDefaults.standard.string(forKey: "refreshToken") ?? ""
+//            "accessToken": UserDefaults.standard.string(forKey: "accessToken") ?? "",
+//            "refreshToken": UserDefaults.standard.string(forKey: "refreshToken") ?? ""
+            "accessToken": accessToken,
+            "refreshToken": refreshToken
         ]
         
-        AF.request(url, method: .post, parameters: parameter, encoding: JSONEncoding.default, headers: nil)
+        API.session.request(url, method: .post, parameters: parameter, encoding: JSONEncoding.default, headers: nil)
             .validate()
             .response { response in
                 switch response.result {
@@ -45,8 +50,10 @@ class MyRequestInterceptor: RequestInterceptor {
                             let refreshToken = result["refreshToken"] as? String ?? ""
                             let accessTokenExpiresIn = result["accessTokenExpiresIn"] as? Int ?? Int()
                             let accessTokenExpireDate = Date(milliseconds: Int64(accessTokenExpiresIn))
-                            UserDefaults.standard.set(accessToken, forKey: "accessToken")
-                            UserDefaults.standard.set(refreshToken, forKey: "refreshToken")
+//                            UserDefaults.standard.set(accessToken, forKey: "accessToken")
+//                            UserDefaults.standard.set(refreshToken, forKey: "refreshToken")
+                            KeyChain.create(key: KeyChain.accessToken, token: accessToken)
+                            KeyChain.create(key: KeyChain.refreshToken, token: refreshToken)
                             UserDefaults.standard.set(accessTokenExpireDate, forKey: "accessTokenExpiresIn")
                             print("토큰 갱신 성공!!!!")
                             completion(.retry)

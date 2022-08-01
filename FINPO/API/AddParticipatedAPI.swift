@@ -14,7 +14,10 @@ struct AddParticipatedAPI {
     static func addParticipationToAPI(id: Int, with memo: String?) -> Observable<Bool> {
         return Observable.create { observer in
             
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
+            
             let urlStr = BaseURL.url.appending("policy/joined")
             
             let parameter: Parameters
@@ -72,7 +75,10 @@ struct AddParticipatedAPI {
     static func addMemoToAPI(id: Int, with memo: String?) -> Observable<Bool> {
         return Observable.create { observer in
             
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
+            
             let urlStr = BaseURL.url.appending("policy/joined/\(id)")
             
             let parameter: Parameters = [

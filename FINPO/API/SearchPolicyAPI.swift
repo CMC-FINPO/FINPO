@@ -17,7 +17,9 @@ struct SearchPolicyAPI {
 
         return Observable.create { observer in
             
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
             
             let urlStr = BaseURL.url.appending("policy/search?size=10&sort=title,asc&sort=modifiedAt,desc")
             
@@ -85,7 +87,10 @@ struct SearchPolicyAPI {
 //            if(title == "") {
 //                return Disposables.create()
 //            }
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken")!
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken")!
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
+            
             print("타이틀: \(title), 불러 올 페이지: \(page)")
             let urlStr = BaseURL.url.appending("policy/search?size=10&sort=countOfInterest,desc")
             

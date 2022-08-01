@@ -919,19 +919,23 @@ class LoginViewModel {
                             observer.onError(viewModelError.alreadyExistAccount)
                         } else {
                             let jsonData = json?["data"] as? [String: Any]
-                            let accessToken = jsonData?["accessToken"] as? String
-                            let refreshToken = jsonData?["refreshToken"] as? String
+                            let accessToken = jsonData?["accessToken"] as? String ?? ""
+                            let refreshToken = jsonData?["refreshToken"] as? String ?? ""
                             let accessTokenExpiresIn = jsonData?["accessTokenExpiresIn"] as? Int ?? Int()
                             print("accessTokenExpiresIn 값: \(accessTokenExpiresIn)")
                             let accessTokenExpireDate = Date(milliseconds: Int64(accessTokenExpiresIn) )
                             print("accessTokenExpireDate 값: \(accessTokenExpireDate)")
+                            ///UserDefaults -> keychain 적용
+                            KeyChain.create(key: KeyChain.accessToken, token: accessToken)
+                            KeyChain.create(key: KeyChain.refreshToken, token: refreshToken)
                             
                             //API 액세스 토큰
                             self.user.accessToken = accessToken ?? ""
 //                            self.user.accessTokenFromSocial = accessToken ?? ""//필요없을듯
                             self.user.refreshToken = refreshToken ?? ""//필요없을듯
-                            UserDefaults.standard.set(self.user.accessToken, forKey: "accessToken")
-                            UserDefaults.standard.set(self.user.refreshToken, forKey: "refreshToken")
+                            ///UserDefaults -> keychain 적용[삭제예정]
+//                            UserDefaults.standard.set(self.user.accessToken, forKey: "accessToken")
+//                            UserDefaults.standard.set(self.user.refreshToken, forKey: "refreshToken")
                             UserDefaults.standard.set(accessTokenExpireDate, forKey: "accessTokenExpiresIn")
                             
                             observer.onNext(self.user)
@@ -948,7 +952,9 @@ class LoginViewModel {
     }
     
     func getStatus() {
-        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+        ///UserDefaults -> keychain
+        let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
         let url = BaseURL.url.appending("user/status/name")
         let header: HTTPHeaders = [
             "Content-Type": "application/json;charset=UTF-8",
@@ -980,7 +986,9 @@ class LoginViewModel {
     }
     
     func getPurpose() {
-        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+        ///UserDefaults -> keychain
+        let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
         let url = BaseURL.url.appending("user/purpose/name")
         let header: HTTPHeaders = [
             "Content-Type": "application/json;charset=UTF-8",
@@ -1014,7 +1022,9 @@ class LoginViewModel {
     func setStatusPurposeToUser() -> Observable<Bool> {
         return Observable.create { [weak self] observer in
             guard let self = self else { return Disposables.create() }
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
             let url = BaseURL.url.appending("user/me")
             let header: HTTPHeaders = [
                 "Content-Type": "application/json;charset=UTF-8",

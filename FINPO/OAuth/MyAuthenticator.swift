@@ -46,13 +46,13 @@ class MyAuthenticator: Authenticator {
         // 4. token을 refresh
         
         let url = BaseURL.url.appending("oauth/reissue")
+        ///UserDefaults -> keychain
+        let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
+        let refreshToken = KeyChain.read(key: KeyChain.refreshToken) ?? ""
         let parameter: Parameters = [
-            "accessToken": UserDefaults.standard.string(forKey: "accessToken") ?? "",
-            "refreshToken": UserDefaults.standard.string(forKey: "refreshToken") ?? ""
+            "accessToken": accessToken,
+            "refreshToken": refreshToken
         ]
-        
-        print("\(UserDefaults.standard.string(forKey: "accessToken") ?? "")")
-        print("\(UserDefaults.standard.string(forKey: "refreshToken") ?? "")")
         
         DispatchQueue.main.async {
             AF.request(url, method: .post, parameters: parameter, encoding: JSONEncoding.default, headers: nil)

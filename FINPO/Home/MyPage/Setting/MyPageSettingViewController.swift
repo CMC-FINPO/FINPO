@@ -214,7 +214,9 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
             let ac = UIAlertController(title: "회원 탈퇴", message: "저장된 정보가 모두 사라집니다", preferredStyle: .alert)
             ac.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
                 if(socialType == "kakao") {
-                    SignOutAPI.signoutWithAuthKakao(accessToken: UserDefaults.standard.string(forKey: "accessToken") ?? "") { valid in
+                    ///UserDefaults -> keychain
+                    let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
+                    SignOutAPI.signoutWithAuthKakao(accessToken: accessToken) { valid in
                         switch valid {
                         case .success(let value):
                             if value {
@@ -232,7 +234,9 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
                     }
                 }
                 else if(socialType == "google") {
-                    SignOutAPI.signoutWithAuthGoogle(accessToken: UserDefaults.standard.string(forKey: "accessToken") ?? "") { valid in
+                    ///UserDefaults -> keychain
+                    let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
+                    SignOutAPI.signoutWithAuthGoogle(accessToken: accessToken) { valid in
                         switch valid {
                         case .success(let value):
                             if value {
@@ -253,7 +257,9 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
                     }
                 }
                 else if(socialType == "apple") {
-                    SignOutAPI.signoutWithAuthApple(accessToken: UserDefaults.standard.string(forKey: "accessToken") ?? "") { valid in
+                    ///UserDefaults -> keychain
+                    let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
+                    SignOutAPI.signoutWithAuthApple(accessToken: accessToken) { valid in
                         switch valid {
                         case .success(let value):
                             if value {

@@ -15,7 +15,9 @@ struct DeleteParticipationAPI {
             
             let url = BaseURL.url.appending("policy/joined/\(id)")
             
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
             
             let header: HTTPHeaders = [
                 "Content-Type": "application/json;charset=UTF-8",

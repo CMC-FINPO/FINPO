@@ -13,7 +13,10 @@ struct ForWhatAPI {
     static func getAllForWhat() -> Observable<UserPurposeAPIResponse> {
         return Observable.create { observer in
             
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
+            
             let url = BaseURL.url.appending("user/purpose/name")
 
             let header: HTTPHeaders = [
@@ -41,7 +44,10 @@ struct ForWhatAPI {
     static func getMyAllForWhat() -> Observable<MyPurposeAPIResponse> {
         return Observable.create { observer in
             
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
+            
             let url = BaseURL.url.appending("user/me/purpose")
             let header: HTTPHeaders = [
                 "Content-Type": "application/json;charset=UTF-8",
@@ -69,7 +75,9 @@ struct ForWhatAPI {
             
             let url = BaseURL.url.appending("user/me")
             
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
             
             let header: HTTPHeaders = [
                 "Content-Type": "application/json;charset=UTF-8",

@@ -15,7 +15,9 @@ struct AlarmAPI {
             
             let url = BaseURL.url.appending("notification/history/me?page=0&size=5&sort=id,desc")
             
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
             
             let header: HTTPHeaders = [
                 "Content-Type": "application/json;charset=UTF-8",
@@ -50,7 +52,9 @@ struct AlarmAPI {
             
             let url = BaseURL.url.appending("notification/history/\(policyId)")
             
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
             
             let header: HTTPHeaders = [
                 "Content-Type": "application/json;charset=UTF-8",

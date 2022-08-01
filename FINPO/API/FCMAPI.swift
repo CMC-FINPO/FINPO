@@ -14,7 +14,9 @@ struct FCMAPI {
         return Observable.create { observer in
             
             let url = BaseURL.url.appending("notification/me")
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
             
             let header: HTTPHeaders = [
                 "Content-Type": "application/json;charset=UTF-8",
@@ -58,7 +60,9 @@ struct FCMAPI {
             
             let url = BaseURL.url.appending("notification/me")
             
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
             
             let header: HTTPHeaders = [
                 "Content-Type": "application/json;charset=UTF-8",
@@ -86,7 +90,9 @@ struct FCMAPI {
             
             let url = BaseURL.url.appending("notification/me")
             
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
             
             let header: HTTPHeaders = [
                 "Content-Type": "application/json;charset=UTF-8",
@@ -121,7 +127,9 @@ struct FCMAPI {
             let url = URL(string: urlStr)
             var request = URLRequest(url: url!)
             
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
 
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             request.setValue("Bearer ".appending(accessToken), forHTTPHeaderField: "Authorization")
@@ -156,7 +164,9 @@ struct FCMAPI {
             let url = URL(string: urlStr)
             var request = URLRequest(url: url!)
             
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
 
             request.setValue("application/json;charset=utf-8", forHTTPHeaderField: "Content-Type")
             request.setValue("Bearer ".appending(accessToken), forHTTPHeaderField: "Authorization")
@@ -198,7 +208,9 @@ struct FCMAPI {
             let url = URL(string: urlStr)
             var request = URLRequest(url: url!)
             
-            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+            ///UserDefaults -> keychain
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
 
             request.setValue("application/json;charset=utf-8", forHTTPHeaderField: "Content-Type")
             request.setValue("Bearer ".appending(accessToken), forHTTPHeaderField: "Authorization")
@@ -236,7 +248,9 @@ struct FCMAPI {
     static func adSubscribe(valid: Bool) {
         let url = BaseURL.url.appending("notification/me")
         
-        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+//        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+        ///UserDefaults -> keychain
+        let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
         
         let header: HTTPHeaders = [
             "Content-Type": "application/json;charset=UTF-8",
