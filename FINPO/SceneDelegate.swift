@@ -21,7 +21,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window = UIWindow(windowScene: windowScene)
         
         ///string -> object 수정
-        if(UserDefaults.standard.object(forKey: "accessToken") != nil) {
+        let acToken = KeyChain.read(key: KeyChain.accessToken)
+        
+        if(acToken != nil) {
             let rootVC = HomeTapViewController()
             window?.rootViewController = rootVC
             window?.makeKeyAndVisible()

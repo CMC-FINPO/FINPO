@@ -107,4 +107,6 @@ struct DataDetail: Codable {
      var status: Bool?
      var parent: RegionParentDetail?
  }
+ 
+ 
  */

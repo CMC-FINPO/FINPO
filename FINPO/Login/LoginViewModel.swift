@@ -461,8 +461,10 @@ class LoginViewModel {
                                             let result = json?["data"] as? [String:Any]
                                             let accessToken = result?["accessToken"] as? String ?? ""
                                             let refreshToken = result?["refreshToken"] as? String ?? ""
-                                            UserDefaults.standard.setValue(accessToken, forKey: "accessToken")
-                                            UserDefaults.standard.setValue(refreshToken, forKey: "refreshToken")
+//                                            UserDefaults.standard.setValue(accessToken, forKey: "accessToken")
+//                                            UserDefaults.standard.setValue(refreshToken, forKey: "refreshToken")
+                                            KeyChain.create(key: KeyChain.accessToken, token: accessToken)
+                                            KeyChain.create(key: KeyChain.refreshToken, token: refreshToken)
                                             UserDefaults.standard.setValue("kakao", forKey: "socialType")
                                             LoginViewModel.socialType = "kakao"
                                             self.user.accessTokenFromSocial = oauthToken.accessToken
@@ -583,8 +585,10 @@ class LoginViewModel {
                                     let result = json?["data"] as? [String:Any]
                                     let accessToken = result?["accessToken"] as? String ?? ""
                                     let refreshToken = result?["refreshToken"] as? String ?? ""
-                                    UserDefaults.standard.setValue(accessToken, forKey: "accessToken")
-                                    UserDefaults.standard.setValue(refreshToken, forKey: "refreshToken")
+//                                    UserDefaults.standard.setValue(accessToken, forKey: "accessToken")
+//                                    UserDefaults.standard.setValue(refreshToken, forKey: "refreshToken")
+                                    KeyChain.create(key: KeyChain.accessToken, token: accessToken)
+                                    KeyChain.create(key: KeyChain.refreshToken, token: refreshToken)
                                     UserDefaults.standard.setValue("apple", forKey: "socialType")
                                     LoginViewModel.socialType = "apple"
                                     print("애플 재로그인")
@@ -636,9 +640,12 @@ class LoginViewModel {
                                         let result = json?["data"] as? [String: Any]
                                         let accessToken = result?["accessToken"] as? String ?? ""
                                         let refreshToken = result?["refreshToken"] as? String ?? ""
-                                        UserDefaults.standard.setValue(accessToken, forKey: "accessToken")
-                                        UserDefaults.standard.setValue(refreshToken, forKey: "refreshToken")
+//                                        UserDefaults.standard.setValue(accessToken, forKey: "accessToken")
+//                                        UserDefaults.standard.setValue(refreshToken, forKey: "refreshToken")
                                         UserDefaults.standard.setValue("google", forKey: "socialType")
+                                        KeyChain.create(key: KeyChain.accessToken, token: accessToken)
+                                        KeyChain.create(key: KeyChain.refreshToken, token: refreshToken)
+                                        
                                         LoginViewModel.socialType = "google"
                                         observer.onNext(true)
                                     }

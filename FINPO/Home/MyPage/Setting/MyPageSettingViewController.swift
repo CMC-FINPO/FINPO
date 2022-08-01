@@ -83,9 +83,10 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
             cell.controlSwitch.isHidden = false
             viewModel.output.sendResultCategory
                 .subscribe(onNext: { interestModels in
-                    cell.controlSwitch.isOn = interestModels.data.adSubscribe
-                    print("광고성 정보 수신여부: \(interestModels.data.adSubscribe)")
-                    if(interestModels.data.adSubscribe) {
+                    let isSubscribed = interestModels.data.adSubscribe ?? false
+                    cell.controlSwitch.isOn = isSubscribed
+                    
+                    if(isSubscribed) {
                         cell.controlSwitch.thumbTintColor = UIColor(hexString: "5B43EF")
                         cell.controlSwitch.onTintColor = UIColor(hexString: "F0F0F0")
                     } else {

@@ -69,7 +69,7 @@ struct FCMAPI {
                 "Authorization": "Bearer ".appending(accessToken)
             ]
             
-            AF.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+            API.session.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
                 .validate(statusCode: 200..<300)
                 .responseDecodable(of: MyAlarmIsOnModel.self) { response in
                     switch response.result {
