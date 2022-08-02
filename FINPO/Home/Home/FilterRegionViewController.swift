@@ -354,9 +354,14 @@ class FilterRegionViewController: UIViewController {
         mainRegionTableView.rx.itemSelected
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] indexPath in
+                ///준비중인 지역 유저 선택 불가
+                if(indexPath.row >= 3) {
+                    self?.localRegionTableView.isUserInteractionEnabled = false
+                } else {
+                    self?.localRegionTableView.isUserInteractionEnabled = true
+                }
                 self?.tableViewModel.getSubRegionDataToTableView(indexPath.row)
-                self?.viewModel.input.addMainRegionIndexObserver.accept(indexPath.row)
-                print("메인 지역 인덱스 방출: \(indexPath.row)")
+                self?.viewModel.input.addMainRegionIndexObserver.accept(indexPath.row)                
             }).disposed(by: disposeBag)
         
         localRegionTableView.rx.itemSelected
@@ -433,11 +438,10 @@ class FilterRegionViewController: UIViewController {
             .bind(to: regionTagCollectionView.rx.items(cellIdentifier: "regionTagCollectionViewCell", cellType: TagCollectionViewCell.self)) {
                 (index: Int, element: DataDetail, cell) in
                 cell.setLayout()
-//                cell.tagLabel.text = (element.region.parent?.name ?? "") + ( element.region.name)
                 if ((element.region.id == 0 && element.region.parent?.id == 0) || (element.region.id == 1 && element.region.parent?.id == 100) || (element.region.id == 2 && element.region.parent?.id == 200)) {
                     cell.tagLabel.text = (element.region.name)
                 } else {
-                    cell.tagLabel.text = (element.region.parent?.name ?? "") + ( element.region.name)                
+                    cell.tagLabel.text = (element.region.parent?.name ?? "") + ( element.region.name)
                 }
                 cell.layer.borderColor = UIColor(hexString: "5B43EF").cgColor
                 cell.layer.borderWidth = 1
@@ -451,6 +455,13 @@ class FilterRegionViewController: UIViewController {
             .observe(on: MainScheduler.instance)
             .bind(to: mainRegionTableView.rx.items(cellIdentifier: "cell")) {
                 (index: Int, element: MainRegion, cell: MainRegionTableViewCell) in
+                if index > 2 {
+                    cell.setLayout()
+                }
+                if index == 0 || index == 1 || index == 2 {
+                    cell.setRegionLayout()
+                    cell.notReadyRegionLabel.isHidden = true
+                }
                 cell.selectionStyle = .none
                 cell.mainRegionLabel.text = element.name
             }.disposed(by: disposeBag)
