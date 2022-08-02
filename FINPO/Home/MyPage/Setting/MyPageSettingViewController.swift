@@ -117,6 +117,7 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //로그아웃
         let socialType = UserDefaults.standard.string(forKey: "socialType")
+        print("소셜타입: \(socialType)")
         
         ///내 정보 수정
         if(indexPath.row == 0) {
@@ -124,8 +125,7 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
             vc.modalPresentationStyle = .fullScreen
             self.navigationController?.pushViewController(vc, animated: true)
         }
-        
-        
+                
         ///관심분야(카테고리) 알림 설정
         if(indexPath.row == 2) {
             let vc = CategoryAlarmViewController()
@@ -244,6 +244,8 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
                                 print("구글 서버 탈퇴 및 구글 연동 해지 성공! ")
                                 UserDefaults.standard.setValue(nil, forKey: "accessToken")
                                 UserDefaults.standard.setValue(nil, forKey: "refreshToken")
+//                                KeyChain.create(key: KeyChain.accessToken, token: "")
+                                
                                 UserDefaults.standard.setValue(nil, forKey: "SocialAccessToken")
                                 let vc = LoginViewController()
                                 let navVc = UINavigationController(rootViewController: vc)

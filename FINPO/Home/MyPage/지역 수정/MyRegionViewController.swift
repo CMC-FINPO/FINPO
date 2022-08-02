@@ -200,8 +200,19 @@ class MyRegionViewController: UIViewController {
             .asDriver()
             .drive(onNext: { [weak self] _ in
                 self?.tableViewModel.input.editMainRegionObserver.accept(self?.tableViewModel.selectedMainRegion ?? -1)
-                //add notification (EditRegionVC)
-                NotificationCenter.default.post(name: NSNotification.Name("popViewController"), object: nil, userInfo: nil)
+                ///HomeViewController 바뀐 지역으로 reload
+                NotificationCenter.default.post(
+                    name: NSNotification.Name("mainRegionChanged"),
+                    object: nil,
+                    userInfo: nil
+                )
+                
+                ///add notification (EditRegionVC)
+                NotificationCenter.default.post(
+                    name: NSNotification.Name("popViewController"),
+                    object: nil,
+                    userInfo: nil
+                )
             }).disposed(by: disposeBag)
     }
     

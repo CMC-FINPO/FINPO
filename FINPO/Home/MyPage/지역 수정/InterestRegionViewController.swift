@@ -202,7 +202,14 @@ class InterestRegionViewController: UIViewController {
             .drive(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 self.tableViewModel.input.editInterestRegionObserver.accept(self.tableViewModel.selectedInterestRegion)
-                //add notification (EditRegionVC)
+                ///HomeViewController 바뀐 지역으로 reload
+                NotificationCenter.default.post(
+                    name: NSNotification.Name("mainRegionChanged"),
+                    object: nil,
+                    userInfo: nil
+                )
+                
+                ///add notification (EditRegionVC)
                 NotificationCenter.default.post(name: NSNotification.Name("popViewController"), object: nil, userInfo: nil)
             }).disposed(by: disposeBag)
     }

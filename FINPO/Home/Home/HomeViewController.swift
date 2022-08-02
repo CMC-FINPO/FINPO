@@ -32,12 +32,26 @@ class HomeViewController: UIViewController {
         setInputBind()
         setOutputBind()
         
+        ///필터링
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(self.didDismissDetailNotification(_:)),
             name: NSNotification.Name("sendFilteredInfo"),
             object: nil
         )
+        
+        ///유저 거주지역 수정 시
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.didChangedUserMainRegion(_:)),
+            name: NSNotification.Name("mainRegionChanged"),
+            object: nil)
+        ///유저 관심지역 수정 시
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.didChangedUserMainRegion(_:)),
+            name: NSNotification.Name("mainRegionChanged"),
+            object: nil)
     }
 
     @objc fileprivate func didDismissDetailNotification(_ notification: Notification) {
@@ -48,8 +62,15 @@ class HomeViewController: UIViewController {
         self.currenetPage = 0
         self.viewModel.input.textFieldObserver.accept("") // 검색 초기화
         self.viewModel.input.myPolicyTrigger.accept(.notMyPolicy)
-        
     }
+    
+    @objc fileprivate func didChangedUserMainRegion(_ notification: Notification) {
+        self.viewModel.input.getUserInfo.accept(())
+    }
+//
+//    @objc fileprivate func didChangedUserSubRegion(_ notification: Notification) {
+//        self.viewModel.input.getUserInfo.accept(())
+//    }
     
     private var searchTextField: UITextField = {
         let tf = UITextField()
@@ -164,7 +185,7 @@ class HomeViewController: UIViewController {
     }
     
     fileprivate func setInputBind() {
-        rx.viewWillAppear.asDriver{ _ in return .never()}
+        rx.viewWillAppear.take(1).asDriver{ _ in return .never()}
             .drive(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 ///유저 정보 가져오기

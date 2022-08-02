@@ -109,7 +109,7 @@ class CategoryAlarmViewController: UIViewController {
             .bind(to: self.AlarmTableView.rx.items(cellIdentifier: "InterestCategoryTableViewCell", cellType: SettingTableViewCell.self)) {
                 (index: Int, element: MyAlarmInterestCategory, cell) in
                 cell.selectionStyle = .none
-                cell.settingNameLabel.text = element.category?.name
+                cell.settingNameLabel.text = element.category.name
                 cell.controlSwitch.isHidden = false
                 cell.controlSwitch.isOn = element.subscribe
                 if(CategoryAlarmViewController.editWholeSwitch) {

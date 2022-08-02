@@ -21,7 +21,7 @@ struct MyAlarmDataDetail: Codable {
 
 struct MyAlarmInterestCategory: Codable {
     var id: Int
-    var category: MyAlarmCategoryDetail?
+    var category: MyAlarmCategoryDetail
     var subscribe: Bool //관심 카테고리별 알림 구독 설정 여부
 }
 
@@ -36,13 +36,13 @@ struct MyAlarmRegionDetail: Codable {
     var id: Int?
     var name: String?
     var status: Bool?
-    var parent: MyAlarmRegionParentDetail?
+    var parent: MyAlarmRegionParentDetail
 }
 
 struct MyAlarmCategoryDetail: Codable {
     var id: Int?
     var name: String?
-    var parent: MyAlarmCategoryParentDetail?
+    var parent: MyAlarmCategoryParentDetail
 }
 
 struct MyAlarmCategoryParentDetail: Codable {
