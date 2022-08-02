@@ -44,13 +44,13 @@ class HomeViewController: UIViewController {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(self.didChangedUserMainRegion(_:)),
-            name: NSNotification.Name("mainRegionChanged"),
+            name: NSNotification.Name("RegionChanged"),
             object: nil)
         ///유저 관심지역 수정 시
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(self.didChangedUserMainRegion(_:)),
-            name: NSNotification.Name("mainRegionChanged"),
+            name: NSNotification.Name("RegionChanged"),
             object: nil)
     }
 
@@ -67,10 +67,6 @@ class HomeViewController: UIViewController {
     @objc fileprivate func didChangedUserMainRegion(_ notification: Notification) {
         self.viewModel.input.getUserInfo.accept(())
     }
-//
-//    @objc fileprivate func didChangedUserSubRegion(_ notification: Notification) {
-//        self.viewModel.input.getUserInfo.accept(())
-//    }
     
     private var searchTextField: UITextField = {
         let tf = UITextField()

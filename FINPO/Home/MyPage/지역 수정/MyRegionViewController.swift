@@ -202,7 +202,7 @@ class MyRegionViewController: UIViewController {
                 self?.tableViewModel.input.editMainRegionObserver.accept(self?.tableViewModel.selectedMainRegion ?? -1)
                 ///HomeViewController 바뀐 지역으로 reload
                 NotificationCenter.default.post(
-                    name: NSNotification.Name("mainRegionChanged"),
+                    name: NSNotification.Name("RegionChanged"),
                     object: nil,
                     userInfo: nil
                 )

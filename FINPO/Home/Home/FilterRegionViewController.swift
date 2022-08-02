@@ -434,10 +434,10 @@ class FilterRegionViewController: UIViewController {
                 (index: Int, element: DataDetail, cell) in
                 cell.setLayout()
 //                cell.tagLabel.text = (element.region.parent?.name ?? "") + ( element.region.name)
-                if (element.region.id == 0 || element.region.id == 100 || element.region.id == 200) {
+                if ((element.region.id == 0 && element.region.parent?.id == 0) || (element.region.id == 1 && element.region.parent?.id == 100) || (element.region.id == 2 && element.region.parent?.id == 200)) {
                     cell.tagLabel.text = (element.region.name)
                 } else {
-                    cell.tagLabel.text = (element.region.parent?.name ?? "") + ( element.region.name)
+                    cell.tagLabel.text = (element.region.parent?.name ?? "") + ( element.region.name)                
                 }
                 cell.layer.borderColor = UIColor(hexString: "5B43EF").cgColor
                 cell.layer.borderWidth = 1
