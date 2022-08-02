@@ -204,6 +204,7 @@ class HomeViewController: UIViewController {
         //검색하는 순간 나의 정책 검색이 아님
         searchTextField.rx.controlEvent([.editingDidEnd])
             .subscribe(onNext: { [weak self] in
+                self?.viewModel.currentPage = 0
                 self?.viewModel.input.myPolicyTrigger.accept(.notMyPolicy)
 //                self?.viewModel.input.loadMoreObserver.accept(true)
             })
