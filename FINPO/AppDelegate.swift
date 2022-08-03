@@ -23,7 +23,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ///APNs 성공/실패 함수
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         print("Failed to register for notifications: \(error.localizedDescription)")
-
     }
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         Messaging.messaging().apnsToken = deviceToken
@@ -146,11 +145,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 ///FCM
 extension AppDelegate: UNUserNotificationCenterDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        let userInfo = notification.request.content.userInfo
+        print(userInfo)
+        //푸시 받았을 때
         completionHandler([.badge, .sound])
     }
     
     ///푸시를 클릭했을 때 실행되는 햄수
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        let messageID = response.notification.request.identifier
+        print(messageID)
+        
+        let state = UIApplication.shared.applicationState
+        if state == .background {
+        } else if state == .inactive {
+        } else if state == .active {
+        }
         completionHandler()
     }
 }
@@ -171,6 +181,13 @@ extension AppDelegate: MessagingDelegate {
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         //TODO: Handle data of notification
+        //백그라운드에서 알림
+        let fcmMessageIdKey = UserDefaults.standard.string(forKey: "FCMToken") ?? ""
+        print("fcmMessageIdKey: \(fcmMessageIdKey)")
+        if let messageID = userInfo[fcmMessageIdKey] {
+            print("Message ID: \(messageID)")
+        }
+        print(userInfo)
         completionHandler(UIBackgroundFetchResult.newData)
     }
 }

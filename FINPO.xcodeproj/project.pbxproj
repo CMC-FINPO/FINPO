@@ -106,6 +106,7 @@
 		DDBFEEC8285E25E8003E9662 /* AddPurposeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBFEEC7285E25E8003E9662 /* AddPurposeViewController.swift */; };
 		DDE615CC2894054C0067040B /* CommunityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDE615CB2894054C0067040B /* CommunityViewModel.swift */; };
 		DDE615CE2897A4890067040B /* KeyChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDE615CD2897A4890067040B /* KeyChain.swift */; };
+		DDE61609289A84AD0067040B /* HomeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDE61608289A84AD0067040B /* HomeCollectionViewCell.swift */; };
 		DDECAE952866C28B001C48D3 /* AddPurposeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDECAE942866C28B001C48D3 /* AddPurposeCollectionViewCell.swift */; };
 		DDECAE9728674BCF001C48D3 /* LoginSuccessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDECAE9628674BCF001C48D3 /* LoginSuccessViewController.swift */; };
 		DDECAE9A286AB0E3001C48D3 /* FilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDECAE99286AB0E3001C48D3 /* FilterViewController.swift */; };
@@ -225,6 +226,7 @@
 		DDBFEEC7285E25E8003E9662 /* AddPurposeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPurposeViewController.swift; sourceTree = "<group>"; };
 		DDE615CB2894054C0067040B /* CommunityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityViewModel.swift; sourceTree = "<group>"; };
 		DDE615CD2897A4890067040B /* KeyChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyChain.swift; sourceTree = "<group>"; };
+		DDE61608289A84AD0067040B /* HomeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeCollectionViewCell.swift; sourceTree = "<group>"; };
 		DDECAE942866C28B001C48D3 /* AddPurposeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPurposeCollectionViewCell.swift; sourceTree = "<group>"; };
 		DDECAE9628674BCF001C48D3 /* LoginSuccessViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSuccessViewController.swift; sourceTree = "<group>"; };
 		DDECAE982867650C001C48D3 /* FINPO.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FINPO.entitlements; sourceTree = "<group>"; };
@@ -292,6 +294,7 @@
 				DD1BFFB52863013600ACAAE1 /* HomeViewController.swift */,
 				DD1BFFBA2863143D00ACAAE1 /* HomeViewModel.swift */,
 				DD1BFFB8286307BD00ACAAE1 /* HomeTableViewCell.swift */,
+				DDE61608289A84AD0067040B /* HomeCollectionViewCell.swift */,
 				DDECAE99286AB0E3001C48D3 /* FilterViewController.swift */,
 				DDECAE9F286B564B001C48D3 /* FilterRegionViewController.swift */,
 				DD5A18D3286D389F00903616 /* FilterCollectionViewCell.swift */,
@@ -763,6 +766,7 @@
 				DDB1CCA2285EE1F800B42EDC /* MyPageSettingViewController.swift in Sources */,
 				DDFD6EE628506C1000A1706F /* SubRegionTableViewCell.swift in Sources */,
 				DDFD6EEE2856489000A1706F /* HomeTapViewController.swift in Sources */,
+				DDE61609289A84AD0067040B /* HomeCollectionViewCell.swift in Sources */,
 				DD5A18EE2871D25F00903616 /* ServiceTypeCollectionViewCell.swift in Sources */,
 				DD60C1E428813278003B201E /* EditUserInfoViewModel.swift in Sources */,
 				DDECAE9E286B2949001C48D3 /* CallMyRegionAPI.swift in Sources */,

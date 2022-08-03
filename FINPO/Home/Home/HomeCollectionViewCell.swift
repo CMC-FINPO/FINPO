@@ -1,16 +1,15 @@
 //
-//  HomeTableViewCell.swift
+//  HomeCollectionViewCell.swift
 //  FINPO
 //
-//  Created by 이동희 on 2022/06/22.
+//  Created by 이동희 on 2022/08/03.
 //
 
 import Foundation
 import UIKit
 import RxSwift
 
-class HomeTableViewCell: UITableViewCell {
-    
+class HomeCollectionViewCell: UICollectionViewCell {
     var disposeBag = DisposeBag()
     
     public var regionLabel: PaddingLabel = {
@@ -51,10 +50,11 @@ class HomeTableViewCell: UITableViewCell {
         return button
     }()
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         contentView.backgroundColor = .white
+        contentView.layer.masksToBounds = true
+        contentView.layer.cornerRadius = 5
         contentView.addSubview(regionLabel)
         contentView.addSubview(policyNameLabel)
         contentView.addSubview(organizationLabel)
@@ -83,8 +83,6 @@ class HomeTableViewCell: UITableViewCell {
             $0.height.equalTo(25)
             $0.width.equalTo(26)
         }
-        
-        
     }
     
     required init?(coder: NSCoder) {

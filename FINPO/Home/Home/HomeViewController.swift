@@ -113,12 +113,27 @@ class HomeViewController: UIViewController {
         return tv
     }()
     
+    private var searchCollectionView: UICollectionView = {
+        let flow = UICollectionViewFlowLayout()
+        flow.sectionInset = UIEdgeInsets(top: 5, left: 2, bottom: 5, right: 2)
+        let cv = UICollectionView(frame: .init(x: 0, y: 0, width: 100, height: 100), collectionViewLayout: flow)
+        cv.backgroundColor = .clear
+        cv.showsVerticalScrollIndicator = false
+        cv.showsHorizontalScrollIndicator = false
+        return cv
+    }()
+    
     fileprivate func setAttribute() {
         view.backgroundColor = UIColor(hexString: "F0F0F0")
         setLogo()
         searchTextField.delegate = self
+        
         searchTableView.register(HomeTableViewCell.self, forCellReuseIdentifier: "homeTableViewCell")
         searchTableView.delegate = self
+        
+        ///정책 셀 CV 변경(2022/08/03)
+        searchCollectionView.delegate = self
+        searchCollectionView.register(HomeCollectionViewCell.self, forCellWithReuseIdentifier: "HomeCollectionViewCell")
     }
     
     fileprivate func setLogo() {
@@ -171,8 +186,15 @@ class HomeViewController: UIViewController {
             $0.height.equalTo(35)
         }
                 
-        view.addSubview(searchTableView)
-        searchTableView.snp.makeConstraints {
+//        view.addSubview(searchTableView)
+//        searchTableView.snp.makeConstraints {
+//            $0.top.equalTo(searchTextField.snp.bottom).offset(62)
+//            $0.leading.trailing.equalTo(searchTextField)
+//            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-10)
+//        }
+        
+        view.addSubview(searchCollectionView)
+        searchCollectionView.snp.makeConstraints {
             $0.top.equalTo(searchTextField.snp.bottom).offset(62)
             $0.leading.trailing.equalTo(searchTextField)
             $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-10)
@@ -206,20 +228,26 @@ class HomeViewController: UIViewController {
             .subscribe(onNext: { [weak self] in
                 self?.viewModel.currentPage = 0
                 self?.viewModel.input.myPolicyTrigger.accept(.notMyPolicy)
-//                self?.viewModel.input.loadMoreObserver.accept(true)
             })
             .disposed(by: disposeBag)
         
         //테이블 load more
-        searchTableView.rx.reachedBottom(from: -25)
+//        searchTableView.rx.reachedBottom(from: -25)
+//            .debug()
+//            .map { a -> Bool in return true }
+//            .subscribe(onNext: { a in
+//                print("추가로드 옵저버 true 방출")
+//                self.viewModel.input.loadMoreObserver.accept(true)
+//            }).disposed(by: disposeBag)
+        
+        ///정책 셀 CV 변경(2022/08/03)
+        searchCollectionView.rx.reachedBottom(from: -25)
             .debug()
             .map { a -> Bool in return true }
-            .subscribe(onNext: { a in
-                print("추가로드 옵저버 true 방출")
+            .subscribe(onNext: { _ in
+                print("loadMore 옵저버 true 방출")
                 self.viewModel.input.loadMoreObserver.accept(true)
             }).disposed(by: disposeBag)
-//            .bind(to: viewModel.input.loadMoreObserver.accept(true))
-//            .disposed(by: disposeBag)
             
         sortPolicyButton.rx.tap
             .subscribe(onNext: { [weak self] _ in
@@ -232,7 +260,6 @@ class HomeViewController: UIViewController {
                     //최신순 - 최신순 했을 때 page 0 중복 방지
                     self.viewModel.currentPage = 0
                     self.viewModel.input.loadMoreObserver.accept(false) //구독 해지됨
-//                    self.viewModel.input.currentPage.accept(self.viewModel.currentPage)
                     self.viewModel.input.sortActionObserver.accept(.latest)
                     DispatchQueue.main.async {
                         self.sortPolicyButton.setImage(UIImage(named: "chip=chip4"), for: .normal)
@@ -242,7 +269,6 @@ class HomeViewController: UIViewController {
                     guard let self = self else { return }
                     self.viewModel.currentPage = 0
                     self.viewModel.input.loadMoreObserver.accept(false)
-//                    self.viewModel.input.currentPage.accept(self.viewModel.currentPage)
                     self.viewModel.input.sortActionObserver.accept(.popular)
                     DispatchQueue.main.async {
                         self.sortPolicyButton.setImage(UIImage(named: "chip=chip13"), for: .normal)
@@ -268,7 +294,16 @@ class HomeViewController: UIViewController {
                 self?.navigationController?.pushViewController(vc, animated: true)
             }).disposed(by: disposeBag)
         
-        searchTableView.rx.itemSelected
+//        searchTableView.rx.itemSelected
+//            .subscribe(onNext: { indexPath in
+//                let vc = HomeDetailViewController()
+//                vc.initialize(id: HomeViewModel.detailId[indexPath.row])
+//                vc.modalPresentationStyle = .fullScreen
+//                self.navigationController?.pushViewController(vc, animated: true)
+//            }).disposed(by: disposeBag)
+        
+        ///정책 셀 CV 변경(2022/08/03)
+        searchCollectionView.rx.itemSelected
             .subscribe(onNext: { indexPath in
                 let vc = HomeDetailViewController()
                 vc.initialize(id: HomeViewModel.detailId[indexPath.row])
@@ -284,6 +319,63 @@ class HomeViewController: UIViewController {
                 self?.user = userInfo
             }).disposed(by: disposeBag)
         
+//        viewModel.output.policyResult
+//            .debug()
+//            .scan(into: [ContentsDetail]()) { contents, type in
+//                switch type {
+//                case .load(let content):
+//                    contents.removeAll()
+//                    self.selectedId.removeAll()
+//                    self.idIsSelected.removeAll()
+//                    for i in 0..<(content[0].content.count) {
+//                        self.selectedId.append(content[0].content[i].id ?? -1)
+//                        self.idIsSelected.append(content[0].content[i].isInterest)
+//                    }
+//                    contents = content[0].content
+//                    self.policyCountLabel.text = "\(contents.count)개의 정책 결과"
+//                    self.setLabelTextColor(sender: self.policyCountLabel, count: contents.count)
+//
+//                case .loadMore(let newContent):
+//                    for i in 0..<newContent.content.count {
+//                        contents.append(newContent.content[i])
+//                        print("추가된 항목: \(newContent.content[i])")
+//                        self.selectedId.append(newContent.content[i].id ?? -1)
+//                        self.idIsSelected.append(newContent.content[i].isInterest)
+//                    }
+//                    self.policyCountLabel.text = "\(contents.count)개의 정책 결과"
+//                    self.setLabelTextColor(sender: self.policyCountLabel, count: contents.count)
+//                }
+//            }
+//            .asObservable()
+//            .bind(to: searchTableView.rx.items(cellIdentifier: "homeTableViewCell")) { (index: Int, element: ContentsDetail, cell: HomeTableViewCell) in
+//                let region = (element.region?.parent?.name ?? "") + " " + (element.region?.name ?? "")
+//                cell.selectionStyle = .none
+//                cell.regionLabel.text = region
+//                cell.policyNameLabel.text = element.title
+//                cell.organizationLabel.text = element.institution ?? "미정"
+//                if element.isInterest {
+//                    cell.bookMarkButton.setImage(UIImage(named: "scrap_active"), for: .normal)
+//                } else {
+//                    cell.bookMarkButton.setImage(UIImage(named: "scrap_inactive"), for: .normal)
+//                }
+//
+//                cell.bookMarkButton.rx.tap
+//                    .asDriver()
+//                    .drive(onNext: { [weak self] _ in
+//                        guard let self = self else { return }
+//                        if(self.idIsSelected[index]) {
+//                            self.viewModel.input.bookmarkDeleteObserver.accept(self.selectedId[index])
+//                            cell.bookMarkButton.setImage(UIImage(named: "scrap_inactive"), for: .normal)
+//                            self.idIsSelected[index] = false
+//                        } else {
+//                            self.viewModel.input.bookmarkObserver.accept(self.selectedId[index])
+//                            cell.bookMarkButton.setImage(UIImage(named: "scrap_active"), for: .normal)
+//                            self.idIsSelected[index] = true
+//                        }
+//                    }).disposed(by: cell.disposeBag)
+//            }.disposed(by: disposeBag)
+        
+        ///정책 셀 CV 변경(2022/08/03)
         viewModel.output.policyResult
             .debug()
             .scan(into: [ContentsDetail]()) { contents, type in
@@ -301,7 +393,6 @@ class HomeViewController: UIViewController {
                     self.setLabelTextColor(sender: self.policyCountLabel, count: contents.count)
                     
                 case .loadMore(let newContent):
-//                    contents.append(newContent.content[])
                     for i in 0..<newContent.content.count {
                         contents.append(newContent.content[i])
                         print("추가된 항목: \(newContent.content[i])")
@@ -313,9 +404,8 @@ class HomeViewController: UIViewController {
                 }
             }
             .asObservable()
-            .bind(to: searchTableView.rx.items(cellIdentifier: "homeTableViewCell")) { (index: Int, element: ContentsDetail, cell: HomeTableViewCell) in
+            .bind(to: searchCollectionView.rx.items(cellIdentifier: "HomeCollectionViewCell")) { (index: Int, element: ContentsDetail, cell: HomeCollectionViewCell) in
                 let region = (element.region?.parent?.name ?? "") + " " + (element.region?.name ?? "")
-                cell.selectionStyle = .none
                 cell.regionLabel.text = region
                 cell.policyNameLabel.text = element.title
                 cell.organizationLabel.text = element.institution ?? "미정"
@@ -380,5 +470,28 @@ extension HomeViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 15
+    }
+}
+
+///정책 셀 CV 변경(2022/08/03)
+extension HomeViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let collectionViewWidth = collectionView.bounds.width
+        
+        return CGSize(width: collectionViewWidth, height: 110)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 20
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 10
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let cell = searchCollectionView.dequeueReusableCell(withReuseIdentifier: "HomeCollectionViewCell", for: indexPath) as? HomeCollectionViewCell else { return }
+        
+        cell.disposeBag = DisposeBag()
     }
 }
