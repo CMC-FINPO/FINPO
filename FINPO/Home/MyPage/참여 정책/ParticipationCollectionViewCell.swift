@@ -128,7 +128,7 @@ class ParticipationCollectionViewCell: UICollectionViewCell {
         
         bookMarkButton.snp.makeConstraints {
             $0.top.equalTo(regionLabel.snp.top)
-            $0.trailing.equalToSuperview().inset(35)
+            $0.trailing.equalToSuperview().inset(40)
             $0.height.equalTo(25)
             $0.width.equalTo(26)
         }

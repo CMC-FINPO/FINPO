@@ -104,13 +104,6 @@ class ParticipationViewController: UIViewController {
             $0.leading.trailing.equalToSuperview().inset(21)
         }
         
-//        view.addSubview(policyTableView)
-//        policyTableView.snp.makeConstraints {
-//            $0.top.equalTo(titleLabel.snp.bottom).offset(15)
-//            $0.leading.trailing.equalToSuperview().inset(21)
-//            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-50)
-//        }
-        
         view.addSubview(policyCollectionView)
         policyCollectionView.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(15)
@@ -125,15 +118,7 @@ class ParticipationViewController: UIViewController {
                 ///참여 정책 조회 및 수정
                 self?.viewModel.input.getUserParticipatedInfo.accept(())                
             }).disposed(by: disposeBag)
-        
-        ///테이블뷰 셀 탭할 경우 상세보기 화면으로 넘어감
-//        policyTableView.rx.itemSelected
-//            .subscribe(onNext: { [weak self] indexPath in
-//                let vc = HomeDetailViewController()
-//                vc.initialize(id: self?.selectedId[indexPath.row] ?? -1)
-//                vc.modalPresentationStyle = .fullScreen
-//                self?.navigationController?.pushViewController(vc, animated: true)
-//            }).disposed(by: disposeBag)
+
         ///TV -> CV
         policyCollectionView.rx.itemSelected
             .subscribe(onNext: { [weak self] indexPath in
@@ -185,100 +170,6 @@ class ParticipationViewController: UIViewController {
                 }
             }).disposed(by: disposeBag)
         
-//        viewModel.output.sendUserParticipatedInfo
-//            .scan(into: [ParticipationModel](), accumulator: { models, data in
-//                switch data {
-//                case .searchMode(let searchData):
-//                    models.removeAll()
-//                    for i in 0..<searchData.data.count {
-//                        models.append(searchData.data[i])
-//                    }
-//                    self.isDeleteMode = false
-//                case .deleteMode(let deleteModeData):
-//                    models.removeAll()
-//                    for i in 0..<deleteModeData.data.count {
-//                        models.append(deleteModeData.data[i])
-//                }
-//                    self.isDeleteMode = true
-//                }
-//            })
-//            .observe(on: MainScheduler.instance)
-//            .bind(to: self.policyTableView.rx.items(cellIdentifier: "ParticipationTableViewCell", cellType: ParticipationTableViewCell.self)) {
-//                (index: Int, element: ParticipationModel, cell) in
-//
-//                cell.regionLabel.text = "\(element.policy.region.parent?.name ?? "")" + " " + "\(element.policy.region.name)"
-//                cell.policyNameLabel.text = element.policy.title
-//                cell.organizationLabel.text = element.policy.institution ?? "미정"
-//
-//                if(element.memo == nil) {
-//                    cell.memoEditButton.setTitle("메모 작성", for: .normal)
-//                    cell.memoStackView.rx.tapGesture()
-//                        .observe(on: MainScheduler.instance)
-//                        .when(.recognized)
-//                        .bind { [weak self] _ in
-//                            guard let self = self else { return }
-//                            let vc = MemoViewController()
-//                            vc.setupProperty(id: self.selectedId[index], on: self.homeViewModel, participatedId: self.participatedId[index])
-//                            vc.modalPresentationStyle = .overCurrentContext
-//                            self.present(vc, animated: false)
-//                        }.disposed(by: cell.disposeBag)
-//                } else {
-//                    cell.memoTextLabel.text = element.memo ?? ""
-//                    cell.memoEditButton.setTitle("메모 수정", for: .normal)
-//                    cell.memoStackView.rx.tapGesture()
-//                        .observe(on: MainScheduler.instance)
-//                        .when(.recognized)
-//                        .bind { [weak self] _ in
-//                            guard let self = self else { return }
-//                            let vc = MemoViewController()
-//                            vc.titleLabel.text = "메모 수정"
-//                            vc.setupProperty(id: self.selectedId[index], on: self.homeViewModel, participatedId: self.participatedId[index])
-//                            vc.modalPresentationStyle = .overCurrentContext
-//                            self.present(vc, animated: false)
-//                        }.disposed(by: cell.disposeBag)
-//                }
-//
-//                if(self.isDeleteMode) {
-//                    cell.bookMarkButton.setImage(UIImage(named: "delete"), for: .normal)
-//                    ///삭제 버튼 클릭 시 알럿 생성 및 정책 id 넘겨주기
-//                    cell.bookMarkButton.rx.tap
-//                        .asDriver()
-//                        .drive(onNext: { [weak self] _ in
-//                            guard let self = self else { return }
-//                            let ac = UIAlertController(title: "참여한 정책을 삭제하시겠습니까?", message: nil, preferredStyle: .alert)
-//                            ac.addAction(UIAlertAction(title: "취소", style: .destructive))
-//                            ac.addAction(UIAlertAction(title: "삭제", style: .default, handler: { _ in
-//                                ///참여 정책 id로 삭제 트리거
-//                                self.viewModel.input.participatedPolicyDeleteObserver.accept(element.id)
-//                            }))
-//                            self.present(ac, animated: true)
-//                        }).disposed(by: cell.disposeBag)
-//                } else {
-//                    //서버에서 북마크 상태 체크
-//                    if(element.policy.isInterest) {
-//                        cell.bookMarkButton.setImage(UIImage(named: "bookmark_top_active"), for: .normal)
-//                    } else {
-//                        cell.bookMarkButton.setImage(UIImage(named: "bookmark_top"), for: .normal)
-//                    }
-//
-//                    ///북마크 버튼 선택 시 "관심정책" 유무
-//                    cell.bookMarkButton.rx.tap
-//                        .asDriver()
-//                        .drive(onNext: { [weak self] _ in
-//                            guard let self = self else { return }
-//                            if(element.policy.isInterest) {
-//                                self.homeViewModel.input.bookmarkDeleteObserver.accept(self.selectedId[index])
-//                                cell.bookMarkButton.setImage(UIImage(named: "bookmark_top"), for: .normal)
-//                            } else {
-//                                self.homeViewModel.input.bookmarkObserver.accept(self.selectedId[index])
-//                                cell.bookMarkButton.setImage(UIImage(named: "bookmark_top_active"), for: .normal)
-//                            }
-//                        }).disposed(by: cell.disposeBag)
-//                }
-//
-//
-//            }.disposed(by: disposeBag)
-        
         viewModel.output.sendUserParticipatedInfo
             .scan(into: [ParticipationModel](), accumulator: { models, data in
                 switch data {
@@ -304,7 +195,6 @@ class ParticipationViewController: UIViewController {
             .observe(on: MainScheduler.instance)
             .bind(to: self.policyCollectionView.rx.items(cellIdentifier: "ParticipationCollectionViewCell", cellType: ParticipationCollectionViewCell.self)) {
                 (index: Int, element: ParticipationModel, cell) in
-                
                 
                 cell.regionLabel.text = "\(element.policy.region.parent?.name ?? "")" + " " + "\(element.policy.region.name)"
                 cell.policyNameLabel.text = element.policy.title
@@ -384,15 +274,6 @@ class ParticipationViewController: UIViewController {
         self.titleLabel.attributedText = attributedText
     }
 }
-
-//extension ParticipationViewController: UITableViewDelegate {
-//    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-//        guard let cell = policyTableView.dequeueReusableCell(withIdentifier: "ParticipationTableViewCell", for: indexPath) as? ParticipationTableViewCell else { return }
-//
-//        ///화면 밖에서 사라질 때 subscription을 dispose 하기
-//        cell.disposeBag = DisposeBag()
-//    }
-//}
 
 extension ParticipationViewController: UICollectionViewDelegateFlowLayout {
 //    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {

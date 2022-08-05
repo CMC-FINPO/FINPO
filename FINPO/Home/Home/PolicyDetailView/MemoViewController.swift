@@ -20,6 +20,8 @@ class MemoViewController: UIViewController {
     var id: Int?
     var participatedPolicyId: Int?
     
+    let mypageViewModel = MyPageViewModel()
+    
     var containerViewHeightConstraint: NSLayoutConstraint?
     var containerViewBottomConstraint: NSLayoutConstraint?
     
@@ -219,6 +221,12 @@ class MemoViewController: UIViewController {
     }
     
     fileprivate func setInputBind() {
+        rx.viewWillAppear.asDriver { _ in return .never()}
+            .drive(onNext: { [weak self] _ in
+                ///텍스트뷰에 저장된 메모 가져오기
+                self?.mypageViewModel.input.getUserParticipatedInfo.accept(())
+            }).disposed(by: disposeBag)
+        
         acceptButton.rx.tap
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
@@ -235,6 +243,18 @@ class MemoViewController: UIViewController {
     }
     
     fileprivate func setOutputBind() {
+        mypageViewModel.output.sendUserParticipatedInfo
+            .subscribe(onNext: { [weak self] data in
+                switch data {
+                case .deleteMode(_):
+                    break
+                case .searchMode(let userMemoData):
+                    for memo in userMemoData.data where memo.id == self?.participatedPolicyId {
+                        self?.memoTextView.text = memo.memo
+                    }
+                }
+            }).disposed(by: disposeBag)            
+        
         viewModel?.output.checkedMemoOutput
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: { [weak self] _ in
