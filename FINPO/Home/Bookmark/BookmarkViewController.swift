@@ -81,10 +81,10 @@ class BookmarkViewController: UIViewController {
     
     fileprivate func setAttribute() {
         view.backgroundColor = .white
-        self.interestCollectionView.register(BookmarkCollectionViewCell.self, forCellWithReuseIdentifier: "BookmarkCollectionViewCell")
-        self.interestCollectionView.delegate = self
+        interestCollectionView.register(BookmarkCollectionViewCell.self, forCellWithReuseIdentifier: "BookmarkCollectionViewCell")
+        interestCollectionView.delegate = self
         
-        self.interestTableView.register(HomeTableViewCell.self, forCellReuseIdentifier: "HomeTableViewCell")
+        interestTableView.register(HomeTableViewCell.self, forCellReuseIdentifier: "HomeTableViewCell")
         ///TV -> CV 변경
         interestPolicyCollectionView.register(HomeCollectionViewCell.self, forCellWithReuseIdentifier: "interestPolicyCollectionViewCell")
         interestPolicyCollectionView.delegate = self

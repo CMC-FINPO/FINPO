@@ -151,8 +151,7 @@ class HomeViewModel {
         var checkedMemoOutput = PublishRelay<Bool>()
         var checkedBookmarkOutput = PublishRelay<Bool>()
         var checkedBookmarkDeleteOutput = PublishRelay<Bool>()
-        
-        
+                
         ///category - childs 형식
         var getJobData = PublishRelay<CategoryModel>()
         ///관심 카테고리

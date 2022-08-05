@@ -40,8 +40,12 @@ class MyPageViewModel {
         
         ///삭제 버튼 옵저버 -> 참여 정책 조회하기
         let changeToDeleteMode = PublishRelay<Void>()
+        let returnOriginalMode = PublishRelay<Void>()
         ///삭제 옵저버
         let participatedPolicyDeleteObserver = PublishRelay<Int>()
+        
+        var bookmarkObserver = PublishRelay<Int>()
+        let bookmarkDeleteObserver = PublishRelay<Int>()
     }
         
     ///OUTPUT
@@ -80,7 +84,7 @@ class MyPageViewModel {
                 }
             }).disposed(by: disposeBag)
         
-        ///여기서 참여 정책 테이블뷰에 초기 뿌려줌
+        ///여기서 참여 정책 컬렉션뷰에 초기 뿌려줌
         input.getUserParticipatedInfo
             .flatMap { UserInfoAPI.getUserParticipatedInfo() }
             .subscribe(onNext: { participatedInfo in
@@ -92,6 +96,26 @@ class MyPageViewModel {
             .flatMap { UserInfoAPI.getUserParticipatedInfo() }
             .subscribe(onNext: { changeAndSendParticipatedInfo in
                 self.output.sendUserParticipatedInfo.accept(.deleteMode(changeAndSendParticipatedInfo))
+            }).disposed(by: disposeBag)
+        
+        input.returnOriginalMode
+            .flatMap { UserInfoAPI.getUserParticipatedInfo() }
+            .subscribe(onNext: { changeAndSendParticipatedInfo in
+                self.output.sendUserParticipatedInfo.accept(.searchMode(changeAndSendParticipatedInfo))
+            }).disposed(by: disposeBag)
+        
+        ///북마크 등록/삭제 여부에 따른 옵저버 방출
+        input.bookmarkObserver
+            .flatMap { BookMarkAPI.addBookmark(polidyId: $0) } //북마크 추가 API
+            .subscribe(onNext: { valid in
+                self.input.getUserParticipatedInfo.accept(())
+            }).disposed(by: disposeBag)
+        
+        ///북마크 삭제
+        input.bookmarkDeleteObserver
+            .flatMap { BookMarkAPI.deleteBookmark(polidyId: $0) }
+            .subscribe(onNext: { valid in
+                self.input.getUserParticipatedInfo.accept(())
             }).disposed(by: disposeBag)
         
         ///참여 정책 삭제

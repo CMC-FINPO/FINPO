@@ -85,6 +85,7 @@
 		DD90E9B8284DDFA200B19B8C /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD90E9B7284DDFA200B19B8C /* User.swift */; };
 		DDAC8EBF284884F80092CB25 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAC8EBE284884F80092CB25 /* LoginViewModel.swift */; };
 		DDAC8EC22848A36C0092CB25 /* LoginDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAC8EC12848A36C0092CB25 /* LoginDetailViewController.swift */; };
+		DDAF7C47289A98D300D1F1FD /* ParticipationCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAF7C46289A98D300D1F1FD /* ParticipationCollectionViewCell.swift */; };
 		DDB1CCA2285EE1F800B42EDC /* MyPageSettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDB1CCA1285EE1F800B42EDC /* MyPageSettingViewController.swift */; };
 		DDB1CCA4285EED3600B42EDC /* SettingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDB1CCA3285EED3600B42EDC /* SettingTableViewCell.swift */; };
 		DDB1CCA7285F5C5B00B42EDC /* BoardTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDB1CCA6285F5C5B00B42EDC /* BoardTableViewCell.swift */; };
@@ -206,6 +207,7 @@
 		DD90E9B7284DDFA200B19B8C /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		DDAC8EBE284884F80092CB25 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		DDAC8EC12848A36C0092CB25 /* LoginDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginDetailViewController.swift; sourceTree = "<group>"; };
+		DDAF7C46289A98D300D1F1FD /* ParticipationCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipationCollectionViewCell.swift; sourceTree = "<group>"; };
 		DDB1CCA1285EE1F800B42EDC /* MyPageSettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPageSettingViewController.swift; sourceTree = "<group>"; };
 		DDB1CCA3285EED3600B42EDC /* SettingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingTableViewCell.swift; sourceTree = "<group>"; };
 		DDB1CCA6285F5C5B00B42EDC /* BoardTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardTableViewCell.swift; sourceTree = "<group>"; };
@@ -391,6 +393,7 @@
 			children = (
 				DD5A19062876C83C00903616 /* ParticipationViewController.swift */,
 				DD5A190B2876D85200903616 /* ParticipationTableViewCell.swift */,
+				DDAF7C46289A98D300D1F1FD /* ParticipationCollectionViewCell.swift */,
 			);
 			name = "참여 정책";
 			path = "참여 정책";
@@ -749,6 +752,7 @@
 				DDBFEEBB2859E675003E9662 /* MyAuthenticator.swift in Sources */,
 				DDBFEEC6285B5134003E9662 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */,
 				DD60A0C42887D71B004E9015 /* OpenSourceTableViewCell.swift in Sources */,
+				DDAF7C47289A98D300D1F1FD /* ParticipationCollectionViewCell.swift in Sources */,
 				DD5A19032875BFEE00903616 /* UserInfoAPI.swift in Sources */,
 				DD5A18E3286FEAEA00903616 /* ServiceInfoViewController.swift in Sources */,
 				DD5A18F228731C7700903616 /* AddParticipatedAPI.swift in Sources */,

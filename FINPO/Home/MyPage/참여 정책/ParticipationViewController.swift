@@ -38,32 +38,11 @@ class ParticipationViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         self.tabBarController?.tabBar.isHidden = true
-//        NotificationCenter.default.addObserver(self, selector: #selector(keyboardUp), name: UIResponder.keyboardWillShowNotification, object: nil)
-//        NotificationCenter.default.addObserver(self, selector: #selector(keyboardDown), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         self.tabBarController?.tabBar.isHidden = false
-//        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
-//        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
-    
-//    @objc func keyboardUp(notification:NSNotification) {
-//        if let keyboardFrame:NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
-//           let keyboardRectangle = keyboardFrame.cgRectValue
-//       
-//            UIView.animate(
-//                withDuration: 0.3
-//                , animations: {
-//                    self.view.transform = CGAffineTransform(translationX: 0, y: -keyboardRectangle.height)
-//                }
-//            )
-//        }
-//    }
-//    
-//    @objc func keyboardDown() {
-//        self.view.transform = .identity
-//    }
     
     private var titleLabel: UILabel = {
         let label = UILabel()
@@ -74,17 +53,28 @@ class ParticipationViewController: UIViewController {
         return label
     }()
     
-    private var policyTableView: UITableView = {
-        let tv = UITableView()
-        tv.rowHeight = UITableView.automaticDimension
-        tv.estimatedRowHeight = 120
-        tv.bounces = false
-        tv.separatorInset.left = 0
-        tv.showsVerticalScrollIndicator = false
-        tv.showsHorizontalScrollIndicator = false
-        tv.layer.masksToBounds = true
-        tv.layer.cornerRadius = 5
-        return tv
+//    private var policyTableView: UITableView = {
+//        let tv = UITableView()
+//        tv.rowHeight = UITableView.automaticDimension
+//        tv.estimatedRowHeight = 120
+//        tv.bounces = false
+//        tv.separatorInset.left = 0
+//        tv.showsVerticalScrollIndicator = false
+//        tv.showsHorizontalScrollIndicator = false
+//        tv.layer.masksToBounds = true
+//        tv.layer.cornerRadius = 5
+//        return tv
+//    }()
+    ///TV -> CV 변경
+    private var policyCollectionView: UICollectionView = {
+        let flow = UICollectionViewFlowLayout()
+        flow.sectionInset = UIEdgeInsets(top: 5, left: 2, bottom: 5, right: 2)
+        flow.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+        let cv = UICollectionView(frame: .init(x: 0, y: 0, width: 100, height: 100), collectionViewLayout: flow)
+        cv.backgroundColor = .clear
+        cv.showsVerticalScrollIndicator = false
+        cv.showsHorizontalScrollIndicator = false
+        return cv
     }()
     
     fileprivate func setAttribute() {
@@ -94,8 +84,11 @@ class ParticipationViewController: UIViewController {
         navigationController?.navigationBar.topItem?.backButtonTitle = ""
      
         ///테이블뷰
-        policyTableView.register(ParticipationTableViewCell.self, forCellReuseIdentifier: "ParticipationTableViewCell")
-        policyTableView.delegate = self
+//        policyTableView.register(ParticipationTableViewCell.self, forCellReuseIdentifier: "ParticipationTableViewCell")
+//        policyTableView.delegate = self
+        ///TV -> CV 변경
+        policyCollectionView.register(ParticipationCollectionViewCell.self, forCellWithReuseIdentifier: "ParticipationCollectionViewCell")
+        policyCollectionView.delegate = self
         
         ///참여 정책 삭제 버튼
         treshButton.frame = CGRect(x: 0, y: 0, width: 51, height: 31)
@@ -111,8 +104,15 @@ class ParticipationViewController: UIViewController {
             $0.leading.trailing.equalToSuperview().inset(21)
         }
         
-        view.addSubview(policyTableView)
-        policyTableView.snp.makeConstraints {
+//        view.addSubview(policyTableView)
+//        policyTableView.snp.makeConstraints {
+//            $0.top.equalTo(titleLabel.snp.bottom).offset(15)
+//            $0.leading.trailing.equalToSuperview().inset(21)
+//            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-50)
+//        }
+        
+        view.addSubview(policyCollectionView)
+        policyCollectionView.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(15)
             $0.leading.trailing.equalToSuperview().inset(21)
             $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-50)
@@ -127,21 +127,28 @@ class ParticipationViewController: UIViewController {
             }).disposed(by: disposeBag)
         
         ///테이블뷰 셀 탭할 경우 상세보기 화면으로 넘어감
-        policyTableView.rx.itemSelected
+//        policyTableView.rx.itemSelected
+//            .subscribe(onNext: { [weak self] indexPath in
+//                let vc = HomeDetailViewController()
+//                vc.initialize(id: self?.selectedId[indexPath.row] ?? -1)
+//                vc.modalPresentationStyle = .fullScreen
+//                self?.navigationController?.pushViewController(vc, animated: true)
+//            }).disposed(by: disposeBag)
+        ///TV -> CV
+        policyCollectionView.rx.itemSelected
             .subscribe(onNext: { [weak self] indexPath in
                 let vc = HomeDetailViewController()
                 vc.initialize(id: self?.selectedId[indexPath.row] ?? -1)
                 vc.modalPresentationStyle = .fullScreen
                 self?.navigationController?.pushViewController(vc, animated: true)
             }).disposed(by: disposeBag)
-        
+                
         self.treshButton.rx.tap
             .asDriver()
             .drive(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 if(self.isDeleteMode) {
-                    self.treshButton.setImage(nil, for: .normal)
-                    self.treshButton.setTitle("완료", for: .normal)
+                    self.viewModel.input.returnOriginalMode.accept(())
                 } else {
                     self.viewModel.input.changeToDeleteMode.accept(())
                     self.treshButton.setImage(UIImage(named: "delete"), for: .normal)
@@ -178,6 +185,100 @@ class ParticipationViewController: UIViewController {
                 }
             }).disposed(by: disposeBag)
         
+//        viewModel.output.sendUserParticipatedInfo
+//            .scan(into: [ParticipationModel](), accumulator: { models, data in
+//                switch data {
+//                case .searchMode(let searchData):
+//                    models.removeAll()
+//                    for i in 0..<searchData.data.count {
+//                        models.append(searchData.data[i])
+//                    }
+//                    self.isDeleteMode = false
+//                case .deleteMode(let deleteModeData):
+//                    models.removeAll()
+//                    for i in 0..<deleteModeData.data.count {
+//                        models.append(deleteModeData.data[i])
+//                }
+//                    self.isDeleteMode = true
+//                }
+//            })
+//            .observe(on: MainScheduler.instance)
+//            .bind(to: self.policyTableView.rx.items(cellIdentifier: "ParticipationTableViewCell", cellType: ParticipationTableViewCell.self)) {
+//                (index: Int, element: ParticipationModel, cell) in
+//
+//                cell.regionLabel.text = "\(element.policy.region.parent?.name ?? "")" + " " + "\(element.policy.region.name)"
+//                cell.policyNameLabel.text = element.policy.title
+//                cell.organizationLabel.text = element.policy.institution ?? "미정"
+//
+//                if(element.memo == nil) {
+//                    cell.memoEditButton.setTitle("메모 작성", for: .normal)
+//                    cell.memoStackView.rx.tapGesture()
+//                        .observe(on: MainScheduler.instance)
+//                        .when(.recognized)
+//                        .bind { [weak self] _ in
+//                            guard let self = self else { return }
+//                            let vc = MemoViewController()
+//                            vc.setupProperty(id: self.selectedId[index], on: self.homeViewModel, participatedId: self.participatedId[index])
+//                            vc.modalPresentationStyle = .overCurrentContext
+//                            self.present(vc, animated: false)
+//                        }.disposed(by: cell.disposeBag)
+//                } else {
+//                    cell.memoTextLabel.text = element.memo ?? ""
+//                    cell.memoEditButton.setTitle("메모 수정", for: .normal)
+//                    cell.memoStackView.rx.tapGesture()
+//                        .observe(on: MainScheduler.instance)
+//                        .when(.recognized)
+//                        .bind { [weak self] _ in
+//                            guard let self = self else { return }
+//                            let vc = MemoViewController()
+//                            vc.titleLabel.text = "메모 수정"
+//                            vc.setupProperty(id: self.selectedId[index], on: self.homeViewModel, participatedId: self.participatedId[index])
+//                            vc.modalPresentationStyle = .overCurrentContext
+//                            self.present(vc, animated: false)
+//                        }.disposed(by: cell.disposeBag)
+//                }
+//
+//                if(self.isDeleteMode) {
+//                    cell.bookMarkButton.setImage(UIImage(named: "delete"), for: .normal)
+//                    ///삭제 버튼 클릭 시 알럿 생성 및 정책 id 넘겨주기
+//                    cell.bookMarkButton.rx.tap
+//                        .asDriver()
+//                        .drive(onNext: { [weak self] _ in
+//                            guard let self = self else { return }
+//                            let ac = UIAlertController(title: "참여한 정책을 삭제하시겠습니까?", message: nil, preferredStyle: .alert)
+//                            ac.addAction(UIAlertAction(title: "취소", style: .destructive))
+//                            ac.addAction(UIAlertAction(title: "삭제", style: .default, handler: { _ in
+//                                ///참여 정책 id로 삭제 트리거
+//                                self.viewModel.input.participatedPolicyDeleteObserver.accept(element.id)
+//                            }))
+//                            self.present(ac, animated: true)
+//                        }).disposed(by: cell.disposeBag)
+//                } else {
+//                    //서버에서 북마크 상태 체크
+//                    if(element.policy.isInterest) {
+//                        cell.bookMarkButton.setImage(UIImage(named: "bookmark_top_active"), for: .normal)
+//                    } else {
+//                        cell.bookMarkButton.setImage(UIImage(named: "bookmark_top"), for: .normal)
+//                    }
+//
+//                    ///북마크 버튼 선택 시 "관심정책" 유무
+//                    cell.bookMarkButton.rx.tap
+//                        .asDriver()
+//                        .drive(onNext: { [weak self] _ in
+//                            guard let self = self else { return }
+//                            if(element.policy.isInterest) {
+//                                self.homeViewModel.input.bookmarkDeleteObserver.accept(self.selectedId[index])
+//                                cell.bookMarkButton.setImage(UIImage(named: "bookmark_top"), for: .normal)
+//                            } else {
+//                                self.homeViewModel.input.bookmarkObserver.accept(self.selectedId[index])
+//                                cell.bookMarkButton.setImage(UIImage(named: "bookmark_top_active"), for: .normal)
+//                            }
+//                        }).disposed(by: cell.disposeBag)
+//                }
+//
+//
+//            }.disposed(by: disposeBag)
+        
         viewModel.output.sendUserParticipatedInfo
             .scan(into: [ParticipationModel](), accumulator: { models, data in
                 switch data {
@@ -187,17 +288,23 @@ class ParticipationViewController: UIViewController {
                         models.append(searchData.data[i])
                     }
                     self.isDeleteMode = false
+                    self.treshButton.setImage(UIImage(named: "delete"), for: .normal)
+                    self.treshButton.setTitle(nil, for: .normal)
                 case .deleteMode(let deleteModeData):
                     models.removeAll()
                     for i in 0..<deleteModeData.data.count {
                         models.append(deleteModeData.data[i])
                 }
                     self.isDeleteMode = true
+                    self.treshButton.setImage(nil, for: .normal)
+                    self.treshButton.setTitleColor(UIColor(hexString: "5B43EF"), for: .normal)
+                    self.treshButton.setTitle("완료", for: .normal)
                 }
             })
             .observe(on: MainScheduler.instance)
-            .bind(to: self.policyTableView.rx.items(cellIdentifier: "ParticipationTableViewCell", cellType: ParticipationTableViewCell.self)) {
+            .bind(to: self.policyCollectionView.rx.items(cellIdentifier: "ParticipationCollectionViewCell", cellType: ParticipationCollectionViewCell.self)) {
                 (index: Int, element: ParticipationModel, cell) in
+                
                 
                 cell.regionLabel.text = "\(element.policy.region.parent?.name ?? "")" + " " + "\(element.policy.region.name)"
                 cell.policyNameLabel.text = element.policy.title
@@ -243,7 +350,7 @@ class ParticipationViewController: UIViewController {
                             ac.addAction(UIAlertAction(title: "삭제", style: .default, handler: { _ in
                                 ///참여 정책 id로 삭제 트리거
                                 self.viewModel.input.participatedPolicyDeleteObserver.accept(element.id)
-                            }))                            
+                            }))
                             self.present(ac, animated: true)
                         }).disposed(by: cell.disposeBag)
                 } else {
@@ -260,35 +367,15 @@ class ParticipationViewController: UIViewController {
                         .drive(onNext: { [weak self] _ in
                             guard let self = self else { return }
                             if(element.policy.isInterest) {
-                                self.homeViewModel.input.bookmarkDeleteObserver.accept(self.selectedId[index])
-                                cell.bookMarkButton.setImage(UIImage(named: "bookmark_top"), for: .normal)
+                                self.viewModel.input.bookmarkDeleteObserver.accept(self.selectedId[index])
                             } else {
-                                self.homeViewModel.input.bookmarkObserver.accept(self.selectedId[index])
-                                cell.bookMarkButton.setImage(UIImage(named: "bookmark_top_active"), for: .normal)
+                                self.viewModel.input.bookmarkObserver.accept(self.selectedId[index])
                             }
                         }).disposed(by: cell.disposeBag)
                 }
-                
-       
+                       
             }.disposed(by: disposeBag)
-        
-        
-//        homeViewModel.output.checkedBookmarkOutput
-//            .asObservable()
-//            .subscribe(onNext: { [weak self] valid in
-//                if valid {
-//                    self?.policyTableView.reloadRows(at: [self?.indexPath ?? IndexPath()], with: .automatic)
-//                    print("인덱스패스: \(self?.indexPath)")
-//                }
-//            }).disposed(by: disposeBag)
-//        
-//        homeViewModel.output.checkedBookmarkDeleteOutput
-//            .asObservable()
-//            .subscribe(onNext: { [weak self] valid in
-//                if valid {
-//                    self?.policyTableView.reloadRows(at: [self?.indexPath ?? IndexPath()], with: .automatic)
-//                }
-//            }).disposed(by: disposeBag)
+    
     }
     
     public func setLabelTextColor(sender: UILabel, count: Int) {
@@ -298,11 +385,29 @@ class ParticipationViewController: UIViewController {
     }
 }
 
-extension ParticipationViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        guard let cell = policyTableView.dequeueReusableCell(withIdentifier: "ParticipationTableViewCell", for: indexPath) as? ParticipationTableViewCell else { return }
+//extension ParticipationViewController: UITableViewDelegate {
+//    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        guard let cell = policyTableView.dequeueReusableCell(withIdentifier: "ParticipationTableViewCell", for: indexPath) as? ParticipationTableViewCell else { return }
+//
+//        ///화면 밖에서 사라질 때 subscription을 dispose 하기
+//        cell.disposeBag = DisposeBag()
+//    }
+//}
+
+extension ParticipationViewController: UICollectionViewDelegateFlowLayout {
+//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+//        let collectionViewWidth = collectionView.bounds.width
+//
+//        return CGSize(width: collectionViewWidth-10, height: 150)
+//    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 10
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let cell = policyCollectionView.dequeueReusableCell(withReuseIdentifier: "ParticipationCollectionViewCell", for: indexPath) as? ParticipationCollectionViewCell else { return }
         
-        ///화면 밖에서 사라질 때 subscription을 dispose 하기
         cell.disposeBag = DisposeBag()
     }
 }
