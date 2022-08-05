@@ -79,7 +79,7 @@ class ParticipationCollectionViewCell: UICollectionViewCell {
         button.titleLabel?.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
         button.setImage(UIImage(named: "memo")?.withRenderingMode(.alwaysOriginal), for: .normal)
         button.setTitle("메모 작성", for: .normal)
-        button.isUserInteractionEnabled = true
+        button.isUserInteractionEnabled = false
         return button
     }()
     
