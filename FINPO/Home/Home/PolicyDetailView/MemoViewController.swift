@@ -224,7 +224,7 @@ class MemoViewController: UIViewController {
         rx.viewWillAppear.asDriver { _ in return .never()}
             .drive(onNext: { [weak self] _ in
                 ///텍스트뷰에 저장된 메모 가져오기
-                self?.mypageViewModel.input.getUserParticipatedInfo.accept(())         
+                self?.mypageViewModel.input.getUserParticipatedInfo.accept(())
             }).disposed(by: disposeBag)
         
         acceptButton.rx.tap
@@ -258,8 +258,6 @@ class MemoViewController: UIViewController {
         viewModel?.output.checkedMemoOutput
             .asDriver(onErrorJustReturn: false)
             .drive(onNext: { [weak self] _ in
-                print("메모 후 종료")
-//                self?.dismiss(animated: true)
                 self?.animateDismissView()
                 self?.viewModel?.input.memoCheckObserver.accept(())
             }).disposed(by: disposeBag)

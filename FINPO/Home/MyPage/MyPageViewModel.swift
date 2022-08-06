@@ -95,6 +95,11 @@ class MyPageViewModel {
         input.changeToDeleteMode
             .flatMap { UserInfoAPI.getUserParticipatedInfo() }
             .subscribe(onNext: { changeAndSendParticipatedInfo in
+                ParticipationViewController.regionLabelLength.removeAll()
+                for i in 0..<(changeAndSendParticipatedInfo.data.count) {
+                    let str = changeAndSendParticipatedInfo.data[i].policy.region.parent?.name ?? "" + " " + changeAndSendParticipatedInfo.data[i].policy.region.name
+                    ParticipationViewController.regionLabelLength.append(str)
+                }
                 self.output.sendUserParticipatedInfo.accept(.deleteMode(changeAndSendParticipatedInfo))
             }).disposed(by: disposeBag)
         

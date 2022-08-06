@@ -26,6 +26,9 @@ class ParticipationViewController: UIViewController {
     private var treshBarButton = UIBarButtonItem()
     var isDeleteMode = false
     
+    ///지역 라벨 길이 측정용
+    static var regionLabelLength = [String]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -188,8 +191,8 @@ class ParticipationViewController: UIViewController {
             .observe(on: MainScheduler.instance)
             .bind(to: self.policyCollectionView.rx.items(cellIdentifier: "ParticipationCollectionViewCell", cellType: ParticipationCollectionViewCell.self)) {
                 (index: Int, element: ParticipationModel, cell) in
-                
-                cell.regionLabel.text = "\(element.policy.region.parent?.name ?? "")" + " " + "\(element.policy.region.name)"
+                let region = (element.policy.region.parent?.name ?? "") + " " + (element.policy.region.name)
+                cell.regionLabel.text = region
                 cell.policyNameLabel.text = element.policy.title
                 cell.organizationLabel.text = element.policy.institution ?? "미정"
                 

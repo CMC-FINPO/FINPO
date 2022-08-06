@@ -109,7 +109,8 @@ class ParticipationCollectionViewCell: UICollectionViewCell {
         regionLabel.snp.makeConstraints {
             $0.top.equalToSuperview().inset(17)
             $0.leading.equalToSuperview().inset(20)
-            $0.trailing.greaterThanOrEqualToSuperview().inset(270)
+//            $0.trailing.greaterThanOrEqualToSuperview().inset(270)
+            $0.trailing.greaterThanOrEqualToSuperview().inset(290)
         }
         
         policyNameLabel.snp.makeConstraints {
