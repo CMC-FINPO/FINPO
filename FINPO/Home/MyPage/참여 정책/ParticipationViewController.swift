@@ -20,7 +20,6 @@ class ParticipationViewController: UIViewController {
     ///불러온 정책 아이디 저장
     var selectedId: [Int] = [Int]()
     var participatedId: [Int] = [Int]()
-//    var isBookmared: [Bool] = [Bool]()
     
     ///참여 정책 삭제버튼
     private let treshButton = UIButton()
@@ -34,6 +33,15 @@ class ParticipationViewController: UIViewController {
         setLayout()
         setInputBind()
         setOutputBind()
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(reloadCV(_:)),
+            name: NSNotification.Name("reloadCVAfterMemoEdited"),
+            object: nil)
+    }
+    
+    @objc fileprivate func reloadCV(_ notification: Notification) {
+        self.viewModel.input.getUserParticipatedInfo.accept(())
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -52,19 +60,7 @@ class ParticipationViewController: UIViewController {
         label.font =  UIFont(name: "AppleSDGothicNeo-SemiBold", size: 27)
         return label
     }()
-    
-//    private var policyTableView: UITableView = {
-//        let tv = UITableView()
-//        tv.rowHeight = UITableView.automaticDimension
-//        tv.estimatedRowHeight = 120
-//        tv.bounces = false
-//        tv.separatorInset.left = 0
-//        tv.showsVerticalScrollIndicator = false
-//        tv.showsHorizontalScrollIndicator = false
-//        tv.layer.masksToBounds = true
-//        tv.layer.cornerRadius = 5
-//        return tv
-//    }()
+
     ///TV -> CV 변경
     private var policyCollectionView: UICollectionView = {
         let flow = UICollectionViewFlowLayout()
@@ -83,9 +79,6 @@ class ParticipationViewController: UIViewController {
         navigationController?.navigationBar.tintColor = .black
         navigationController?.navigationBar.topItem?.backButtonTitle = ""
      
-        ///테이블뷰
-//        policyTableView.register(ParticipationTableViewCell.self, forCellReuseIdentifier: "ParticipationTableViewCell")
-//        policyTableView.delegate = self
         ///TV -> CV 변경
         policyCollectionView.register(ParticipationCollectionViewCell.self, forCellWithReuseIdentifier: "ParticipationCollectionViewCell")
         policyCollectionView.delegate = self

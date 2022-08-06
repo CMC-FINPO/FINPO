@@ -102,6 +102,12 @@ struct AddParticipatedAPI {
                                 let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
                                 let result = json?["success"] as? Bool ?? false
                                 print("메모 수정 결과: \(result)")
+                                ///참여정책 CV reload
+                                NotificationCenter.default.post(
+                                    name: Notification.Name("reloadCVAfterMemoEdited"),
+                                    object: nil,
+                                    userInfo: nil
+                                )
                                 observer.onNext(result)
                             }
                         }

@@ -295,7 +295,7 @@ class HomeViewModel {
             }).disposed(by: disposeBag)
         
         ///메모 서버 저장
-        _ = Observable.combineLatest(
+        _ = Observable.zip(
             self.input.participatedId,
             self.input.memoTextObserver)
             .map { a, b in
