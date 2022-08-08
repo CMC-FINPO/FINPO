@@ -222,9 +222,7 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
                         switch valid {
                         case .success(let value):
                             if value {
-                                print("logout() success.")
-                                UserDefaults.standard.setValue(nil, forKey: "accessToken")
-                                UserDefaults.standard.setValue(nil, forKey: "refreshToken")
+                                KeyChain.delete(key: KeyChain.accessToken)
                                 let vc = LoginViewController()
                                 let navVc = UINavigationController(rootViewController: vc)
                                 navVc.modalPresentationStyle = .fullScreen
@@ -243,10 +241,7 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
                         case .success(let value):
                             if value {
                                 print("구글 서버 탈퇴 및 구글 연동 해지 성공! ")
-                                UserDefaults.standard.setValue(nil, forKey: "accessToken")
-                                UserDefaults.standard.setValue(nil, forKey: "refreshToken")
-//                                KeyChain.create(key: KeyChain.accessToken, token: "")
-                                
+                                KeyChain.delete(key: KeyChain.accessToken)
                                 UserDefaults.standard.setValue(nil, forKey: "SocialAccessToken")
                                 let vc = LoginViewController()
                                 let navVc = UINavigationController(rootViewController: vc)
@@ -268,8 +263,7 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
                         case .success(let value):
                             if value {
                                 print("애플 서버 탈퇴 및 애플 연동 해지 성공!")
-                                UserDefaults.standard.setValue(nil, forKey: "accessToken")
-                                UserDefaults.standard.setValue(nil, forKey: "refreshToken")
+                                KeyChain.delete(key: KeyChain.accessToken)
                                 UserDefaults.standard.setValue(nil, forKey: "SocialAccessToken")
                                 let vc = LoginViewController()
                                 let navVC = UINavigationController(rootViewController: vc)

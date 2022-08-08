@@ -469,7 +469,7 @@ class LoginViewModel {
                                             let accessToken = result?["accessToken"] as? String ?? ""
                                             let refreshToken = result?["refreshToken"] as? String ?? ""
                                             KeyChain.create(key: KeyChain.accessToken, token: accessToken)
-                                            KeyChain.create(key: KeyChain.refreshToken, token: refreshToken)                                        
+                                            KeyChain.create(key: KeyChain.refreshToken, token: refreshToken)
                                             KeyChain.create(key: KeyChain.socialType, token: "kakao")
                                             LoginViewModel.socialType = "kakao"
                                             self.user.accessTokenFromSocial = oauthToken.accessToken
@@ -484,7 +484,6 @@ class LoginViewModel {
                                                 } else { ///회원정보 가져오기 성공 시
                                                     self.input.nickNameObserver.accept(user?.kakaoAccount?.profile?.nickname ?? "")
                                                     self.user.profileImg = user?.kakaoAccount?.profile?.profileImageUrl!
-                                                    UserDefaults.standard.setValue("kakao", forKey: "socialType")
                                                     KeyChain.create(key: KeyChain.socialType, token: "kakao")
                                                     LoginViewModel.socialType = "kakao"
                                                     observer.onNext(true)
@@ -536,7 +535,6 @@ class LoginViewModel {
                                     KeyChain.create(key: KeyChain.refreshToken, token: refreshToken)
                                     KeyChain.create(key: KeyChain.socialType, token: "apple")
                                     LoginViewModel.socialType = "apple"
-                                    print("애플 재로그인")
                                     self.output.goAppleLogin.accept(true)
                                     observer.onCompleted()
                                 }
@@ -621,7 +619,6 @@ class LoginViewModel {
                 print("구글 프로필 사진 옵셔널: \(self.user.profileImg)")
                 self.input.nickNameObserver.accept(user.profile?.name ?? "")
                 KeyChain.create(key: KeyChain.socialType, token: "google")
-                UserDefaults.standard.setValue("google", forKey: "socialType")
                 LoginViewModel.socialType = "google"
                 print("구글 로그인 성공! 액세스 토큰: \(authentication.accessToken)")
                 UserDefaults.standard.setValue(authentication.accessToken, forKey: "SocialAccessToken")
