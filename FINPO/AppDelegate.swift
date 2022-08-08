@@ -36,7 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        var window: UIWindow?
+//        var window: UIWindow?
         KakaoSDK.initSDK(appKey: "a9fd79ba4b7f4e57f0a867113df50302")
         
         ///FCM
@@ -73,15 +73,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 print("해당 애플 ID는 연동되어 있습니다.")
                 let rootVC = LoginViewController()
                 let navVC = UINavigationController(rootViewController: rootVC)
-                window?.rootViewController = navVC
-                window?.makeKeyAndVisible()
+//                window?.rootViewController = navVC
+//                window?.makeKeyAndVisible()
             case .revoked, .notFound:
                 DispatchQueue.main.async {
                     print("애플 ID revoked or notFound in your system")
                     let rootVC = LoginViewController()
                     let navVC = UINavigationController(rootViewController: rootVC)
-                    window?.rootViewController = navVC
-                    window?.makeKeyAndVisible()
+//                    window?.rootViewController = navVC
+//                    window?.makeKeyAndVisible()
                 }
             default:
                 break

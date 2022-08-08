@@ -242,6 +242,7 @@ extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizatio
                let tokenString = String(data: identifyToken, encoding: .utf8) {
                 UserDefaults.standard.setValue(tokenString, forKey: "appleAccessToken")
                 UserDefaults.standard.setValue("apple", forKey: "socialType")
+                KeyChain.create(key: KeyChain.socialType, token: "apple")
                 UserDefaults.standard.setValue(authString, forKey: "authorizationCode")
                 
                 ///performRequests()시 여기로 들어옴

@@ -449,7 +449,14 @@ class LoginViewModel {
                         "Authorization": "Bearer ".appending(kakaoAccessToken)
                     ]
                     ///서버 회원가입 상태 체크
-                    AF.request(url, method: .get, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+                    API.session.request(
+                        url,
+                        method: .get,
+                        encoding: URLEncoding.default,
+                        headers: header
+//                        , interceptor: MyRequestInterceptor()
+                    )
+                        .validate()
                         .response { response in
                             switch response.result {
                             case .success(let data):
@@ -461,11 +468,9 @@ class LoginViewModel {
                                             let result = json?["data"] as? [String:Any]
                                             let accessToken = result?["accessToken"] as? String ?? ""
                                             let refreshToken = result?["refreshToken"] as? String ?? ""
-//                                            UserDefaults.standard.setValue(accessToken, forKey: "accessToken")
-//                                            UserDefaults.standard.setValue(refreshToken, forKey: "refreshToken")
                                             KeyChain.create(key: KeyChain.accessToken, token: accessToken)
-                                            KeyChain.create(key: KeyChain.refreshToken, token: refreshToken)
-                                            UserDefaults.standard.setValue("kakao", forKey: "socialType")
+                                            KeyChain.create(key: KeyChain.refreshToken, token: refreshToken)                                        
+                                            KeyChain.create(key: KeyChain.socialType, token: "kakao")
                                             LoginViewModel.socialType = "kakao"
                                             self.user.accessTokenFromSocial = oauthToken.accessToken
                                             self.output.goKakaoLogin.accept(true)
@@ -480,6 +485,7 @@ class LoginViewModel {
                                                     self.input.nickNameObserver.accept(user?.kakaoAccount?.profile?.nickname ?? "")
                                                     self.user.profileImg = user?.kakaoAccount?.profile?.profileImageUrl!
                                                     UserDefaults.standard.setValue("kakao", forKey: "socialType")
+                                                    KeyChain.create(key: KeyChain.socialType, token: "kakao")
                                                     LoginViewModel.socialType = "kakao"
                                                     observer.onNext(true)
                                                 }
@@ -495,71 +501,6 @@ class LoginViewModel {
                 }
             }
             
-            ///로그인 되어있지 않은 경우 -> 1. 로그인시도 2. 회원가입ㄴ
-            
-//            if AuthApi.hasToken() {
-//                UserApi.shared.accessTokenInfo { _, error in
-//                    if let error = error { print("------kakao login error occured ------") }
-//                    if UserApi.isKakaoTalkLoginAvailable() {
-//                        UserApi.shared.rx.loginWithKakaoTalk()
-//                            .subscribe(onNext: { oauthToken in
-//                                let kakaoAccessToken = oauthToken.accessToken
-//                                let url = BaseURL.url.appending("oauth/login/kakao")
-//                                let header: HTTPHeaders = [
-//                                    "Content-Type": "application/json;charset=UTF-8",
-//                                    "Authorization": "Bearer ".appending(kakaoAccessToken)
-//                                ]
-//
-//                                AF.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: header)
-//                                    .validate(statusCode: 200..<300)
-//                                    .response { response in
-//                                        switch response.result {
-//                                        case .success(let data):
-//                                            if let data = data {
-//                                                do {
-//                                                    let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-//                                                    let result = json?["data"] as? [String:Any]
-//                                                    let accessToken = result?["accessToken"] as? String ?? ""
-//                                                    let refreshToken = result?["refreshToken"] as? String ?? ""
-//                                                    UserDefaults.standard.setValue(accessToken, forKey: "accessToken")
-//                                                    UserDefaults.standard.setValue(refreshToken, forKey: "refreshToken")
-//                                                    UserDefaults.standard.setValue("kakao", forKey: "socialType")
-//                                                    LoginViewModel.socialType = "kakao"
-//                                                    self.output.goKakaoLogin.accept(true)
-//                                                }
-//                                            }
-//                                        case .failure(let err):
-//                                            print("카카오 재로그인 에러발생: \(err)")
-//                                        }
-//                                    }
-//                            }).disposed(by: self.disposeBag)
-//                    }
-//                }
-//            }
-//            else {
-//                UserApi.shared.rx.loginWithKakaoTalk()
-//                    .subscribe(onNext: { (oauthToken) in
-//                        UserApi.shared.me { user, error in
-//                            if let error = error {
-//                                self.output.errorValue.accept(error)
-//                            } else { ///회원정보 가져오기 성공 시
-//                                self.input.nickNameObserver.accept(user?.kakaoAccount?.profile?.nickname ?? "")
-//                                self.user.profileImg = user?.kakaoAccount?.profile?.profileImageUrl!
-//                                UserDefaults.standard.setValue("kakao", forKey: "socialType")
-//                                LoginViewModel.socialType = "kakao"
-//                                observer.onNext(true)
-//                            }
-//                        }
-//                        //소셜 액세스 토큰
-//                        self.user.accessTokenFromSocial = oauthToken.accessToken
-//
-//                        print("카카오 엑세스 토큰 from kakao api server: \(self.user.accessTokenFromSocial)")
-//                    }, onError: { (error) in
-//                        print("error occured: \(error)")
-//                        observer.onError(error)
-//                    }).disposed(by: self.disposeBag)
-//            }
-            
             return Disposables.create()
         }
     }
@@ -573,7 +514,13 @@ class LoginViewModel {
                 "Authorization": "Bearer ".appending(identifyToken)
             ]
             
-            AF.request(url, method: .get, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+            API.session.request(
+                url,
+                method: .get,
+                encoding: URLEncoding.default,
+                headers: header
+//                , interceptor: MyRequestInterceptor()
+            )
                 .response { response in
                     switch response.result {
                     case .success(let data):
@@ -585,11 +532,9 @@ class LoginViewModel {
                                     let result = json?["data"] as? [String:Any]
                                     let accessToken = result?["accessToken"] as? String ?? ""
                                     let refreshToken = result?["refreshToken"] as? String ?? ""
-//                                    UserDefaults.standard.setValue(accessToken, forKey: "accessToken")
-//                                    UserDefaults.standard.setValue(refreshToken, forKey: "refreshToken")
                                     KeyChain.create(key: KeyChain.accessToken, token: accessToken)
                                     KeyChain.create(key: KeyChain.refreshToken, token: refreshToken)
-                                    UserDefaults.standard.setValue("apple", forKey: "socialType")
+                                    KeyChain.create(key: KeyChain.socialType, token: "apple")
                                     LoginViewModel.socialType = "apple"
                                     print("애플 재로그인")
                                     self.output.goAppleLogin.accept(true)
@@ -640,12 +585,9 @@ class LoginViewModel {
                                         let result = json?["data"] as? [String: Any]
                                         let accessToken = result?["accessToken"] as? String ?? ""
                                         let refreshToken = result?["refreshToken"] as? String ?? ""
-//                                        UserDefaults.standard.setValue(accessToken, forKey: "accessToken")
-//                                        UserDefaults.standard.setValue(refreshToken, forKey: "refreshToken")
-                                        UserDefaults.standard.setValue("google", forKey: "socialType")
                                         KeyChain.create(key: KeyChain.accessToken, token: accessToken)
                                         KeyChain.create(key: KeyChain.refreshToken, token: refreshToken)
-                                        
+                                        KeyChain.create(key: KeyChain.socialType, token: "google")
                                         LoginViewModel.socialType = "google"
                                         observer.onNext(true)
                                     }
@@ -678,7 +620,7 @@ class LoginViewModel {
                 self.user.profileImg = user.profile?.imageURL(withDimension: 200)!
                 print("구글 프로필 사진 옵셔널: \(self.user.profileImg)")
                 self.input.nickNameObserver.accept(user.profile?.name ?? "")
-                print("구글 유저 이름: \(user.profile?.name ?? "")")
+                KeyChain.create(key: KeyChain.socialType, token: "google")
                 UserDefaults.standard.setValue("google", forKey: "socialType")
                 LoginViewModel.socialType = "google"
                 print("구글 로그인 성공! 액세스 토큰: \(authentication.accessToken)")

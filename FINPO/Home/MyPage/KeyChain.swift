@@ -13,6 +13,7 @@ class KeyChain: NSObject {
     
     static var accessToken = "accessToken"
     static var refreshToken = "refreshToken"
+    static var socialType = "socialType"
     
     ///create keychain
     class func create(key: String, token: String) {

@@ -21,7 +21,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window = UIWindow(windowScene: windowScene)
         
         ///string -> object 수정
+//        let acToken = KeyChain.read(key: KeyChain.accessToken)
+//        print("acToken: \(acToken!)")
+        ///임시
+//        KeyChain.delete(key: KeyChain.accessToken)
         let acToken = KeyChain.read(key: KeyChain.accessToken)
+        print("acToken: \(acToken)")
         
         if(acToken != nil) {
             let rootVC = HomeTapViewController()

@@ -38,7 +38,7 @@ class MyRequestInterceptor: RequestInterceptor {
         ]
         
         API.session.request(url, method: .post, parameters: parameter, encoding: JSONEncoding.default, headers: nil)
-            .validate()
+            .validate(statusCode: 200..<499)
             .response { response in
                 switch response.result {
                 case .success(let data):
@@ -50,8 +50,6 @@ class MyRequestInterceptor: RequestInterceptor {
                             let refreshToken = result["refreshToken"] as? String ?? ""
                             let accessTokenExpiresIn = result["accessTokenExpiresIn"] as? Int ?? Int()
                             let accessTokenExpireDate = Date(milliseconds: Int64(accessTokenExpiresIn))
-//                            UserDefaults.standard.set(accessToken, forKey: "accessToken")
-//                            UserDefaults.standard.set(refreshToken, forKey: "refreshToken")
                             KeyChain.create(key: KeyChain.accessToken, token: accessToken)
                             KeyChain.create(key: KeyChain.refreshToken, token: refreshToken)
                             UserDefaults.standard.set(accessTokenExpireDate, forKey: "accessTokenExpiresIn")

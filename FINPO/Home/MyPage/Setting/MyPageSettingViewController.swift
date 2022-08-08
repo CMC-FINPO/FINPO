@@ -116,7 +116,8 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //로그아웃
-        let socialType = UserDefaults.standard.string(forKey: "socialType")
+//        let socialType = UserDefaults.standard.string(forKey: "socialType")
+        let socialType = KeyChain.read(key: KeyChain.socialType) ?? ""
         print("소셜타입: \(socialType)")
         
         ///내 정보 수정
