@@ -38,7 +38,7 @@ class MyRequestInterceptor: RequestInterceptor {
         ]
         
         API.session.request(url, method: .post, parameters: parameter, encoding: JSONEncoding.default, headers: nil)
-            .validate(statusCode: 200..<499)
+            .validate()
             .response { response in
                 switch response.result {
                 case .success(let data):

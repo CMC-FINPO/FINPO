@@ -24,7 +24,7 @@ struct LastSignUpAPI {
         request.httpMethod = "PUT"
         request.httpBody = try! JSONSerialization.data(withJSONObject: regionId.map({["regionId":$0]}))
         
-        API.session.request(request)
+        AF.request(request)
             .validate()
             .response { (response) in
                 switch response.result {

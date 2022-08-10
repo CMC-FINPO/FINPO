@@ -147,26 +147,7 @@ class LoginViewModel {
                     }).disposed(by: self.disposeBag)
                 }
             }).disposed(by: disposeBag)
-        
-//        input.appleSignUpObserver
-//            .subscribe(onNext: { [weak self] in
-//                self?.output.goAppleSignUp.accept(true)
-//            }).disposed(by: disposeBag)
-        
-//        input.kakaoSignUpObserver
-//            .flatMap { self.kakaoLogin() }
-//            .subscribe({ valid in
-//                switch valid {
-//                case .next(let validation):
-//                    print("주입되었음")
-//                    self.output.goKakaoSignUp.accept(validation)
-//                case .completed:
-//                    break
-//                case .error(let error):
-//                    self.output.errorValue.accept(error)
-//                }
-//            }).disposed(by: disposeBag)
-        
+
         ///구글 회원가입
         input.googleSignUpObserver
             .flatMap { user in self.googleLogin(user: user) }
@@ -449,7 +430,7 @@ class LoginViewModel {
                         "Authorization": "Bearer ".appending(kakaoAccessToken)
                     ]
                     ///서버 회원가입 상태 체크
-                    API.session.request(
+                    AF.request(
                         url,
                         method: .get,
                         encoding: URLEncoding.default,
@@ -485,6 +466,7 @@ class LoginViewModel {
                                                     self.input.nickNameObserver.accept(user?.kakaoAccount?.profile?.nickname ?? "")
                                                     self.user.profileImg = user?.kakaoAccount?.profile?.profileImageUrl!
                                                     KeyChain.create(key: KeyChain.socialType, token: "kakao")
+                                                    self.user.accessTokenFromSocial = oauthToken.accessToken
                                                     LoginViewModel.socialType = "kakao"
                                                     observer.onNext(true)
                                                 }
@@ -513,7 +495,7 @@ class LoginViewModel {
                 "Authorization": "Bearer ".appending(identifyToken)
             ]
             
-            API.session.request(
+            AF.request(
                 url,
                 method: .get,
                 encoding: URLEncoding.default,
@@ -571,7 +553,7 @@ class LoginViewModel {
                     "Authorization": "Bearer ".appending(googleAccessToken)
                 ]
                 
-                AF.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: header)
+                API.session.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: header)
                     .response { response in
                         switch response.result {
                         case .success(let data):
@@ -604,8 +586,6 @@ class LoginViewModel {
             return Disposables.create()
         }
     }
-    
-    
     
     ///회원가입
     private func googleLogin(user: GIDGoogleUser) -> Observable<Bool> {
@@ -818,7 +798,7 @@ class LoginViewModel {
     
     func semiSignup() -> Observable<User> {
         return Observable.create { observer in
-            let socialType = UserDefaults.standard.string(forKey: "socialType") ?? ""
+            guard let socialType = KeyChain.read(key: KeyChain.socialType) else { return Disposables.create() }
             let url = BaseURL.url.appending("oauth/register/\(socialType)")
             
             let parameter: Parameters = [
@@ -837,13 +817,14 @@ class LoginViewModel {
                 "Authorization":"Bearer ".appending((self.user.accessTokenFromSocial))
             ]
             
-            AF.upload(multipartFormData: { (multipart) in
+            API.session.upload(multipartFormData: { (multipart) in
                 for (key, value) in parameter {
                     multipart.append("\(value)".data(using: .utf8, allowLossyConversion: false)!, withName: "\(key)")
                 }
                 //카테고리 JSON 타입으로 보내기
                 var dics: [[String:Any]] = [[String:Any]]()
                 var dicsData: Data = Data()
+                
                 for i in 0..<(self.user.category.count) {
                     dics.append(["categoryId": self.user.category[i]])
                     dicsData = try! JSONSerialization.data(withJSONObject: dics, options: [])
@@ -876,12 +857,9 @@ class LoginViewModel {
                             KeyChain.create(key: KeyChain.refreshToken, token: refreshToken)
                             
                             //API 액세스 토큰
-                            self.user.accessToken = accessToken ?? ""
+                            self.user.accessToken = accessToken
 //                            self.user.accessTokenFromSocial = accessToken ?? ""//필요없을듯
-                            self.user.refreshToken = refreshToken ?? ""//필요없을듯
-                            ///UserDefaults -> keychain 적용[삭제예정]
-//                            UserDefaults.standard.set(self.user.accessToken, forKey: "accessToken")
-//                            UserDefaults.standard.set(self.user.refreshToken, forKey: "refreshToken")
+                            self.user.refreshToken = refreshToken
                             UserDefaults.standard.set(accessTokenExpireDate, forKey: "accessTokenExpiresIn")
                             
                             observer.onNext(self.user)
@@ -898,7 +876,6 @@ class LoginViewModel {
     }
     
     func getStatus() {
-//        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
         ///UserDefaults -> keychain
         let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
         let url = BaseURL.url.appending("user/status/name")

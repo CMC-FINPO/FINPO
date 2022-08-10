@@ -25,7 +25,7 @@ struct OpenAPI {
                 "Authorization": "Bearer ".appending(accessToken)
             ]
             
-            API.session.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+            AF.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
                 .validate(statusCode: 200..<300)
                 .responseDecodable(of: OpenAPIModel.self) { response in
                     switch response.result {

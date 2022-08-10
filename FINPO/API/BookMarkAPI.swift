@@ -70,7 +70,7 @@ struct BookMarkAPI {
                 "policyId": id
             ]
             
-            API.session.request(urlStr, method: .delete, parameters: parameter, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+            AF.request(urlStr, method: .delete, parameters: parameter, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
                 .validate(statusCode: 200..<300)
                 .response { response in
                     switch response.result {

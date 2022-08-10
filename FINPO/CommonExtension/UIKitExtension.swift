@@ -284,6 +284,7 @@ extension UITextField {
             let datePicker = UIDatePicker(frame: CGRect(x: 0, y: 0, width: SCwidth, height: 216))
             datePicker.datePickerMode = .date
             datePicker.isSelected = true
+            datePicker.locale = NSLocale(localeIdentifier: "ko_KO") as Locale
             if #available(iOS 13.4, *) {
                 datePicker.preferredDatePickerStyle = .wheels
                 datePicker.setValue(UIColor.black, forKey: "textColor")

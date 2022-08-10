@@ -61,7 +61,7 @@ struct AlarmAPI {
                 "Authorization": "Bearer ".appending(accessToken)
             ]
             
-            API.session.request(url, method: .delete, parameters: nil, encoding: URLEncoding.queryString, headers: header, interceptor: MyRequestInterceptor())
+            AF.request(url, method: .delete, parameters: nil, encoding: URLEncoding.queryString, headers: header, interceptor: MyRequestInterceptor())
                 .validate(statusCode: 200..<600)
                 .responseJSON { response in
                     switch response.result {

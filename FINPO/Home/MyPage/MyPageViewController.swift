@@ -306,19 +306,19 @@ class MyPageViewController: UIViewController {
             $0.height.equalTo(1)
         }
         
-        view.addSubview(segmentedControl)
-        segmentedControl.snp.makeConstraints {
-            $0.top.equalTo(interestListLabel.snp.bottom).offset(23)
-            $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(50)
-        }
-        
-        view.addSubview(pageViewController.view)
-        pageViewController.view.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(1)
-            $0.top.equalTo(segmentedControl.snp.bottom).offset(1)
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
-        }
+//        view.addSubview(segmentedControl)
+//        segmentedControl.snp.makeConstraints {
+//            $0.top.equalTo(interestListLabel.snp.bottom).offset(23)
+//            $0.leading.trailing.equalToSuperview()
+//            $0.height.equalTo(50)
+//        }
+//        
+//        view.addSubview(pageViewController.view)
+//        pageViewController.view.snp.makeConstraints {
+//            $0.leading.trailing.equalToSuperview().inset(1)
+//            $0.top.equalTo(segmentedControl.snp.bottom).offset(1)
+//            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+//        }
         
         
     }

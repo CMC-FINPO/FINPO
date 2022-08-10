@@ -135,9 +135,11 @@ class MyPageViewModel {
         input.loadUserInterestedThingsObserver
             .flatMap { UserInfoAPI.getMyCategory() }
             .subscribe(onNext: { categories in
-                for i in 0..<categories.data.count {
-                    MyPageViewController.interestThingsString.append(categories.data[i].name)
-                }
+                DispatchQueue.global().sync {
+                    for i in 0..<categories.data.count {
+                        MyPageViewController.interestThingsString.append(categories.data[i].name)
+                    }
+                }                
                 self.output.sendUserInterestedThings.accept(categories)
             }).disposed(by: disposeBag)
         

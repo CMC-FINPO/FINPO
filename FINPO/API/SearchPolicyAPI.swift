@@ -56,7 +56,7 @@ struct SearchPolicyAPI {
             ]
              
             //URLEncoding(arrayEncoding: .noBrackets)
-            API.session.request(url, method: .get, parameters: parameter, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+            AF.request(url, method: .get, parameters: parameter, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
                 .validate(statusCode: 200..<300)
                 .responseJSON { (response) in
                     switch response.result {

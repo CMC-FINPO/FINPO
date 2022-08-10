@@ -14,7 +14,6 @@ struct FCMAPI {
         return Observable.create { observer in
             
             let url = BaseURL.url.appending("notification/me")
-//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
             ///UserDefaults -> keychain
             let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
             
@@ -32,7 +31,7 @@ struct FCMAPI {
                 "adSubscribe": LoginDetailViewController.isCMAllow
             ]
             
-            API.session.request(url, method: .put, parameters: parameter, encoding: JSONEncoding.default, headers: header)
+            AF.request(url, method: .put, parameters: parameter, encoding: JSONEncoding.default, headers: header)
                 .validate(statusCode: 200..<300)
                 .response { response in
                     switch response.result {
@@ -69,7 +68,7 @@ struct FCMAPI {
                 "Authorization": "Bearer ".appending(accessToken)
             ]
             
-            API.session.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+            AF.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
                 .validate(statusCode: 200..<300)
                 .responseDecodable(of: MyAlarmIsOnModel.self) { response in
                     switch response.result {
@@ -103,7 +102,7 @@ struct FCMAPI {
                 "subscribe": subOrNot
             ]
             
-            API.session.request(url, method: .put, parameters: parameter, encoding: JSONEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+            AF.request(url, method: .put, parameters: parameter, encoding: JSONEncoding.default, headers: header, interceptor: MyRequestInterceptor())
                 .validate(statusCode: 200..<300)
                 .responseDecodable(of: MyAlarmIsOnModel.self) { response in
                     switch response.result {
@@ -186,7 +185,7 @@ struct FCMAPI {
             
             request.httpBody = try! JSONSerialization.data(withJSONObject: parameter, options: .prettyPrinted)
             
-            API.session.request(request)
+            AF.request(request)
                 .validate(statusCode: 200..<300)
                 .responseDecodable(of: MyAlarmIsOnModel.self) { response in
                     switch response.result {
@@ -263,7 +262,7 @@ struct FCMAPI {
             "adSubscribe": valid
         ]
         
-        API.session.request(url, method: .put, parameters: parameter, encoding: JSONEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+        AF.request(url, method: .put, parameters: parameter, encoding: JSONEncoding.default, headers: header, interceptor: MyRequestInterceptor())
             .validate(statusCode: 200..<300)
             .response { response in
                 switch response.result {

@@ -15,6 +15,8 @@ import RxCocoa
 
 class MyPageSettingViewController: UIViewController {
     
+    var user = User.instance
+    
     let disposeBag = DisposeBag()
     let viewModel = CategoryAlarmViewModel()
     
@@ -173,24 +175,21 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
             let ac = UIAlertController(title: "로그아웃", message: "로그아웃 하시겠습니까?", preferredStyle: .actionSheet)
             ac.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
                 if(socialType == "kakao") {
-//                    UserApi.shared.logout { error in
-//                        if let error = error { print(error) }
-//                        else {
-                            print("logout() success.")
-                            UserDefaults.standard.setValue(nil, forKey: "accessToken")
-                            UserDefaults.standard.setValue(nil, forKey: "refreshToken")
-                            let vc = LoginViewController()
-                            let navVc = UINavigationController(rootViewController: vc)
-                            navVc.modalPresentationStyle = .fullScreen
-                            self.present(navVc, animated: true)
-//                        }
+                    //                    UserApi.shared.logout { error in
+                    //                        if let error = error { print(error) }
+                    //                        else {
+                    print("logout() success.")
+                    KeyChain.delete(key: KeyChain.accessToken)
+                    let vc = LoginViewController()
+                    let navVc = UINavigationController(rootViewController: vc)
+                    navVc.modalPresentationStyle = .fullScreen
+                    self.present(navVc, animated: true)
+                    //                        }
 //                    }
                 }
                 
                 else if(socialType == "google") {
-//                    GIDSignIn.sharedInstance.signOut()
-                    UserDefaults.standard.setValue(nil, forKey: "accessToken")
-                    UserDefaults.standard.setValue(nil, forKey: "refreshToken")
+                    KeyChain.delete(key: KeyChain.accessToken)
                     print("구글 서버 로그아웃 및 로그아웃 성공! ")
                     let vc = LoginViewController()
                     let navVc = UINavigationController(rootViewController: vc)
@@ -198,8 +197,7 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
                     self.present(navVc, animated: true)
                 }
                 else if(socialType == "apple") {
-                    UserDefaults.standard.setValue(nil, forKey: "accessToken")
-                    UserDefaults.standard.setValue(nil, forKey: "refreshToken")
+                    KeyChain.delete(key: KeyChain.accessToken)
                     print("애플 서버 로그아웃 및 로그아웃 성공! ")
                     let vc = LoginViewController()
                     let navVc = UINavigationController(rootViewController: vc)
@@ -208,6 +206,8 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
                 }
             }))
             ac.addAction(UIAlertAction(title: "취소", style: .destructive))
+            //구글,카카오 로그아웃 후 애플 로그인 시 프로필 클리어
+            self.user.profileImg = nil
             self.present(ac, animated: true, completion: nil)
         }
     
@@ -277,6 +277,8 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
                 }
             }))
             ac.addAction(UIAlertAction(title: "취소", style: .destructive))
+            //구글,카카오 로그아웃 후 애플 로그인 시 프로필 클리어
+            self.user.profileImg = nil
             self.present(ac, animated: true, completion: nil)
         }
     }

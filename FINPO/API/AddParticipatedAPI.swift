@@ -40,7 +40,7 @@ struct AddParticipatedAPI {
                 "Authorization": "Bearer ".appending(accessToken)
             ]
             
-            API.session.request(urlStr,
+            AF.request(urlStr,
                                 method: .post,
                                 parameters: parameter,
                                 encoding: JSONEncoding.default,
@@ -92,7 +92,7 @@ struct AddParticipatedAPI {
                 "Authorization": "Bearer ".appending(accessToken)
             ]
             
-            API.session.request(urlStr, method: .put, parameters: parameter, encoding: JSONEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+            AF.request(urlStr, method: .put, parameters: parameter, encoding: JSONEncoding.default, headers: header, interceptor: MyRequestInterceptor())
                 .validate()
                 .response { response in
                     switch response.result {

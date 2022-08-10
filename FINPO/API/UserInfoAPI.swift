@@ -242,7 +242,7 @@ struct UserInfoAPI {
                 "Authorization": "Bearer ".appending(accessToken)
             ]
             
-            API.session.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+            AF.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
                 .validate(statusCode: 200..<300)
                 .responseDecodable(of: UserResponseModel.self) { response in
                     switch response.result {
@@ -277,7 +277,7 @@ struct UserInfoAPI {
                 "Authorization": "Bearer ".appending(accessToken)
             ]
             
-            API.session.request(url, method: .get, parameters: parameter, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+            AF.request(url, method: .get, parameters: parameter, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
                 .validate(statusCode: 200..<300)
                 .response { response in
                     switch response.result {
@@ -326,7 +326,7 @@ struct UserInfoAPI {
                 "gender": userInfo.gender
             ]
             
-            API.session.request(url, method: .put, parameters: parameter, encoding: JSONEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+            AF.request(url, method: .put, parameters: parameter, encoding: JSONEncoding.default, headers: header, interceptor: MyRequestInterceptor())
                 .validate(statusCode: 200..<300)
                 .response { response in
                     switch response.result {
