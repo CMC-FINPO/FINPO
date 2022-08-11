@@ -277,7 +277,7 @@ class EditUserInfoViewController: UIViewController {
             .bind(to: viewModel.input.nameObserver)
             .disposed(by: disposeBag)
         
-        nickNameTextField.rx.controlEvent([.editingDidEnd])
+        nickNameTextField.rx.controlEvent([.editingDidEnd, .editingChanged])
             .map { self.nickNameTextField.text ?? "" }
             .bind(to: viewModel.input.nickNameObserver)
             .disposed(by: disposeBag)
