@@ -234,8 +234,10 @@ extension LoginViewController: ASAuthorizationControllerDelegate, ASAuthorizatio
             ///ver1.0.2 애플 재로그인 시 유저정보가 제공되지 않음 -> guard 통과 못함
             let givenName = appleIDCredential.fullName?.givenName ?? ""
             let familyName = appleIDCredential.fullName?.familyName ?? ""
-            viewModel.user.nickname = familyName + givenName
-
+//            viewModel.user.nickname = familyName + givenName
+            viewModel.user.name = familyName + givenName
+            print("애플로그인 시 저장된 이름: \(viewModel.user.name)")
+            
             if let authorizationCode = appleIDCredential.authorizationCode,
                let identifyToken = appleIDCredential.identityToken,
                let authString = String(data: authorizationCode, encoding: .utf8),

@@ -33,7 +33,7 @@ enum SocialLoginType {
     case apple(String)
 }
 
-class LoginViewModel {
+final class LoginViewModel {
     
     let disposeBag = DisposeBag()
     var user = User.instance
@@ -180,8 +180,8 @@ class LoginViewModel {
         
         //check nickname validation
         input.nickNameObserver
-            .observe(on: MainScheduler.asyncInstance)
-            .flatMap { _ in self.checkNicknameValid() } //중복:true
+//            .observe(on: MainScheduler.asyncInstance)
+            .flatMap { nick in self.checkNicknameValid(nickName: nick) } //중복:true
             .subscribe({ valid in
                 switch valid {
                 case .next(let valid):
@@ -192,6 +192,8 @@ class LoginViewModel {
                     self.output.errorValue.accept(error)
                 }
             }).disposed(by: disposeBag)
+        
+
         
         input.birthObserver.subscribe(onNext: { birth in
             self.user.birth = birth
@@ -610,9 +612,12 @@ class LoginViewModel {
     }
 
     
-    private func checkNicknameValid() -> Observable<Bool> {
+    private func checkNicknameValid(nickName: String) -> Observable<Bool> {
         return Observable.create { observer in
-            let encodedNickname = self.user.nickname.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+            print("네트워크 닉네임호출 닉네임: \(self.user.nickname)")
+//            let encodedNickname = self.user.nickname.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+            
+            let encodedNickname = nickName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
             
             let url = BaseURL.url.appending("user/check-duplicate?nickname=\(encodedNickname)")
             let parameter: Parameters = [

@@ -212,7 +212,7 @@ class LoginBasicInfoViewController: UIViewController {
     private var confirmButton: UIButton = {
         let button = UIButton()
         button.setTitle("다음", for: .normal)
-        button.titleLabel?.textColor = UIColor(hexString: "616161")
+        button.setTitleColor(UIColor(hexString: "616161"), for: .normal)
         button.backgroundColor = UIColor(hexString: "F0F0F0")
         button.layer.cornerRadius = 5
         button.isEnabled = false
@@ -352,24 +352,36 @@ class LoginBasicInfoViewController: UIViewController {
         rx.viewWillAppear.take(1).asDriver { _ in return .never()}
             .drive(onNext: { [weak self] _ in
                 guard let self = self else { return }
-//                self.nameTextField.text = self.viewModel.user.nickname
-                self.nickNameTextField.text = self.viewModel.user.nickname
+                let socialType = KeyChain.read(key: KeyChain.socialType)
+                print("이름가져오기: \(socialType ?? "ㅋ")")
+                print("이름: \(self.viewModel.user.name)")
+                if(socialType == "apple") {
+                    self.nameTextField.text = self.viewModel.user.name
+                } else {
+                    self.nickNameTextField.text = self.viewModel.user.nickname
+                    self.viewModel.input.nickNameObserver.accept(self.nickNameTextField.text ?? "")
+                }
             }).disposed(by: disposeBag)
         
-        nameTextField.rx.text
-            .orEmpty
+//        nameTextField.rx.text
+//            .orEmpty
+//            .bind(to: viewModel.input.nameObserver)
+//            .disposed(by: disposeBag)
+        
+        nameTextField.rx.controlEvent([.editingChanged, .editingDidEnd])
+            .map { self.nameTextField.text ?? "" }
             .bind(to: viewModel.input.nameObserver)
             .disposed(by: disposeBag)
         
-        nickNameTextField.rx.controlEvent([.editingDidEnd])
+//        nickNameTextField.rx.controlEvent([.editingDidEnd])
+//            .map { self.nickNameTextField.text ?? "" }
+//            .bind(to: viewModel.input.nickNameObserver)
+//            .disposed(by: disposeBag)
+        
+        nickNameTextField.rx.controlEvent([.editingChanged, .editingDidEnd])
             .map { self.nickNameTextField.text ?? "" }
             .bind(to: viewModel.input.nickNameObserver)
             .disposed(by: disposeBag)
-        
-//        nickNameTextField.rx.text
-//            .orEmpty
-//            .bind(to: viewModel.input.nickNameObserver)
-//            .disposed(by: disposeBag)
         
         birthTextField.rx.controlEvent([.editingDidEnd])
             .map { self.birthTextField.text ?? "" }

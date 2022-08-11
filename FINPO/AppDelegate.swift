@@ -27,7 +27,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         Messaging.messaging().apnsToken = deviceToken
         let tokenParts = deviceToken.map { data in String(format: "%02.2hhx", data) }
-
+        print("디바이스 토큰: \(tokenParts)")
+        
         //TODO: 서버로 이 토큰을 보내는가?(디바이스토큰 / FCM 토큰이 있는데 여기선 디바이스 토큰 UserDefaults 저장)
         let token = tokenParts.joined()
         UserDefaults.standard.setValue(token, forKey: "fcmToken")
