@@ -208,7 +208,17 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
             ac.addAction(UIAlertAction(title: "취소", style: .destructive))
             //구글,카카오 로그아웃 후 애플 로그인 시 프로필 클리어
             self.user.profileImg = nil
-            self.present(ac, animated: true, completion: nil)
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                if let popoverController = ac.popoverPresentationController {
+                      // ActionSheet가 표현되는 위치를 저장해줍니다.
+                      popoverController.sourceView = self.view
+                      popoverController.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
+                      popoverController.permittedArrowDirections = []
+                      self.present(ac, animated: true, completion: nil)
+                  }
+            } else {
+                self.present(ac, animated: true, completion: nil)
+            }
         }
     
         //회원탈퇴
