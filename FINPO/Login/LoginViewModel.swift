@@ -437,7 +437,6 @@ final class LoginViewModel {
                         method: .get,
                         encoding: URLEncoding.default,
                         headers: header
-//                        , interceptor: MyRequestInterceptor()
                     )
                         .validate()
                         .response { response in
@@ -483,10 +482,46 @@ final class LoginViewModel {
                         }
                 }
             }
+            ///카카오톡 설치가 안 된 경우라면
+            else {
+                UserApi.shared.loginWithKakaoAccount { oauthToken, _ in
+                    guard let oauthToken = oauthToken else { return }
+                    let kakaoAccessToken = oauthToken.accessToken
+                    let url = BaseURL.url.appending("oauth/login/kakao")
+                    SocialLoginAPI.loginWithKakao(url: url, socialToken: kakaoAccessToken) { isSignin in
+                        switch isSignin {
+                        case .success(true):
+                            self.user.accessTokenFromSocial = oauthToken.accessToken
+                            self.output.goKakaoLogin.accept(true)
+                            observer.onCompleted()
+                        case .success(false):
+                            UserApi.shared.me { user, error in
+                                if let error = error {
+                                    self.output.errorValue.accept(error)                  
+                                } else { ///회원정보 가져오기 성공 시
+                                    self.input.nickNameObserver.accept(user?.kakaoAccount?.profile?.nickname ?? "")
+                                    self.user.profileImg = user?.kakaoAccount?.profile?.profileImageUrl!
+                                    KeyChain.create(key: KeyChain.socialType, token: "kakao")
+                                    self.user.accessTokenFromSocial = oauthToken.accessToken
+                                    LoginViewModel.socialType = "kakao"
+                                    observer.onNext(true)
+                                }
+                            }
+                        default:
+                            print("카카오로그인 에러 발생")
+                            break
+                        }
+                    }
+                    
+                }
+            }
             
             return Disposables.create()
         }
     }
+    
+    
+    
     ///애플 회원가입 상태 체크
     private func appleSignin(identifyToken: String) -> Observable<Bool> {
         return Observable.create { observer in

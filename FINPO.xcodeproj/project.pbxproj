@@ -86,6 +86,7 @@
 		DDAC8EBF284884F80092CB25 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAC8EBE284884F80092CB25 /* LoginViewModel.swift */; };
 		DDAC8EC22848A36C0092CB25 /* LoginDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAC8EC12848A36C0092CB25 /* LoginDetailViewController.swift */; };
 		DDAF7C47289A98D300D1F1FD /* ParticipationCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAF7C46289A98D300D1F1FD /* ParticipationCollectionViewCell.swift */; };
+		DDAF7C8228A6585100D1F1FD /* SocialLoginAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAF7C8128A6585100D1F1FD /* SocialLoginAPI.swift */; };
 		DDB1CCA2285EE1F800B42EDC /* MyPageSettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDB1CCA1285EE1F800B42EDC /* MyPageSettingViewController.swift */; };
 		DDB1CCA4285EED3600B42EDC /* SettingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDB1CCA3285EED3600B42EDC /* SettingTableViewCell.swift */; };
 		DDB1CCA7285F5C5B00B42EDC /* BoardTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDB1CCA6285F5C5B00B42EDC /* BoardTableViewCell.swift */; };
@@ -208,6 +209,7 @@
 		DDAC8EBE284884F80092CB25 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		DDAC8EC12848A36C0092CB25 /* LoginDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginDetailViewController.swift; sourceTree = "<group>"; };
 		DDAF7C46289A98D300D1F1FD /* ParticipationCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipationCollectionViewCell.swift; sourceTree = "<group>"; };
+		DDAF7C8128A6585100D1F1FD /* SocialLoginAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialLoginAPI.swift; sourceTree = "<group>"; };
 		DDB1CCA1285EE1F800B42EDC /* MyPageSettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPageSettingViewController.swift; sourceTree = "<group>"; };
 		DDB1CCA3285EED3600B42EDC /* SettingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingTableViewCell.swift; sourceTree = "<group>"; };
 		DDB1CCA6285F5C5B00B42EDC /* BoardTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardTableViewCell.swift; sourceTree = "<group>"; };
@@ -552,6 +554,7 @@
 				DD60C1D5287E98F6003B201E /* ForWhatAPI.swift */,
 				DD4D492F288478BB00E25AB6 /* DeleteParticipationAPI.swift */,
 				DD60A0BF2887D1E2004E9015 /* OpenAPI.swift */,
+				DDAF7C8128A6585100D1F1FD /* SocialLoginAPI.swift */,
 				31718119D93A97BDE60B464A /* Frameworks */,
 				DDB419C028636289005868ED /* Event Logger */,
 			);
@@ -713,6 +716,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DD5A19072876C83D00903616 /* ParticipationViewController.swift in Sources */,
+				DDAF7C8228A6585100D1F1FD /* SocialLoginAPI.swift in Sources */,
 				DD5A18E72870227C00903616 /* DetailInfoModel.swift in Sources */,
 				DDFD6EEA2854B2B000A1706F /* InterestCollectionViewCell.swift in Sources */,
 				DD612576287B0451002FBF4D /* BookmarkCollectionViewCell.swift in Sources */,
@@ -958,7 +962,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = FINPO/FINPO.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = 6P7X76PR5Q;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FINPO/Info.plist;
@@ -991,7 +995,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = FINPO/FINPO.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = 6P7X76PR5Q;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FINPO/Info.plist;
