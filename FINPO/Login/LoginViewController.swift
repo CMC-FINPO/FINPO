@@ -112,8 +112,6 @@ class LoginViewController: UIViewController {
     private func setInputBind() {
         ///카카오 리팩
         kakaoSignUpButton.rx.tap
-            .take(1)
-            
             .bind { [weak self] _ in
                 self?.viewModel.input.finalSocialSignupCheckObserver.accept(.kakao)
             }

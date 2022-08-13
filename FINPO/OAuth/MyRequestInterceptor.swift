@@ -31,8 +31,6 @@ class MyRequestInterceptor: RequestInterceptor {
         let refreshToken = KeyChain.read(key: KeyChain.refreshToken) ?? ""
         
         let parameter: Parameters = [
-//            "accessToken": UserDefaults.standard.string(forKey: "accessToken") ?? "",
-//            "refreshToken": UserDefaults.standard.string(forKey: "refreshToken") ?? ""
             "accessToken": accessToken,
             "refreshToken": refreshToken
         ]

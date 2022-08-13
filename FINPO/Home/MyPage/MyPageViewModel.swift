@@ -139,7 +139,7 @@ class MyPageViewModel {
                     for i in 0..<categories.data.count {
                         MyPageViewController.interestThingsString.append(categories.data[i].name)
                     }
-                }                
+                }
                 self.output.sendUserInterestedThings.accept(categories)
             }).disposed(by: disposeBag)
         
