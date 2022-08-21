@@ -31,7 +31,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         //TODO: 서버로 이 토큰을 보내는가?(디바이스토큰 / FCM 토큰이 있는데 여기선 디바이스 토큰 UserDefaults 저장)
         let token = tokenParts.joined()
-        UserDefaults.standard.setValue(token, forKey: "fcmToken")
+        ///DeviceToken 서버 보낼필요 없음(0816) -> 얘를 보내야 할듯? 매핑된거
+//        UserDefaults.standard.setValue(token, forKey: "fcmToken")
         print("Device Token: \(token)")
 
     }
@@ -45,12 +46,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Messaging.messaging().delegate = self
         registerRemoteNotification()
         
-        ///APNs
-        UNUserNotificationCenter.current().delegate = self
-        UNUserNotificationCenter.current()
-            .requestAuthorization(options: [.alert, .sound, .badge]) { [weak self] granted, error in
-                print("APNs permission granted: \(granted)")
-            }
+        ///APNs -> 중복 -> 주석처리
+//        UNUserNotificationCenter.current().delegate = self
+//        UNUserNotificationCenter.current()
+//            .requestAuthorization(options: [.alert, .sound, .badge]) { [weak self] granted, error in
+//                print("APNs permission granted: \(granted)")
+//            }
         
         ///APNs 등록
         application.registerForRemoteNotifications()
@@ -170,6 +171,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 extension AppDelegate: MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         let dataDict: [String: String] = ["token": fcmToken ?? ""]
+        print("fcmToken: \(dataDict)")
+        ///테스트로 임시 주석처리(0816)
         UserDefaults.standard.setValue(fcmToken, forKey: "fcmToken")
         NotificationCenter.default.post(
             name: Notification.Name("FCMToken"),
@@ -177,18 +180,24 @@ extension AppDelegate: MessagingDelegate {
             userInfo: dataDict
         )
         //TODO: if necessary send token to application server
-        
     }
+    
+    
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         //TODO: Handle data of notification
         //백그라운드에서 알림
-        let fcmMessageIdKey = UserDefaults.standard.string(forKey: "FCMToken") ?? ""
+        let fcmMessageIdKey = UserDefaults.standard.string(forKey: "fcmToken") ?? ""
         print("fcmMessageIdKey: \(fcmMessageIdKey)")
-        if let messageID = userInfo[fcmMessageIdKey] {
-            print("Message ID: \(messageID)")
+//        if let messageID = userInfo[fcmMessageIdKey] {
+//            print("Message ID: \(messageID)")
+//        }
+        if let test = userInfo["acme1"] {
+            print("테스트 내용: \(test)") //출력 -> 테스트 내용: bar
         }
         print(userInfo)
         completionHandler(UIBackgroundFetchResult.newData)
     }
+    
+    
 }

@@ -175,21 +175,22 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
             let ac = UIAlertController(title: "로그아웃", message: "로그아웃 하시겠습니까?", preferredStyle: .actionSheet)
             ac.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
                 if(socialType == "kakao") {
-                    //                    UserApi.shared.logout { error in
-                    //                        if let error = error { print(error) }
-                    //                        else {
-                    print("logout() success.")
-                    KeyChain.delete(key: KeyChain.accessToken)
-                    let vc = LoginViewController()
-                    let navVc = UINavigationController(rootViewController: vc)
-                    navVc.modalPresentationStyle = .fullScreen
-                    self.present(navVc, animated: true)
-                    //                        }
-//                    }
+                    UserApi.shared.logout { error in
+                        if let error = error { print(error) }
+                        else {
+                            print("logout() success.")
+                            KeyChain.delete(key: KeyChain.accessToken)
+                            let vc = LoginViewController()
+                            let navVc = UINavigationController(rootViewController: vc)
+                            navVc.modalPresentationStyle = .fullScreen
+                            self.present(navVc, animated: true)
+                        }
+                    }
                 }
                 
                 else if(socialType == "google") {
                     KeyChain.delete(key: KeyChain.accessToken)
+                    GIDSignIn.sharedInstance.signOut()
                     print("구글 서버 로그아웃 및 로그아웃 성공! ")
                     let vc = LoginViewController()
                     let navVc = UINavigationController(rootViewController: vc)

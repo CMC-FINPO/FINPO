@@ -156,7 +156,7 @@ class MyPageViewModel {
                 "Authorization":"Bearer ".appending(accessToken)
             ]
             
-            AF.request(url, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: header, interceptor: MyRequestInterceptor(), requestModifier: nil)
+            AF.request(url, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: header, interceptor: MyRequestInterceptor())
                 .validate()
                 .response { (response) in
                 switch response.result {

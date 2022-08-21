@@ -31,7 +31,7 @@ struct FCMAPI {
                 "adSubscribe": LoginDetailViewController.isCMAllow
             ]
             
-            AF.request(url, method: .put, parameters: parameter, encoding: JSONEncoding.default, headers: header)
+            API.session.request(url, method: .put, parameters: parameter, encoding: JSONEncoding.default, headers: header)
                 .validate(statusCode: 200..<300)
                 .response { response in
                     switch response.result {

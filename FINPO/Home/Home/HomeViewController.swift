@@ -27,6 +27,10 @@ class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        ///fcm 토큰 device / fcmtoken 어떤게 저장되어있는지 체크
+        let realToken = UserDefaults.standard.string(forKey: "fcmToken") ?? ""
+        print("실제 담긴 토큰: \(realToken)") // 파베 fcmtoken 저장돼있음
+        
         setAttribute()
         setLayout()
         setInputBind()
@@ -395,7 +399,7 @@ class HomeViewController: UIViewController {
                 case .loadMore(let newContent):
                     for i in 0..<newContent.content.count {
                         contents.append(newContent.content[i])
-                        print("추가된 항목: \(newContent.content[i])")
+//                        print("추가된 항목: \(newContent.content[i])")
                         self.selectedId.append(newContent.content[i].id ?? -1)
                         self.idIsSelected.append(newContent.content[i].isInterest)
                     }

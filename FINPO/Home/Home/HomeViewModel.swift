@@ -363,6 +363,7 @@ class HomeViewModel {
             input.selectedCategoryObserver.asObservable(), //필터링 시 카테고리
             input.filteredRegionObserver.asObservable() //필터링 시 지역
         )
+//        .debug()
         .flatMap({ (myPolicy, action, text, categories, filteredRegions) -> Observable<SearchPolicyResponse> in
             switch myPolicy {
             case .mypolicy:
@@ -385,13 +386,14 @@ class HomeViewModel {
                 }
             }
         })
+//        .debug()
         .subscribe(onNext: { policyData in
             HomeViewModel.detailId.removeAll()
             for i in 0..<(policyData.data?.content.count ?? 0) {
                 HomeViewModel.detailId.append(policyData.data?.content[i].id ?? 1000)
             }
             self.output.policyResult.accept(Action.load([Contents(content: policyData.data!.content)]))
-            print("상세정보 아이디: \(HomeViewModel.detailId)")
+//            print("상세정보 아이디: \(HomeViewModel.detailId)")
         }).disposed(by: disposeBag)
         
 //        스크롤 내렸을 때 loadMore 하기
@@ -403,10 +405,6 @@ class HomeViewModel {
             input.selectedCategoryObserver.asObservable(),
             input.filteredRegionObserver.asObservable()
         )
-        .debug()
-//        .take(while: { _, can, _, _, _, _ in
-//            can == true //여기서 disposed 됨(loadmore -> sort 변경 시)
-//        })
         .flatMap({ (myPolicy, isReload, action, categories, filteredRegions) -> Observable<SearchPolicyResponse> in
             print("추가 데이터 불러오기")
             if isReload {
@@ -444,7 +442,7 @@ class HomeViewModel {
                 for i in 0..<(addedData.data?.content.count ?? 0) {
                     HomeViewModel.detailId.append(addedData.data?.content[i].id ?? 1000)
                 }
-                print("추가 로드 되었을 때 상세정보 아이디: \(HomeViewModel.detailId)")
+//                print("추가 로드 되었을 때 상세정보 아이디: \(HomeViewModel.detailId)")
             }
         }).disposed(by: disposeBag)
         
