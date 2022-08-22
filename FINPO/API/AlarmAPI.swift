@@ -11,8 +11,7 @@ import RxSwift
 
 struct AlarmAPI {
     static func getMyAlarmList() -> Observable<AlarmModel> {
-        return Observable.create { observer in
-            
+        return Observable.create { observer in            
             let url = BaseURL.url.appending("notification/history/me?page=0&size=5&sort=id,desc")
             
 //            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""

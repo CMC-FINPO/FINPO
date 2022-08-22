@@ -14,6 +14,9 @@
 		DD1BFFBB2863143D00ACAAE1 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1BFFBA2863143D00ACAAE1 /* HomeViewModel.swift */; };
 		DD1BFFBD2863312200ACAAE1 /* SearchPolicyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1BFFBC2863312200ACAAE1 /* SearchPolicyAPI.swift */; };
 		DD1BFFBF2863316200ACAAE1 /* SearchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1BFFBE2863316200ACAAE1 /* SearchModel.swift */; };
+		DD1E994D28B28E8300C80272 /* CommunityboardResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1E994C28B28E8300C80272 /* CommunityboardResponseModel.swift */; };
+		DD1E994F28B32A5C00C80272 /* ApiManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1E994E28B32A5C00C80272 /* ApiManager.swift */; };
+		DD1E995128B368E900C80272 /* BoolResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1E995028B368E900C80272 /* BoolResponseModel.swift */; };
 		DD1EC9712861B23000B58F10 /* SignOutAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1EC9702861B23000B58F10 /* SignOutAPI.swift */; };
 		DD2EA46628487F730004D707 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2EA46528487F730004D707 /* AppDelegate.swift */; };
 		DD2EA46828487F730004D707 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2EA46728487F730004D707 /* SceneDelegate.swift */; };
@@ -136,6 +139,9 @@
 		DD1BFFBA2863143D00ACAAE1 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		DD1BFFBC2863312200ACAAE1 /* SearchPolicyAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchPolicyAPI.swift; sourceTree = "<group>"; };
 		DD1BFFBE2863316200ACAAE1 /* SearchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchModel.swift; sourceTree = "<group>"; };
+		DD1E994C28B28E8300C80272 /* CommunityboardResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityboardResponseModel.swift; sourceTree = "<group>"; };
+		DD1E994E28B32A5C00C80272 /* ApiManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiManager.swift; sourceTree = "<group>"; };
+		DD1E995028B368E900C80272 /* BoolResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoolResponseModel.swift; sourceTree = "<group>"; };
 		DD1EC9702861B23000B58F10 /* SignOutAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignOutAPI.swift; sourceTree = "<group>"; };
 		DD2EA46228487F730004D707 /* FINPO.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FINPO.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD2EA46528487F730004D707 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -439,6 +445,8 @@
 				DD60C1DD287F31C1003B201E /* MyAlarmIsOnModel.swift */,
 				DD60C1E52882D945003B201E /* MyPolicyTestModel.swift */,
 				DD60A0C12887D216004E9015 /* OpenAPIModel.swift */,
+				DD1E994C28B28E8300C80272 /* CommunityboardResponseModel.swift */,
+				DD1E995028B368E900C80272 /* BoolResponseModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -557,6 +565,7 @@
 				DDAF7C8128A6585100D1F1FD /* SocialLoginAPI.swift */,
 				31718119D93A97BDE60B464A /* Frameworks */,
 				DDB419C028636289005868ED /* Event Logger */,
+				DD1E994E28B32A5C00C80272 /* ApiManager.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -753,6 +762,7 @@
 				DD5A18F62873FB6500903616 /* MyPolicySearchAPI.swift in Sources */,
 				DD60A0C22887D216004E9015 /* OpenAPIModel.swift in Sources */,
 				DD60A0BE2887D122004E9015 /* OpenSourceViewController.swift in Sources */,
+				DD1E995128B368E900C80272 /* BoolResponseModel.swift in Sources */,
 				DDBFEEBB2859E675003E9662 /* MyAuthenticator.swift in Sources */,
 				DDBFEEC6285B5134003E9662 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */,
 				DD60A0C42887D71B004E9015 /* OpenSourceTableViewCell.swift in Sources */,
@@ -768,6 +778,7 @@
 				DD5A190C2876D85200903616 /* ParticipationTableViewCell.swift in Sources */,
 				DD5A19002875ADF800903616 /* EditRegionViewController.swift in Sources */,
 				DDFD6EE82852F48400A1706F /* LoginInterestViewController.swift in Sources */,
+				DD1E994D28B28E8300C80272 /* CommunityboardResponseModel.swift in Sources */,
 				DD612583287C3FFF002FBF4D /* AlarmTableViewCell.swift in Sources */,
 				DD1BFFBB2863143D00ACAAE1 /* HomeViewModel.swift in Sources */,
 				DD612578287C0CA3002FBF4D /* FCMAPI.swift in Sources */,
@@ -786,6 +797,7 @@
 				DD2EA46A28487F730004D707 /* LoginViewController.swift in Sources */,
 				DD1BFFBF2863316200ACAAE1 /* SearchModel.swift in Sources */,
 				DDE615CE2897A4890067040B /* KeyChain.swift in Sources */,
+				DD1E994F28B32A5C00C80272 /* ApiManager.swift in Sources */,
 				DD6125722879D953002FBF4D /* BookmarkViewModel.swift in Sources */,
 				DDBFEEC8285E25E8003E9662 /* AddPurposeViewController.swift in Sources */,
 				DD50F7AA287DCA1200ADEB09 /* InterestCategoryViewController.swift in Sources */,

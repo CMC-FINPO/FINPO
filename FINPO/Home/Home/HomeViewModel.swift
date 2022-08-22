@@ -264,7 +264,12 @@ class HomeViewModel {
             }).disposed(by: disposeBag)
         
         input.interestCategoryObserver
-            .flatMap { CallCategoryAPI.callInterestCategory() }
+//            .flatMap { CallCategoryAPI.callInterestCategory() }
+            .flatMap { ApiManager.getData(
+                with: nil,
+                from: BaseURL.url.appending("policy/category/me"),
+                to: MyInterestCategoryModel.self as? Codable,
+                encoding: URLEncoding.default) }
             .subscribe(onNext: { interestCategories in
                 self.output.getInterestCategory.accept(interestCategories)
             }).disposed(by: disposeBag)
@@ -309,7 +314,13 @@ class HomeViewModel {
         
         ///북마크
         input.bookmarkObserver
-            .flatMap { BookMarkAPI.addBookmark(polidyId: $0) } //북마크 추가 API
+            .flatMap {
+                ApiManager.postData(
+                    with: ["policyId": $0],
+                    from: BaseURL.url.appending("policy/interest"),
+                    to: BookmarkResponseModel.self ,
+                    encoding: JSONEncoding.default) }
+            .map { $0.success }
             .subscribe(onNext: { valid in
                 self.output.checkedBookmarkOutput.accept(valid)
             }).disposed(by: disposeBag)
