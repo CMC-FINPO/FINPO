@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import RxSwift
 import RxCocoa
+import Kingfisher
 
 class CommunityMainViewController: UIViewController {
     
@@ -69,7 +70,7 @@ class CommunityMainViewController: UIViewController {
         let tv = UITableView()
         tv.backgroundColor = .white
         tv.rowHeight = CGFloat(150)
-        tv.bounces = false
+//        tv.bounces = false
         tv.separatorInset.left = 0
         return tv
     }()
@@ -143,16 +144,86 @@ class CommunityMainViewController: UIViewController {
     }
     
     fileprivate func setInputBind() {
+        rx.viewWillAppear.take(1).asDriver { _ in return .never()}
+            .drive(onNext: { [weak self] _ in
+                self?.viewModel.input.loadBoardObserver.accept(.latest)
+            }).disposed(by: disposeBag)
         
+        postTableView.rx.reachedBottom(from: -25)
+            .map { a -> Bool in return true }
+            .subscribe(onNext: { _ in
+                self.viewModel.input.loadMoreObserver.accept(())
+            }).disposed(by: disposeBag)
     }
     
     fileprivate func setOutputBind() {
-//        dummyItems
-//            .observe(on: MainScheduler.instance)
-//            .bind(to: postTableView.rx.items(cellIdentifier: "postTableViewCell", cellType: BoardTableViewCell.self)) { (index, element, cell) in
-//                cell.selectionStyle = .none
-//                cell.contentView.backgroundColor = .white
-//            }.disposed(by: disposeBag)
+        self.viewModel.output.loadBoardOutput
+            .observe(on: MainScheduler.asyncInstance)
+            .subscribe(onNext: { action in
+                switch action {
+                case .first(let data):
+                    self.sumOfPostLabel.text = "\(data.data.totalElements)개의 글"
+                    let attributedText = NSMutableAttributedString(string: self.sumOfPostLabel.text!)
+                    attributedText.addAttribute(.foregroundColor, value: UIColor(hexString: "5B43EF"), range: (self.sumOfPostLabel.text! as NSString).range(of: "\(data.data.totalElements)"))
+                    self.sumOfPostLabel.attributedText = attributedText
+                case .loadMore(let data):
+                    self.sumOfPostLabel.text = "\(data.data.totalElements)개의 글"
+                    let attributedText = NSMutableAttributedString(string: self.sumOfPostLabel.text!)
+                    attributedText.addAttribute(.foregroundColor, value: UIColor(hexString: "5B43EF"), range: (self.sumOfPostLabel.text! as NSString).range(of: "\(data.data.totalElements)"))
+                    self.sumOfPostLabel.attributedText = attributedText
+                }
+            }).disposed(by: disposeBag)
+        
+        self.viewModel.output.loadBoardOutput
+            .scan(into: [CommunityContentModel]()) { boards, action in
+                switch action {
+                case .first(let firstData):
+                    boards.removeAll()
+                    for i in 0..<(firstData.data.content.count) {
+                        boards.append(firstData.data.content[i])
+                    }
+                case .loadMore(let addedData):
+                    for i in 0..<(addedData.data.content.count) {
+                        boards.append(addedData.data.content[i])
+                    }
+                }
+            }
+            .debug()
+            .observe(on: MainScheduler.asyncInstance)
+            .bind(to: postTableView.rx.items(cellIdentifier: "postTableViewCell", cellType: BoardTableViewCell.self)) {
+                (index, element, cell) in
+                cell.selectionStyle = .none
+                if let imageStr = element.user.profileImg {
+                    let profileImgURL = URL(string: imageStr)
+                    cell.userImageView.kf.setImage(with: profileImgURL)
+                } else {
+                    cell.userImageView.image = UIImage(named: "profile=Default_72")
+                }
+                ///익명글
+                if element.anonymity {
+                    cell.userName.text = "(익명)"
+                } else {
+                    cell.userName.text = element.user.nickname ?? "(알 수 없음)"
+                }
+                ///Date
+                let format = DateFormatter()
+                format.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+                format.locale = Locale(identifier: "ko")
+                format.timeZone = TimeZone(abbreviation: "KST")
+                var tempDate: Date
+                element.isModified ? (tempDate = format.date(from: element.modifiedAt) ?? Date()) : (tempDate = format.date(from: element.createdAt) ?? Date())
+                format.dateFormat = "yyyy년 MM월 dd일 a hh:mm"
+                format.amSymbol = "오전"
+                format.pmSymbol = "오후"
+                let str = format.string(from: tempDate)
+                cell.dateLabel.text = str
+                cell.contentLabel.text = element.content
+                
+                ///좋아요, 댓글, 북마크 수
+                cell.likeCountLabel.text = "좋아요 \(element.likes)"
+                cell.viewsCountLabel.text = "・ 댓글 \(element.countOfComment)"
+                cell.commentCountLabel.text = "・ 조회수 \(element.hits)"
+            }.disposed(by: disposeBag)
     }
 
 }

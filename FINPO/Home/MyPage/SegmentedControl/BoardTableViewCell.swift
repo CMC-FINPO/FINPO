@@ -8,9 +8,12 @@
 import Foundation
 import UIKit
 import SnapKit
+import RxSwift
 
 class BoardTableViewCell: UITableViewCell {
 
+    var cellBag = DisposeBag()
+    
     public var userImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "profile")
@@ -22,7 +25,7 @@ class BoardTableViewCell: UITableViewCell {
         label.textAlignment = .left
         label.font = UIFont(name: "AppleSDGothicNeo-Semibold", size: 16)
         label.textColor = UIColor(hexString: "000000")
-        label.text = "핀포닉네임"
+        label.text = "사용자"
         return label
     }()
     
@@ -41,7 +44,7 @@ class BoardTableViewCell: UITableViewCell {
         label.lineBreakMode = .byTruncatingTail
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 18)
         label.textColor = UIColor(hexString: "000000")
-        label.text = "청년저축계좌랑 청년희망키움통장이랑 다른 거 맞죠? 어떤 점이 다른 건가요? 제가 어디에 해당되는건가요? 알려주실 분 급구합니다"
+        label.text = ""
         return label
     }()
     
@@ -128,14 +131,14 @@ class BoardTableViewCell: UITableViewCell {
         }
         
         likeButton.snp.makeConstraints {
-            $0.top.equalTo(contentLabel.snp.bottom).offset(10)
+            $0.bottom.equalTo(contentView.snp.bottom).inset(10)
             $0.leading.equalTo(contentLabel.snp.leading)
             $0.height.width.equalTo(25)
         }
         
         bookMarkButton.snp.makeConstraints {
             $0.top.equalTo(likeButton.snp.top)
-            $0.leading.equalTo(likeButton.snp.trailing).offset(6)
+            $0.leading.equalTo(likeButton.snp.trailing).offset(10)
             $0.width.height.equalTo(25)
         }
         
@@ -144,15 +147,19 @@ class BoardTableViewCell: UITableViewCell {
             $0.bottom.equalTo(bookMarkButton.snp.bottom)
         }
         
-        commentCountLabel.snp.makeConstraints {
-            $0.bottom.equalTo(likeCountLabel.snp.bottom)
-            $0.leading.equalTo(likeCountLabel.snp.trailing).offset(10)
-        }
-        
         viewsCountLabel.snp.makeConstraints {
             $0.bottom.equalTo(likeCountLabel.snp.bottom)
-            $0.leading.equalTo(commentCountLabel.snp.trailing).offset(10)
+            $0.leading.equalTo(likeCountLabel.snp.trailing).offset(2.5)
+        }
+        
+        commentCountLabel.snp.makeConstraints {
+            $0.bottom.equalTo(likeCountLabel.snp.bottom)
+            $0.leading.equalTo(viewsCountLabel.snp.trailing).offset(2.5)
         }
     }
-    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        self.cellBag = DisposeBag()
+    }
 }

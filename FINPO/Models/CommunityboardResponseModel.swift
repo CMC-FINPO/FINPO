@@ -13,6 +13,7 @@ struct CommunityboardResponseModel: Codable {
 
 struct CommunityDataModel: Codable {
     var content: [CommunityContentModel]
+    var totalElements: Int
 }
 
 struct CommunityContentModel: Codable {
@@ -26,16 +27,17 @@ struct CommunityContentModel: Codable {
     var isMine: Bool //내가 작성한 글인가
     var isLiked: Bool //좋아요 한 글인가
     var isBookmarked: Bool //북마크 한 글인가
-    var modified: Bool //수정된 글인가
+    var isModified: Bool
+    var modified: Bool? //수정된 글인가
     var createdAt: String //작성일
     var modifiedAt: String //수정일
     var user: CommunityUserDetail
 }
 
 struct CommunityUserDetail: Codable {
-    var status: Bool
-    var nickname: String
-    var gender: String
-    var profileImg: String
-    var role: String
+    var status: Bool?
+    var nickname: String?
+    var gender: String?
+    var profileImg: String?
+    var role: String?
 }
