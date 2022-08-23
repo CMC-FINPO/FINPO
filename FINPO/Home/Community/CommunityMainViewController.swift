@@ -17,14 +17,7 @@ class CommunityMainViewController: UIViewController {
     let viewModel = CommunityViewModel()
     
     var isLastPage: Bool = false
-    
-    ///test
-    let dummyItems = Observable.just([
-        " Usage of text input box ",
-        " Usage of switch button ",
-        " Usage of progress bar ",
-        " Usage of text labels ",
-        ])
+    var idList: [Int] = [Int]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -194,6 +187,14 @@ class CommunityMainViewController: UIViewController {
                 self?.present(alertVC, animated: true)
             }).disposed(by: disposeBag)
         
+        postTableView.rx.itemSelected
+            .subscribe(onNext: { indexPath in
+                let vc = CommunityDetailViewController()
+                vc.initialize(id: self.idList[indexPath.row])
+                vc.modalPresentationStyle = .fullScreen
+                self.navigationController?.pushViewController(vc, animated: true)
+            }).disposed(by: disposeBag)
+        
     }
     
     fileprivate func setOutputBind() {
@@ -217,11 +218,13 @@ class CommunityMainViewController: UIViewController {
                 switch action {
                 case .first(let firstData):
                     boards.removeAll()
+                    self.idList.removeAll()
                     if firstData.data.last {
                         self.isLastPage = true
                     }
                     for i in 0..<(firstData.data.content.count) {
                         boards.append(firstData.data.content[i])
+                        self.idList.append(firstData.data.content[i].id)
                     }
                 case .loadMore(let addedData):
                     if addedData.data.last {
@@ -229,6 +232,7 @@ class CommunityMainViewController: UIViewController {
                     }
                     for i in 0..<(addedData.data.content.count) {
                         boards.append(addedData.data.content[i])
+                        self.idList.append(addedData.data.content[i].id)
                     }
                 case .edited(let editedData):
                     boards.append(editedData)
