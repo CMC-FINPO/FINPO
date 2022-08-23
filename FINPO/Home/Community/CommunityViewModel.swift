@@ -39,7 +39,7 @@ class CommunityViewModel {
             case .latest:
                 return "post/search?&size=5&sort=id,desc"
             case .popular:
-                return "post/search?&size=5&sort=createdAt,desc"
+                return "post/search?&size=5&sort=createdAt,likes"
             }
         }
     }
@@ -61,7 +61,7 @@ class CommunityViewModel {
                         to: CommunityboardResponseModel.self as? Codable,
                         encoding: URLEncoding.default
                     ).subscribe(onNext: { data in
-                        self.output.loadBoardOutput.accept(.loadMore(data))
+                        self.output.loadBoardOutput.accept(.first(data))
                     }).disposed(by: self.disposeBag)
                 case .popular:
                     ApiManager.getData(
@@ -69,7 +69,7 @@ class CommunityViewModel {
                     to: CommunityboardResponseModel.self as? Codable,
                     encoding: URLEncoding.default)
                     .subscribe(onNext: { data in
-                        self.output.loadBoardOutput.accept(.loadMore(data))
+                        self.output.loadBoardOutput.accept(.first(data))
                     }).disposed(by: self.disposeBag)
                 }
             }.subscribe(onNext: {

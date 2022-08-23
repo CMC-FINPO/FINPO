@@ -154,6 +154,39 @@ class CommunityMainViewController: UIViewController {
             .subscribe(onNext: { _ in
                 self.viewModel.input.loadMoreObserver.accept(())
             }).disposed(by: disposeBag)
+        
+        sortPolicyButton.rx.tap
+            .subscribe(onNext: { [weak self] _ in
+                let alertVC = UIAlertController(title: "정렬", message: nil, preferredStyle: .actionSheet)
+                alertVC.setTitle(font: UIFont(name: "AppleSDGothicNeo-Semibold", size: 18), color: UIColor(named: "000000"))
+                let latestAction = UIAlertAction(title: "최신순", style: .default) { [weak self] action in
+                    guard let self = self else { return }
+                    //최신순 - 최신순 했을 때 page 0 중복 방지
+                    self.viewModel.currentPage = 0
+                    self.viewModel.input.loadBoardObserver.accept(.latest)
+                    DispatchQueue.main.async {
+                        self.sortPolicyButton.setImage(UIImage(named: "chip=chip4"), for: .normal)
+                    }
+                }
+                let popularAction = UIAlertAction(title: "인기순", style: .default) { [weak self] action in
+                    guard let self = self else { return }
+                    self.viewModel.currentPage = 0
+                    self.viewModel.input.loadBoardObserver.accept(.popular)
+                    DispatchQueue.main.async {
+                        self.sortPolicyButton.setImage(UIImage(named: "chip=chip13"), for: .normal)
+                    }
+                }
+                let cancelAction = UIAlertAction(title: "취소", style: .destructive)
+                
+                latestAction.setValue(UIColor(hexString: "5B43EF"), forKey: "titleTextColor")
+                popularAction.setValue(UIColor(hexString: "5B43EF"), forKey: "titleTextColor")
+                alertVC.addAction(latestAction)
+                alertVC.addAction(popularAction)
+                alertVC.addAction(cancelAction)
+                alertVC.view.layer.masksToBounds = true
+                alertVC.view.layer.cornerRadius = 5
+                self?.present(alertVC, animated: true)
+            }).disposed(by: disposeBag)
     }
     
     fileprivate func setOutputBind() {
