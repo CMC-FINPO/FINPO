@@ -27,6 +27,8 @@ class CommunityViewModel {
         ///게시글 좋아요, 북마크
         let likeObserver = PublishRelay<Int>()
         let unlikeObserver = PublishRelay<Int>()
+        let doBookmarkObserver = PublishRelay<Int>()
+        let undoBookmarkObserver = PublishRelay<Int>()
         //trigger
         let triggerObserver = PublishRelay<Void>()
     }
@@ -64,6 +66,18 @@ class CommunityViewModel {
             switch self {
             case .isLike(let id), .notLike(let id):
                 return "post/\(id)/like"
+            }
+        }
+    }
+    
+    enum bookmarkCheckAction {
+        case add(id: Int)
+        case delete(id: Int)
+        
+        var sortingURL: String {
+            switch self {
+            case .add(let id), .delete(let id):
+                return "post/\(id)/bookmark"
             }
         }
     }
@@ -129,9 +143,8 @@ class CommunityViewModel {
                 from: BaseURL.url.appending("\(likeCheckAction.isLike(id: id).sortingURL)"),
                 to: CommunityLikeResponseModel.self,
                 encoding: URLEncoding.default) }
-            .subscribe(onNext: { editedData in
-//                self.output.loadBoardOutput.accept(.edited(editedData.data))
-                self.input.triggerObserver.accept(())
+            .subscribe(onNext: { [weak self] editedData in
+                self?.input.triggerObserver.accept(())
             }).disposed(by: disposeBag)
         
         input.unlikeObserver
@@ -139,8 +152,26 @@ class CommunityViewModel {
                 from: BaseURL.url.appending("\(likeCheckAction.notLike(id: id).sortingURL)"),
                 to: CommunityLikeResponseModel.self,
                 encoding: URLEncoding.default) }
-            .subscribe(onNext: { editedData in
-                self.input.triggerObserver.accept(())
+            .subscribe(onNext: { [weak self] editedData in
+                self?.input.triggerObserver.accept(())
+            }).disposed(by: disposeBag)
+        
+        input.doBookmarkObserver
+            .flatMap { id in ApiManager.postData(
+                from: BaseURL.url.appending("\(bookmarkCheckAction.add(id: id).sortingURL)"),
+                to: CommunityLikeResponseModel.self,
+                encoding: URLEncoding.default) }
+            .subscribe(onNext: { [weak self] editedData in
+                self?.input.triggerObserver.accept(())
+            }).disposed(by: disposeBag)
+        
+        input.undoBookmarkObserver
+            .flatMap { id in ApiManager.deleteData(
+                from: BaseURL.url.appending("\(bookmarkCheckAction.delete(id: id).sortingURL)"),
+                to: CommunityLikeResponseModel.self,
+                encoding: URLEncoding.default) }
+            .subscribe(onNext: { [weak self] editedData in
+                self?.input.triggerObserver.accept(())
             }).disposed(by: disposeBag)
         
         input.triggerObserver

@@ -43,7 +43,7 @@ class BoardTableViewCell: UITableViewCell {
         let label = UILabel()
         label.numberOfLines = 2
         label.lineBreakMode = .byTruncatingTail
-        label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 18)
+        label.font = UIFont(name: "AppleSDGothicNeo-Regular", size: 16)
         label.textColor = UIColor(hexString: "000000")
         label.text = ""
         return label
@@ -93,7 +93,7 @@ class BoardTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        contentView.backgroundColor = UIColor(hexString: "F0F0F0") // hex 수정
+        contentView.backgroundColor = UIColor.white
         
         [userImageView, userName, dateLabel, contentLabel, likeButton, bookMarkButton, likeCountLabel, commentCountLabel, viewsCountLabel].forEach {
             contentView.addSubview($0)

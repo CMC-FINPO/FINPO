@@ -272,10 +272,8 @@ class CommunityMainViewController: UIViewController {
                 
                 if(element.isLiked) {
                     cell.likeButton.setImage(UIImage(named: "like_active")?.withRenderingMode(.alwaysOriginal), for: .normal)
-                    
                 } else {
                     cell.likeButton.setImage(UIImage(named: "like"), for: .normal)
-                    cell.removeFromSuperview()
                 }
                 
                 cell.likeButton.rx.tap
@@ -288,6 +286,20 @@ class CommunityMainViewController: UIViewController {
                         }
                     }).disposed(by: cell.cellBag)
                 
+                if(element.isBookmarked) {
+                    cell.bookMarkButton.setImage(UIImage(named: "scrap_active"), for: .normal)
+                } else {
+                    cell.bookMarkButton.setImage(UIImage(named: "scrap_inactive"), for: .normal)
+                }
+                
+                cell.bookMarkButton.rx.tap
+                    .subscribe(onNext: { [weak self] _ in
+                        if(element.isBookmarked) {
+                            self?.viewModel.input.undoBookmarkObserver.accept(element.id)
+                        } else {
+                            self?.viewModel.input.doBookmarkObserver.accept(element.id)
+                        }
+                    }).disposed(by: cell.cellBag)
                 
             }.disposed(by: disposeBag)
     }
