@@ -62,14 +62,14 @@ struct ApiManager {
         }
     }
     
-    static func deleteData<T: Decodable>(with param: Encodable? = nil, from url: String, to model: Codable?, encoding: ParameterEncoding) -> Observable<T> {
+    static func deleteData<T: Decodable>(with param: Encodable? = nil, from url: String, to model: T.Type, encoding: ParameterEncoding) -> Observable<T> {
         return Observable.create { observer in
             let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
             let header = ApiManager.createHeader(token: accessToken)
             
-            AF.request(url, method: .post, parameters: param?.dictionary, encoding: encoding, headers: header, interceptor: MyRequestInterceptor())
+            API.session.request(url, method: .delete, parameters: param?.dictionary, encoding: encoding, headers: header, interceptor: MyRequestInterceptor())
                 .validate(statusCode: 200..<300)
-                .responseDecodable(of: T.self, completionHandler: { response in
+                .responseDecodable(of: model.self, completionHandler: { response in
                     switch response.value {
                     case .some(let models):
                         observer.onNext(models)

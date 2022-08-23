@@ -14,10 +14,11 @@ struct CommunityboardResponseModel: Codable {
 struct CommunityDataModel: Codable {
     var content: [CommunityContentModel]
     var totalElements: Int
+    var last: Bool //현재가 마지막 페이지인가
 }
 
 struct CommunityContentModel: Codable {
-    var status: Bool //글 상태 (삭제 시 false)
+    var status: Bool? //글 상태 (삭제 시 false)
     var id: Int //글 id
     var content: String //글 내용
     var anonymity: Bool //글작성자 익명여부
@@ -31,7 +32,7 @@ struct CommunityContentModel: Codable {
     var modified: Bool? //수정된 글인가
     var createdAt: String //작성일
     var modifiedAt: String //수정일
-    var user: CommunityUserDetail
+    var user: CommunityUserDetail?
 }
 
 struct CommunityUserDetail: Codable {
@@ -40,4 +41,9 @@ struct CommunityUserDetail: Codable {
     var gender: String?
     var profileImg: String?
     var role: String?
+}
+
+///좋아요, 북마크
+struct CommunityLikeResponseModel: Codable {
+    var data: CommunityContentModel
 }

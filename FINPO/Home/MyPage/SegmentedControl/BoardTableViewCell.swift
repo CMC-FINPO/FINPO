@@ -17,6 +17,7 @@ class BoardTableViewCell: UITableViewCell {
     public var userImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "profile")
+        imageView.layer.masksToBounds = true
         return imageView
     }()
     
@@ -98,7 +99,6 @@ class BoardTableViewCell: UITableViewCell {
             contentView.addSubview($0)
         }
         
-        userImageView.layer.cornerRadius = userImageView.frame.width/2
     }
     
     required init?(coder: NSCoder) {
@@ -107,7 +107,8 @@ class BoardTableViewCell: UITableViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        
+        userImageView.layer.masksToBounds = true
+        userImageView.layer.cornerRadius = userImageView.frame.width/2
         userImageView.snp.makeConstraints {
             $0.leading.equalTo(contentView.snp.leading).inset(10)
             $0.top.equalTo(contentView.snp.top).inset(10)

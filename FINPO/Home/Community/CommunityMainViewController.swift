@@ -16,6 +16,8 @@ class CommunityMainViewController: UIViewController {
     let disposeBag = DisposeBag()
     let viewModel = CommunityViewModel()
     
+    var isLastPage: Bool = false
+    
     ///test
     let dummyItems = Observable.just([
         " Usage of text input box ",
@@ -70,7 +72,7 @@ class CommunityMainViewController: UIViewController {
         let tv = UITableView()
         tv.backgroundColor = .white
         tv.rowHeight = CGFloat(150)
-//        tv.bounces = false
+        tv.bounces = false
         tv.separatorInset.left = 0
         return tv
     }()
@@ -152,7 +154,11 @@ class CommunityMainViewController: UIViewController {
         postTableView.rx.reachedBottom(from: -25)
             .map { a -> Bool in return true }
             .subscribe(onNext: { _ in
-                self.viewModel.input.loadMoreObserver.accept(())
+                if self.isLastPage {
+                    return
+                } else {
+                    self.viewModel.input.loadMoreObserver.accept(())
+                }
             }).disposed(by: disposeBag)
         
         sortPolicyButton.rx.tap
@@ -187,6 +193,7 @@ class CommunityMainViewController: UIViewController {
                 alertVC.view.layer.cornerRadius = 5
                 self?.present(alertVC, animated: true)
             }).disposed(by: disposeBag)
+        
     }
     
     fileprivate func setOutputBind() {
@@ -196,14 +203,12 @@ class CommunityMainViewController: UIViewController {
                 switch action {
                 case .first(let data):
                     self.sumOfPostLabel.text = "\(data.data.totalElements)개의 글"
-                    let attributedText = NSMutableAttributedString(string: self.sumOfPostLabel.text!)
-                    attributedText.addAttribute(.foregroundColor, value: UIColor(hexString: "5B43EF"), range: (self.sumOfPostLabel.text! as NSString).range(of: "\(data.data.totalElements)"))
-                    self.sumOfPostLabel.attributedText = attributedText
+                    self.sumOfPostLabel.attributedText = self.attributeText(originalText: self.sumOfPostLabel.text!, range: "\(data.data.totalElements)", color: "5B43EF")
                 case .loadMore(let data):
                     self.sumOfPostLabel.text = "\(data.data.totalElements)개의 글"
-                    let attributedText = NSMutableAttributedString(string: self.sumOfPostLabel.text!)
-                    attributedText.addAttribute(.foregroundColor, value: UIColor(hexString: "5B43EF"), range: (self.sumOfPostLabel.text! as NSString).range(of: "\(data.data.totalElements)"))
-                    self.sumOfPostLabel.attributedText = attributedText
+                    self.sumOfPostLabel.attributedText = self.attributeText(originalText: self.sumOfPostLabel.text!, range: "\(data.data.totalElements)", color: "5B43EF")
+                case .edited(_):
+                    break
                 }
             }).disposed(by: disposeBag)
         
@@ -212,13 +217,21 @@ class CommunityMainViewController: UIViewController {
                 switch action {
                 case .first(let firstData):
                     boards.removeAll()
+                    if firstData.data.last {
+                        self.isLastPage = true
+                    }
                     for i in 0..<(firstData.data.content.count) {
                         boards.append(firstData.data.content[i])
                     }
                 case .loadMore(let addedData):
+                    if addedData.data.last {
+                        self.isLastPage = true
+                    }
                     for i in 0..<(addedData.data.content.count) {
                         boards.append(addedData.data.content[i])
                     }
+                case .edited(let editedData):
+                    boards.append(editedData)
                 }
             }
             .debug()
@@ -226,7 +239,7 @@ class CommunityMainViewController: UIViewController {
             .bind(to: postTableView.rx.items(cellIdentifier: "postTableViewCell", cellType: BoardTableViewCell.self)) {
                 (index, element, cell) in
                 cell.selectionStyle = .none
-                if let imageStr = element.user.profileImg {
+                if let imageStr = element.user?.profileImg {
                     let profileImgURL = URL(string: imageStr)
                     cell.userImageView.kf.setImage(with: profileImgURL)
                 } else {
@@ -236,7 +249,7 @@ class CommunityMainViewController: UIViewController {
                 if element.anonymity {
                     cell.userName.text = "(익명)"
                 } else {
-                    cell.userName.text = element.user.nickname ?? "(알 수 없음)"
+                    cell.userName.text = element.user?.nickname ?? "(알 수 없음)"
                 }
                 ///Date
                 let format = DateFormatter()
@@ -256,7 +269,33 @@ class CommunityMainViewController: UIViewController {
                 cell.likeCountLabel.text = "좋아요 \(element.likes)"
                 cell.viewsCountLabel.text = "・ 댓글 \(element.countOfComment)"
                 cell.commentCountLabel.text = "・ 조회수 \(element.hits)"
+                
+                if(element.isLiked) {
+                    cell.likeButton.setImage(UIImage(named: "like_active")?.withRenderingMode(.alwaysOriginal), for: .normal)
+                    
+                } else {
+                    cell.likeButton.setImage(UIImage(named: "like"), for: .normal)
+                    cell.removeFromSuperview()
+                }
+                
+                cell.likeButton.rx.tap
+                    .subscribe(onNext: { _ in
+                        if(element.isLiked) {
+                            self.viewModel.input.unlikeObserver.accept(element.id)
+                        }
+                        else {
+                            self.viewModel.input.likeObserver.accept(element.id)
+                        }
+                    }).disposed(by: cell.cellBag)
+                
+                
             }.disposed(by: disposeBag)
+    }
+    
+    public func attributeText(originalText: String, range: String, color: String) -> NSMutableAttributedString {
+        let attributedText = NSMutableAttributedString(string: originalText)
+        attributedText.addAttribute(.foregroundColor, value: UIColor(hexString: "\(color)"), range: (originalText as NSString).range(of: "\(range)"))
+        return attributedText
     }
 
 }
