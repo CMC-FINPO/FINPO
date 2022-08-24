@@ -22,12 +22,22 @@ class CommunityDetailViewModel {
     struct INPUT {
         let loadDetailBoardObserver = PublishRelay<Int>()
         
-        let doLikeObserver = PublishRelay<Int>()
-        let undoLikeObserver = PublishRelay<Int>()
+        let likeObserver = PublishRelay<likeAction>()
+        let bookmarkObserver = PublishRelay<bookmarkAction>()
     }
     
     struct OUTPUT {
         var loadDetailBoardOutput = PublishRelay<CommunityDetailBoardResponseModel>()
+    }
+    
+    enum likeAction {
+        case doLike(id: Int)
+        case undoLike(id: Int)
+    }
+    
+    enum bookmarkAction {
+        case doBook(id: Int)
+        case undoBook(id: Int)
     }
     
     init() {
@@ -42,26 +52,54 @@ class CommunityDetailViewModel {
                 self?.output.loadDetailBoardOutput.accept(boardDetail)
             }).disposed(by: disposeBag)
         
-        input.doLikeObserver
-            .flatMap { id in
-                ApiManager.postData(
-                    from: BaseURL.url.appending("post/\(id)/like"),
-                    to: CommunityLikeResponseModel.self,
-                    encoding: URLEncoding.default
-                )
-            }.subscribe(onNext: { data in
-                print("좋아요 추가 성공")
+        input.likeObserver
+            .map { actions in
+                switch actions {
+                case .doLike(let id):
+                    ApiManager.postData(
+                        from: BaseURL.url.appending("post/\(id)/like"),
+                        to: CommunityLikeResponseModel.self,
+                        encoding: URLEncoding.default
+                    ).subscribe(onNext: { _ in
+                        print("좋아요 등록 성공")
+                    }).disposed(by: self.disposeBag)
+                case .undoLike(let id):
+                    ApiManager.deleteData(
+                        from: BaseURL.url.appending("post/\(id)/like"),
+                        to: CommunityLikeResponseModel.self,
+                        encoding: URLEncoding.default
+                    ).subscribe(onNext: { _ in
+                        print("좋아요 해지 성공")
+                    }).disposed(by: self.disposeBag)
+                }
+            }.subscribe(onNext: { _ in
+                print("이벤트 방출")
             }).disposed(by: disposeBag)
         
-        input.undoLikeObserver
-            .flatMap { id in
-                ApiManager.deleteData(
-                    from: BaseURL.url.appending("post/\(id)/like"),
-                    to: CommunityLikeResponseModel.self,
-                    encoding: URLEncoding.default
-                )
-            }.subscribe(onNext: { data in
-                print("좋아요 삭제 성공")
+        input.bookmarkObserver
+            .map { action in
+                switch action {
+                case .doBook(let id):
+                    ApiManager.postData(
+                        from: BaseURL.url.appending("post/\(id)/bookmark"),
+                        to: CommunityLikeResponseModel.self,
+                        encoding: URLEncoding.default
+                    ).subscribe(onNext: { _ in
+                        print("북마크 등록 성공")
+                    }).disposed(by: self.disposeBag)
+                    
+                case .undoBook(let id):
+                    ApiManager.deleteData(
+                        from: BaseURL.url.appending("post/\(id)/bookmark"),
+                        to: CommunityLikeResponseModel.self,
+                        encoding: URLEncoding.default
+                    ).subscribe(onNext: { _ in
+                        print("북마크 해지 성공")
+                    }).disposed(by: self.disposeBag)
+                }
+            }.subscribe(onNext: { _ in
+                print("이벤트 방출")
             }).disposed(by: disposeBag)
+        
     }
 }

@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 
+///댓글, 대댓글용 컬렉션뷰
 class DynamicHeightCollectionView: UICollectionView {
     override func layoutSubviews() {
         super.layoutSubviews()

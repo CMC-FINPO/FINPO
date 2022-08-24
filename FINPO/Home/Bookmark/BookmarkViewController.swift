@@ -165,7 +165,7 @@ class BookmarkViewController: UIViewController {
     fileprivate func setOutputBind() {
         viewModel.output.sendUserInterestedOutput
             .asObservable()
-            .observe(on: MainScheduler.instance)
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] userData in
                 guard let self = self else { return }
                 self.titleLabel.text = "\(self.myPageViewModel.user.nickname)님은\n\(userData.data.count)개의 정책에 관심이 있네요!"
@@ -181,7 +181,7 @@ class BookmarkViewController: UIViewController {
                     print("불러온 관심카테고리: \(category[i].name)")
                 }
             })
-            .observe(on: MainScheduler.instance)
+            .observe(on: MainScheduler.asyncInstance)
             .bind(to: self.interestCollectionView.rx.items(cellIdentifier: "BookmarkCollectionViewCell", cellType: BookmarkCollectionViewCell.self)) {
                 (index: Int, element: myInterestCategory, cell) in
                 cell.titleLabel.text = element.name
@@ -263,7 +263,7 @@ class BookmarkViewController: UIViewController {
                 print("선택된 정책 아이디: \(self.selectedId)")
             })
             .asObservable()
-            .observe(on: MainScheduler.instance)
+            .observe(on: MainScheduler.asyncInstance)
             .bind(to: self.interestPolicyCollectionView.rx.items(cellIdentifier: "interestPolicyCollectionViewCell", cellType: HomeCollectionViewCell.self)) {
                 (index: Int, element: ParticipationModel, cell) in
                 ///ex 서울 성북 -> 서울 전체일 경우 예외처리 할 것

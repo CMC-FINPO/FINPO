@@ -52,15 +52,16 @@ class CommunityDetailViewController: UIViewController {
     
     private var contentView: UIView = { //dynamicSizeContent
         let view = UIView()
-        
+//        view.isUserInteractionEnabled = false
         return view
     }()
     
-    private var boardStackView: UIStackView = {
-        let view = UIStackView()
-        view.axis = .vertical
+    private var boardStackView: UIView = {
+        let view = UIView()
+//        view.axis = .vertical
 //        view.distribution = .fillEqually
-        view.spacing = 5
+//        view.isUserInteractionEnabled = true
+        view.backgroundColor = .white
         return view
     }()
     
@@ -85,7 +86,7 @@ class CommunityDetailViewController: UIViewController {
         label.textAlignment = .left
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
         label.textColor = UIColor(hexString: "999999")
-        label.text = "dummy time 2022/06/20"
+        label.text = "dummy time"
         return label
     }()
     
@@ -95,13 +96,14 @@ class CommunityDetailViewController: UIViewController {
 //        label.lineBreakMode = .byTruncatingTail
         label.font = UIFont(name: "AppleSDGothicNeo-Regular", size: 16)
         label.textColor = UIColor(hexString: "000000")
-        label.text = "여기에는 여기에는 컨텐츠가 들어갑니다\n여기에는 늘어납니다\n여기에는 늘어납니다\n늘어났니?\n늘어난거맞니?\n동적으로다이내믹하게늘어낫니?\n정말이니?"
+        label.text = ""
         return label
     }()
     
     private var boardCollectionView: UICollectionView = {
         let flow = UICollectionViewFlowLayout()
-        let cv = UICollectionView(frame: CGRect(x: 0, y: 0, width: 100, height: 100), collectionViewLayout: flow)
+        flow.scrollDirection = .horizontal
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: flow)
         return cv
     }()
     
@@ -124,7 +126,7 @@ class CommunityDetailViewController: UIViewController {
         label.textAlignment = .center
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
         label.textColor = UIColor(hexString: "999999")
-        label.text = "좋아요 3"
+        label.text = "좋아요"
         return label
     }()
     
@@ -133,7 +135,7 @@ class CommunityDetailViewController: UIViewController {
         label.textAlignment = .center
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
         label.textColor = UIColor(hexString: "999999")
-        label.text = "댓글 1"
+        label.text = "댓글"
         return label
     }()
     
@@ -142,12 +144,14 @@ class CommunityDetailViewController: UIViewController {
         label.textAlignment = .center
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
         label.textColor = UIColor(hexString: "999999")
-        label.text = "조회수 30"
+        label.text = "조회수"
         return label
     }()
     
     fileprivate func setAttribute() {
         view.backgroundColor = .white
+        
+        boardCollectionView.register(CommunityCollectionViewCell.self, forCellWithReuseIdentifier: "CommunityCollectionViewCell")
     }
     
     fileprivate func setLayout() {
@@ -160,12 +164,14 @@ class CommunityDetailViewController: UIViewController {
         contentView.snp.makeConstraints {
             $0.width.equalToSuperview()
             $0.centerX.equalToSuperview()
+            $0.height.greaterThanOrEqualToSuperview()
         }
         
         contentView.addSubview(boardStackView)
         boardStackView.snp.makeConstraints {
             $0.top.equalToSuperview()
             $0.width.equalToSuperview()
+            $0.bottom.greaterThanOrEqualTo(view.bounds.height/2)
         }
         
         boardStackView.addSubview(userImageView)
@@ -254,13 +260,27 @@ class CommunityDetailViewController: UIViewController {
                 print("aksdjlaksjdlaksjdla")
                 guard let self = self else { return }
                 if self.isLiked {
-                    self.viewModel.input.undoLikeObserver.accept(self.pageId ?? -1)
+                    self.viewModel.input.likeObserver.accept(.undoLike(id: self.pageId ?? -1))
                     self.isLiked.toggle()
                     self.likeButton.setImage(UIImage(named: "like"), for: .normal)
                 } else {
-                    self.viewModel.input.doLikeObserver.accept(self.pageId ?? -1)
+                    self.viewModel.input.likeObserver.accept(.doLike(id: self.pageId ?? -1))
                     self.isLiked.toggle()
                     self.likeButton.setImage(UIImage(named: "like_active"), for: .normal)
+                }
+            }.disposed(by: disposeBag)
+        
+        bookMarkButton.rx.tap
+            .bind { [weak self] _ in
+                guard let self = self else { return }
+                if self.isBookmarked {
+                    self.viewModel.input.bookmarkObserver.accept(.undoBook(id: self.pageId ?? -1))
+                    self.isBookmarked.toggle()
+                    self.bookMarkButton.setImage(UIImage(named: "scrap_inactive"), for: .normal)
+                } else {
+                    self.viewModel.input.bookmarkObserver.accept(.doBook(id: self.pageId ?? -1))
+                    self.isBookmarked.toggle()
+                    self.bookMarkButton.setImage(UIImage(named: "scrap_active"), for: .normal)
                 }
             }.disposed(by: disposeBag)
     }
@@ -309,9 +329,42 @@ class CommunityDetailViewController: UIViewController {
                 
                 if(boardDetail.data.isBookmarked) {
                     self.bookMarkButton.setImage(UIImage(named: "scrap_active"), for: .normal)
+                    self.isBookmarked = true
                 } else {
                     self.bookMarkButton.setImage(UIImage(named: "scrap_inactive"), for: .normal)
+                    self.isBookmarked = false
                 }
             }).disposed(by: disposeBag)
+        
+        viewModel.output.loadDetailBoardOutput
+            .scan(into: [BoardImgDetail]()) { [weak self] imgs, data in
+                guard let self = self else { return }
+                if let imagsCnt = data.data.imgs {
+                    for i in 0..<(imagsCnt.count) {
+                        imgs.append(imagsCnt[i])
+                    }
+                }
+                else {
+                    DispatchQueue.main.async {
+                        self.boardCollectionView.isHidden = true
+                        self.likeButton.snp.remakeConstraints({
+                            $0.top.equalTo(self.contentLabel.snp.bottom).offset(15)
+                            $0.leading.equalTo(self.contentLabel.snp.leading)
+                        })
+                        self.likeButton.layoutIfNeeded()
+                    }
+                    return
+                }
+            }
+            .observe(on: MainScheduler.asyncInstance)
+            .bind(to: boardCollectionView.rx.items(cellIdentifier: "CommunityCollectionViewCell", cellType: CommunityCollectionViewCell.self)) {
+                (index: Int, element: BoardImgDetail, cell) in
+                if let url = URL(string: element.img) {
+                    cell.imageView.kf.setImage(with: url)
+                } else {
+                    cell.imageView.image = UIImage(named: "MainInterest1")
+                }
+            }.disposed(by: disposeBag)
+            
     }
 }

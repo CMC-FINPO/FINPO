@@ -395,7 +395,7 @@ class MyPageViewController: UIViewController {
                 }
             })
             .asObservable()
-            .observe(on: MainScheduler.instance)
+            .observe(on: MainScheduler.asyncInstance)
             .bind(to: self.interestThingsCollectionView.rx.items(cellIdentifier: "interestThingsCollectionView", cellType: FilterCollectionViewCell.self)) {
                 (index: Int, element: myInterestCategory, cell) in
                 cell.contentView.backgroundColor = UIColor(hexString: "F0F0F0")

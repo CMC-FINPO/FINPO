@@ -47,9 +47,11 @@ struct ApiManager {
             let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
             let header = ApiManager.createHeader(token: accessToken)
             
+            let queue = DispatchQueue.global(qos: .utility)
+            
             API.session.request(url, method: .post, parameters: param?.dictionary, encoding: encoding, headers: header, interceptor: MyRequestInterceptor())
                 .validate(statusCode: 200..<300)
-                .responseDecodable(of: model.self, completionHandler: { response in
+                .responseDecodable(of: model.self, queue: queue,completionHandler: { response in
                     switch response.value {
                     case .some(let models):
                         observer.onNext(models)
@@ -126,7 +128,7 @@ struct ApiManager {
                 case .failure(let error):
                     print("토큰 리프레시 실패!: \(error.localizedDescription)")
                     print("리스폰스:\(response.response)")
-                    apiResult = false                
+                    apiResult = false
                 
                 }
                 semaphore.signal()
