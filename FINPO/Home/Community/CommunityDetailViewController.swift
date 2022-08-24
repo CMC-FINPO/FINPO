@@ -13,7 +13,13 @@ import Kingfisher
 
 class CommunityDetailViewController: UIViewController {
     
+    let disposeBag = DisposeBag()
+    let viewModel = CommunityDetailViewModel()
+    let favoriteViewModel = CommunityViewModel()
+    
     var pageId: Int?
+    var isLiked: Bool = false
+    var isBookmarked: Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -237,10 +243,75 @@ class CommunityDetailViewController: UIViewController {
     }
     
     fileprivate func setInputBind() {
+        rx.viewWillAppear.take(1).asDriver { _ in return .never()}
+            .drive(onNext: { [weak self] _ in
+                guard let id = self?.pageId else { return }
+                self?.viewModel.input.loadDetailBoardObserver.accept(id)
+            }).disposed(by: disposeBag)
         
+        likeButton.rx.tap
+            .bind { [weak self] _ in
+                print("aksdjlaksjdlaksjdla")
+                guard let self = self else { return }
+                if self.isLiked {
+                    self.viewModel.input.undoLikeObserver.accept(self.pageId ?? -1)
+                    self.isLiked.toggle()
+                    self.likeButton.setImage(UIImage(named: "like"), for: .normal)
+                } else {
+                    self.viewModel.input.doLikeObserver.accept(self.pageId ?? -1)
+                    self.isLiked.toggle()
+                    self.likeButton.setImage(UIImage(named: "like_active"), for: .normal)
+                }
+            }.disposed(by: disposeBag)
     }
     
     fileprivate func setOutputBind() {
-        
+        self.viewModel.output.loadDetailBoardOutput
+            .observe(on: MainScheduler.asyncInstance)
+            .subscribe(onNext: { [weak self] boardDetail in
+                guard let self = self else { return }
+                if let profileImgStr = boardDetail.data.user.profileImg {
+                    let imgUrl = URL(string: profileImgStr)
+                    self.userImageView.kf.setImage(with: imgUrl)
+                }
+                if(boardDetail.data.anonymity) {
+                    self.userName.text = "(익명)"
+                } else {
+                    self.userName.text = boardDetail.data.user.nickname ?? "(알 수 없음)"
+                }
+                ///Date
+                let format = DateFormatter()
+                format.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+                format.locale = Locale(identifier: "ko")
+                format.timeZone = TimeZone(abbreviation: "KST")
+                var tempDate: Date
+                boardDetail.data.isModified ? (tempDate = format.date(from: boardDetail.data.modifiedAt) ?? Date()) : (tempDate = format.date(from: boardDetail.data.createdAt) ?? Date())
+                format.dateFormat = "yyyy년 MM월 dd일 a hh:mm"
+                format.amSymbol = "오전"
+                format.pmSymbol = "오후"
+                let str = format.string(from: tempDate)
+                boardDetail.data.isModified ? (self.dateLabel.text = str + "(수정됨)") : (self.dateLabel.text = str)
+                ///Content
+                self.contentLabel.text = boardDetail.data.content
+                
+                ///좋아요, 댓글, 북마크 수
+                self.likeCountLabel.text = "좋아요 \(boardDetail.data.likes)"
+                self.viewsCountLabel.text = "・ 댓글 \(boardDetail.data.countOfComment)"
+                self.commentCountLabel.text = "・ 조회수 \(boardDetail.data.hits)"
+                
+                if(boardDetail.data.isLiked) {
+                    self.likeButton.setImage(UIImage(named: "like_active"), for: .normal)
+                    self.isLiked = true
+                } else {
+                    self.likeButton.setImage(UIImage(named: "like")?.withRenderingMode(.alwaysOriginal), for: .normal)
+                    self.isLiked = false
+                }
+                
+                if(boardDetail.data.isBookmarked) {
+                    self.bookMarkButton.setImage(UIImage(named: "scrap_active"), for: .normal)
+                } else {
+                    self.bookMarkButton.setImage(UIImage(named: "scrap_inactive"), for: .normal)
+                }
+            }).disposed(by: disposeBag)
     }
 }

@@ -268,7 +268,7 @@ class HomeViewModel {
             .flatMap { ApiManager.getData(
                 with: nil,
                 from: BaseURL.url.appending("policy/category/me"),
-                to: MyInterestCategoryModel.self as? Codable,
+                to: MyInterestCategoryModel.self,
                 encoding: URLEncoding.default) }
             .subscribe(onNext: { interestCategories in
                 self.output.getInterestCategory.accept(interestCategories)

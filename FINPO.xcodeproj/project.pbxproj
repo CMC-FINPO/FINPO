@@ -19,6 +19,8 @@
 		DD1E995128B368E900C80272 /* BoolResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1E995028B368E900C80272 /* BoolResponseModel.swift */; };
 		DD1E995328B4DC8100C80272 /* DynamicHeightCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1E995228B4DC8100C80272 /* DynamicHeightCollectionView.swift */; };
 		DD1E995528B4DF4500C80272 /* CommunityDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1E995428B4DF4400C80272 /* CommunityDetailViewController.swift */; };
+		DD1E995728B5322B00C80272 /* CommunityDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1E995628B5322B00C80272 /* CommunityDetailViewModel.swift */; };
+		DD1E995928B5335100C80272 /* CommunityDetailBoardResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1E995828B5335100C80272 /* CommunityDetailBoardResponseModel.swift */; };
 		DD1EC9712861B23000B58F10 /* SignOutAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1EC9702861B23000B58F10 /* SignOutAPI.swift */; };
 		DD2EA46628487F730004D707 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2EA46528487F730004D707 /* AppDelegate.swift */; };
 		DD2EA46828487F730004D707 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2EA46728487F730004D707 /* SceneDelegate.swift */; };
@@ -146,6 +148,8 @@
 		DD1E995028B368E900C80272 /* BoolResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoolResponseModel.swift; sourceTree = "<group>"; };
 		DD1E995228B4DC8100C80272 /* DynamicHeightCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicHeightCollectionView.swift; sourceTree = "<group>"; };
 		DD1E995428B4DF4400C80272 /* CommunityDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityDetailViewController.swift; sourceTree = "<group>"; };
+		DD1E995628B5322B00C80272 /* CommunityDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityDetailViewModel.swift; sourceTree = "<group>"; };
+		DD1E995828B5335100C80272 /* CommunityDetailBoardResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityDetailBoardResponseModel.swift; sourceTree = "<group>"; };
 		DD1EC9702861B23000B58F10 /* SignOutAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignOutAPI.swift; sourceTree = "<group>"; };
 		DD2EA46228487F730004D707 /* FINPO.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FINPO.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD2EA46528487F730004D707 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -363,6 +367,7 @@
 				DD4D493428856C2A00E25AB6 /* CommunityMainViewController.swift */,
 				DDE615CB2894054C0067040B /* CommunityViewModel.swift */,
 				DD1E995428B4DF4400C80272 /* CommunityDetailViewController.swift */,
+				DD1E995628B5322B00C80272 /* CommunityDetailViewModel.swift */,
 			);
 			path = Community;
 			sourceTree = "<group>";
@@ -452,6 +457,7 @@
 				DD60A0C12887D216004E9015 /* OpenAPIModel.swift */,
 				DD1E994C28B28E8300C80272 /* CommunityboardResponseModel.swift */,
 				DD1E995028B368E900C80272 /* BoolResponseModel.swift */,
+				DD1E995828B5335100C80272 /* CommunityDetailBoardResponseModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -755,6 +761,7 @@
 				DD60C1E028811611003B201E /* RegionAlarmViewController.swift in Sources */,
 				DD60C1DE287F31C1003B201E /* MyAlarmIsOnModel.swift in Sources */,
 				DDBFEEC2285AEDE3003E9662 /* TagCollectionViewCell.swift in Sources */,
+				DD1E995728B5322B00C80272 /* CommunityDetailViewModel.swift in Sources */,
 				DD5A18FE2875AD9600903616 /* MyRegionViewController.swift in Sources */,
 				DDECAE952866C28B001C48D3 /* AddPurposeCollectionViewCell.swift in Sources */,
 				DDB419BD2863612C005868ED /* APIEventLogger.swift in Sources */,
@@ -827,6 +834,7 @@
 				DD5A18F028728F2C00903616 /* MyRequestInterceptor.swift in Sources */,
 				DD5A18D4286D389F00903616 /* FilterCollectionViewCell.swift in Sources */,
 				DD5A18E92870257800903616 /* SearchDetailPolicyAPI.swift in Sources */,
+				DD1E995928B5335100C80272 /* CommunityDetailBoardResponseModel.swift in Sources */,
 				DD50F7AF287E762D00ADEB09 /* LowCategoryModel.swift in Sources */,
 				DD50F7AD287DD5C600ADEB09 /* MyInterestCategoryModel.swift in Sources */,
 				DDBFEEA828578FD2003E9662 /* UnderlineSegmentedControl.swift in Sources */,

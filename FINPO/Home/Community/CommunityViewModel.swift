@@ -91,7 +91,7 @@ class CommunityViewModel {
                 case .latest:
                     ApiManager.getData(
                         from:BaseURL.url.appending("\(boardSorting.latest.sortingURL)&page=\(self.currentPage)"),
-                        to: CommunityboardResponseModel.self as? Codable,
+                        to: CommunityboardResponseModel.self,
                         encoding: URLEncoding.default
                     ).subscribe(onNext: { data in
                         self.output.loadBoardOutput.accept(.first(data))
@@ -99,7 +99,7 @@ class CommunityViewModel {
                 case .popular:
                     ApiManager.getData(
                         from: BaseURL.url.appending("\(boardSorting.popular.sortingURL)&page=\(self.currentPage)"),
-                    to: CommunityboardResponseModel.self as? Codable,
+                    to: CommunityboardResponseModel.self,
                     encoding: URLEncoding.default)
                     .subscribe(onNext: { data in
                         self.output.loadBoardOutput.accept(.first(data))
@@ -119,7 +119,7 @@ class CommunityViewModel {
                 case .latest:
                     ApiManager.getData(
                         from: BaseURL.url.appending("\(boardSorting.latest.sortingURL)&page=\(self.currentPage)"),
-                        to: CommunityboardResponseModel.self as? Codable,
+                        to: CommunityboardResponseModel.self,
                         encoding: URLEncoding.default
                     ).subscribe(onNext: { data in
                         self.output.loadBoardOutput.accept(.loadMore(data))
@@ -127,7 +127,7 @@ class CommunityViewModel {
                 case .popular:
                     ApiManager.getData(
                         from: BaseURL.url.appending("\(boardSorting.popular.sortingURL)&page=\(self.currentPage)"),
-                    to: CommunityboardResponseModel.self as? Codable,
+                    to: CommunityboardResponseModel.self,
                     encoding: URLEncoding.default)
                     .subscribe(onNext: { data in
                         self.output.loadBoardOutput.accept(.loadMore(data))
@@ -183,7 +183,7 @@ class CommunityViewModel {
                         for i in 1..<(self.currentPage) where self.currentPage > 0 {
                             ApiManager.getData(
                                 from: BaseURL.url.appending("\(boardSorting.latest.sortingURL)&page=\(i)"),
-                                to: CommunityboardResponseModel.self as? Codable,
+                                to: CommunityboardResponseModel.self,
                                 encoding: URLEncoding.default
                             ).subscribe(onNext: { data in
                                 self.output.loadBoardOutput.accept(.loadMore(data))
@@ -196,7 +196,7 @@ class CommunityViewModel {
                         for i in 1..<(self.currentPage) {
                             ApiManager.getData(
                                 from: BaseURL.url.appending("\(boardSorting.popular.sortingURL)&page=\(i)"),
-                            to: CommunityboardResponseModel.self as? Codable,
+                            to: CommunityboardResponseModel.self,
                             encoding: URLEncoding.default)
                             .subscribe(onNext: { data in
                                 self.output.loadBoardOutput.accept(.loadMore(data))

@@ -25,9 +25,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         print("acToken: \(acToken)")
         
         if(acToken != nil) {
-            let rootVC = HomeTapViewController()
-            window?.rootViewController = rootVC
-            window?.makeKeyAndVisible()
+            ///Using semaphore
+            let tokenValidationResult = ApiManager.checkTokenValidation()
+            
+            if(tokenValidationResult) {
+                print("여기로 들옴")
+                let rootVC = HomeTapViewController()
+                window?.rootViewController = rootVC
+                window?.makeKeyAndVisible()
+            } else {
+                print("갱신실패")
+                let rootVC = LoginViewController()
+                let navVC = UINavigationController(rootViewController: rootVC)
+                window?.rootViewController = navVC
+                window?.makeKeyAndVisible()
+            }
+
         } else {
             if(UserDefaults.standard.object(forKey: "isOnboarding") == nil) {
                 let rootVC = OnBoardingViewController()

@@ -22,14 +22,14 @@ struct ApiManager {
         return header
     }
     
-    static func getData<T: Decodable>(with param: Encodable? = nil, from url: String, to model: Codable?, encoding: ParameterEncoding) -> Observable<T> {
+    static func getData<T: Decodable>(with param: Encodable? = nil, from url: String, to model: T.Type, encoding: ParameterEncoding) -> Observable<T> {
         return Observable.create { observer in
             let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
             let header = ApiManager.createHeader(token: accessToken)
             
             API.session.request(url, method: .get, parameters: param?.dictionary, encoding: encoding, headers: header, interceptor: MyRequestInterceptor())
                 .validate(statusCode: 200..<300)
-                .responseDecodable(of: T.self, completionHandler: { response in
+                .responseDecodable(of: model.self, completionHandler: { response in
                     switch response.value {
                     case .some(let models):
                         observer.onNext(models)
@@ -80,6 +80,60 @@ struct ApiManager {
             
             return Disposables.create()
         }
+    }
+    
+    static func checkTokenValidation() -> Bool {
+        let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
+        let refreshToken = KeyChain.read(key: KeyChain.refreshToken) ?? ""
+        let url = BaseURL.url.appending("oauth/reissue")
+        
+        let parameter: Parameters = [
+            "accessToken": accessToken,
+            "refreshToken": refreshToken
+        ]
+        
+        var apiResult: Bool = false
+        
+        ///비동기 처리의 동기화 -> 세마포어 사용
+        let semaphore = DispatchSemaphore(value: 0)
+        //alamofre의 completion handler가({}) DispatchQueue.main에서 실행되므로, DispatchSemaphore를 DispatchQueue.main 실행하게 되면 completionHandler의 실행까지 멈춰버리므로 데드락 발생
+        let queue = DispatchQueue.global(qos: .utility)
+        //따라서 completionHandler를 DispatchQueue.main 이외의 스레드로 실행하면 되기에 response 매개변수에 실행하고자 하는 queue로 교체
+        
+        API.session.request(url, method: .post, parameters: parameter, encoding: JSONEncoding.default, headers: nil)
+            .validate()
+            .response(queue: queue) { response in
+                
+                switch response.result {
+                case .success(let data):
+                    if let data = data {
+                        do {
+                            let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                            let result = json?["data"] as? [String: Any] ?? [:]
+                            let accessToken = result["accessToken"] as? String ?? ""
+                            let refreshToken = result["refreshToken"] as? String ?? ""
+                            let accessTokenExpiresIn = result["accessTokenExpiresIn"] as? Int ?? 0
+                            let accessTokenExpireDate = Date(milliseconds: Int64(accessTokenExpiresIn))
+                            KeyChain.create(key: KeyChain.accessToken, token: accessToken)
+                            KeyChain.create(key: KeyChain.refreshToken, token: refreshToken)
+                            UserDefaults.standard.set(accessTokenExpireDate, forKey: "accessTokenExpiresIn")
+                            print("갱신된 액세스 토큰: \(accessToken)")
+                            print("갱신된 리프레시 토큰: \(refreshToken)")
+                            print("토큰 갱신 성공!!!!")
+                            apiResult = true
+                        }
+                    }
+                case .failure(let error):
+                    print("토큰 리프레시 실패!: \(error.localizedDescription)")
+                    print("리스폰스:\(response.response)")
+                    apiResult = false                
+                
+                }
+                semaphore.signal()
+            }
+        semaphore.wait()
+        return apiResult
+
     }
 }
 
