@@ -24,10 +24,14 @@ class CommunityDetailViewModel {
         
         let likeObserver = PublishRelay<likeAction>()
         let bookmarkObserver = PublishRelay<bookmarkAction>()
+        
+        let loadCommentObserver = PublishRelay<Int>()
     }
     
     struct OUTPUT {
         var loadDetailBoardOutput = PublishRelay<CommunityDetailBoardResponseModel>()
+        
+        var loadCommentOutput = PublishRelay<CommunityCommentResponseModel>()
     }
     
     enum likeAction {
@@ -99,6 +103,25 @@ class CommunityDetailViewModel {
                 }
             }.subscribe(onNext: { _ in
                 print("이벤트 방출")
+            }).disposed(by: disposeBag)
+        
+        input.loadCommentObserver
+            .map { id in
+                let parameter: Parameters = [
+                    "page": 0,
+                    "size": 10,
+                    "sort": "id,asc"
+                ]
+                ApiManager.getData(
+                    with: parameter as? Encodable,
+                    from: BaseURL.url.appending("post/\(id)/comment"),
+                    to: CommunityCommentResponseModel.self,
+                    encoding: JSONEncoding.default
+                ).subscribe(onNext: { [weak self] commentData in
+                    self?.output.loadCommentOutput.accept(commentData)
+                }).disposed(by: self.disposeBag)
+            }.subscribe(onNext: {
+                print("댓글 이벤트 방출")
             }).disposed(by: disposeBag)
         
     }

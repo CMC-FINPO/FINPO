@@ -148,10 +148,29 @@ class CommunityDetailViewController: UIViewController {
         return label
     }()
     
+    private var commentView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .green
+        return view
+    }()
+    
+    private var commentTableView: UITableView = {
+        let tv = UITableView()
+        tv.backgroundColor = .white
+//        tv.rowHeight = CGFloat(100)
+        tv.rowHeight = UITableView.automaticDimension
+//        tv.estimatedRowHeight = 100
+        tv.bounces = false
+        tv.separatorInset.left = 0
+        return tv
+    }()
+    
     fileprivate func setAttribute() {
         view.backgroundColor = .white
         
         boardCollectionView.register(CommunityCollectionViewCell.self, forCellWithReuseIdentifier: "CommunityCollectionViewCell")
+        
+        commentTableView.register(BoardTableViewCell.self, forCellReuseIdentifier: "commentTableViewCell")
     }
     
     fileprivate func setLayout() {
@@ -162,16 +181,17 @@ class CommunityDetailViewController: UIViewController {
         
         scrollView.addSubview(contentView)
         contentView.snp.makeConstraints {
+            $0.top.equalToSuperview()
             $0.width.equalToSuperview()
             $0.centerX.equalToSuperview()
-            $0.height.greaterThanOrEqualToSuperview()
+            $0.height.greaterThanOrEqualToSuperview().offset(500)
         }
         
         contentView.addSubview(boardStackView)
         boardStackView.snp.makeConstraints {
             $0.top.equalToSuperview()
             $0.width.equalToSuperview()
-            $0.bottom.greaterThanOrEqualTo(view.bounds.height/2)
+            $0.height.greaterThanOrEqualTo(150)
         }
         
         boardStackView.addSubview(userImageView)
@@ -238,6 +258,21 @@ class CommunityDetailViewController: UIViewController {
             $0.bottom.equalTo(likeCountLabel.snp.bottom)
             $0.leading.equalTo(viewsCountLabel.snp.trailing).offset(2.5)
         }
+        
+        contentView.addSubview(commentView)
+        commentView.snp.makeConstraints {
+            $0.top.equalTo(boardStackView.snp.bottom)
+            $0.width.equalToSuperview()
+            $0.height.greaterThanOrEqualTo(self.view.bounds.height)
+        }
+        
+        commentView.addSubview(commentTableView)
+        commentTableView.snp.makeConstraints {
+            $0.top.equalToSuperview()
+            $0.width.equalToSuperview()
+//            $0.bottom.equalTo(self.scrollView.safeAreaLayoutGuide.snp.bottom)
+            $0.bottom.equalTo(commentView)
+        }
     }
     
     fileprivate func addToDynamicContent() {
@@ -253,6 +288,7 @@ class CommunityDetailViewController: UIViewController {
             .drive(onNext: { [weak self] _ in
                 guard let id = self?.pageId else { return }
                 self?.viewModel.input.loadDetailBoardObserver.accept(id)
+                self?.viewModel.input.loadCommentObserver.accept(id)
             }).disposed(by: disposeBag)
         
         likeButton.rx.tap
@@ -286,7 +322,7 @@ class CommunityDetailViewController: UIViewController {
     }
     
     fileprivate func setOutputBind() {
-        self.viewModel.output.loadDetailBoardOutput
+        viewModel.output.loadDetailBoardOutput
             .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] boardDetail in
                 guard let self = self else { return }
@@ -366,5 +402,48 @@ class CommunityDetailViewController: UIViewController {
                 }
             }.disposed(by: disposeBag)
             
+        viewModel.output.loadCommentOutput
+            .scan(into: [CommentContentDetail]()) { comments, response in
+                for i in 0..<(response.data.content.count) {
+                    comments.append(response.data.content[i])
+                }
+            }
+            .observe(on: MainScheduler.asyncInstance)
+            .bind(to: commentTableView.rx.items(cellIdentifier: "commentTableViewCell", cellType: BoardTableViewCell.self)) {
+                (index: Int, element: CommentContentDetail, cell) in
+                if(element.status) {
+                    cell.contentLabel.text = element.content ?? "댓글없음"
+                    cell.hiddenProperty() //댓글전용 셀로 만들기
+                } else { //삭제된 글일경우
+                    cell.setDeleteComment()
+                    cell.contentLabel.text = "(삭제된 댓글입니다)"
+                }
+                
+                //댓글 작성자 익명 확인
+//                if(element.user != nil) {
+//                    if let imgurl = element.user?.profileImg,
+//                       let nickname = element.user?.nickname,
+//                       let isMine = element.isMine,
+//                       let isWriter = element.isWriter,
+//                       let anonymity = element.anonymity
+//                    {
+//                        cell.userImageView.kf.setImage(with: URL(string: imgurl))
+//                        if(isMine) {
+//                            cell.userName.text = nickname + "(본인)"
+//                        } else if(isWriter){
+//                            cell.userName.text = nickname + "(글쓴이)"
+//                        } else if(anonymity){
+//                            cell.userName.text = "(익명)"
+//                        } else if(element.status){
+//                            cell.userName.text = "(알 수 없음)"
+//                        }
+//                    }
+//                } else {
+//                    guard let nickname = element.user?.nickname else { return }
+//                    cell.userName.text = nickname
+//                }
+                
+                
+            }.disposed(by: disposeBag)
     }
 }

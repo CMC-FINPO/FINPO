@@ -98,15 +98,6 @@ class BoardTableViewCell: UITableViewCell {
         [userImageView, userName, dateLabel, contentLabel, likeButton, bookMarkButton, likeCountLabel, commentCountLabel, viewsCountLabel].forEach {
             contentView.addSubview($0)
         }
-        
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
         userImageView.layer.masksToBounds = true
         userImageView.layer.cornerRadius = userImageView.frame.width/2
         userImageView.snp.makeConstraints {
@@ -129,6 +120,7 @@ class BoardTableViewCell: UITableViewCell {
             $0.leading.equalTo(userImageView.snp.leading)
             $0.trailing.equalTo(contentView.snp.trailing)
             $0.top.equalTo(userImageView.snp.bottom).offset(15)
+
         }
         
         likeButton.snp.makeConstraints {
@@ -158,6 +150,41 @@ class BoardTableViewCell: UITableViewCell {
             $0.leading.equalTo(viewsCountLabel.snp.trailing).offset(2.5)
         }
     }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+    }
+    
+    public func hiddenProperty() {
+        [self.likeButton, self.bookMarkButton, self.likeCountLabel, self.viewsCountLabel, self.commentCountLabel].forEach {
+            $0.isHidden = true
+            self.contentView.layoutIfNeeded()
+        }
+        self.contentLabel.snp.remakeConstraints {
+            $0.leading.equalTo(userImageView.snp.leading)
+            $0.trailing.equalTo(contentView.snp.trailing)
+            $0.top.equalTo(userImageView.snp.bottom).offset(15)
+            $0.bottom.equalTo(contentView.snp.bottom).inset(10)
+        }
+        self.contentLabel.layoutIfNeeded()
+    }
+    
+    public func setDeleteComment() {
+        [self.likeButton, self.bookMarkButton, self.likeCountLabel, self.viewsCountLabel, self.commentCountLabel, self.userImageView, self.userName, self.dateLabel].forEach {
+            $0.isHidden = true
+            self.contentView.layoutIfNeeded()
+        }
+        self.contentLabel.snp.remakeConstraints {
+            $0.edges.equalTo(contentView).inset(15)
+        }
+        self.contentLabel.layoutIfNeeded()
+    }
+    
     override func prepareForReuse() {
         super.prepareForReuse()
         

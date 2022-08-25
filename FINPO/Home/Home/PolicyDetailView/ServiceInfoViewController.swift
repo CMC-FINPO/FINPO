@@ -93,7 +93,6 @@ class ServiceInfoViewController: UIViewController {
         tv.backgroundColor = UIColor(hexString: "5B43EF").withAlphaComponent(0.3)
         tv.layer.masksToBounds = true
         tv.layer.cornerRadius = 5
-        tv.separatorInset.left = 0
         tv.separatorStyle = UITableViewCell.SeparatorStyle.none
         tv.showsVerticalScrollIndicator = false
         tv.showsHorizontalScrollIndicator = false

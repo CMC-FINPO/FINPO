@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import SnapKit
 
+///커뮤니티 상세 게시글 사진용
 class CommunityCollectionViewCell: UICollectionViewCell {
     
     public var imageView: UIImageView = {
