@@ -21,6 +21,11 @@ class CommunityDetailViewController: UIViewController {
     var isLiked: Bool = false
     var isBookmarked: Bool = false
     
+    //대댓글 개수 체크
+    var childCommentCnt = [String:Int]()
+    //대댓글 불러온 적 있는지 체크
+    var isAddedChild = [String:[Bool]]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -28,6 +33,10 @@ class CommunityDetailViewController: UIViewController {
         setLayout()
         setInputBind()
         setOutputBind()
+        
+        print("스크롤뷰 height: \(self.scrollView.bounds.height)")
+        print("컨텐츠뷰 height: \(self.contentView.bounds.height)")
+        print("댓글뷰 height: \(self.commentView.bounds.height)")
     }
     
     func initialize(id: Int) {
@@ -58,9 +67,6 @@ class CommunityDetailViewController: UIViewController {
     
     private var boardStackView: UIView = {
         let view = UIView()
-//        view.axis = .vertical
-//        view.distribution = .fillEqually
-//        view.isUserInteractionEnabled = true
         view.backgroundColor = .white
         return view
     }()
@@ -154,16 +160,20 @@ class CommunityDetailViewController: UIViewController {
         return view
     }()
     
-    private var commentTableView: UITableView = {
-        let tv = UITableView()
+    private var commentTableView: DynamicHeightTableView = {
+        let tv = DynamicHeightTableView()
         tv.backgroundColor = .white
-//        tv.rowHeight = CGFloat(100)
         tv.rowHeight = UITableView.automaticDimension
-//        tv.estimatedRowHeight = 100
         tv.bounces = false
         tv.separatorInset.left = 0
         return tv
     }()
+    
+    public func attributeText(originalText: String, range: String, color: String) -> NSMutableAttributedString {
+        let attributedText = NSMutableAttributedString(string: originalText)
+        attributedText.addAttribute(.foregroundColor, value: UIColor(hexString: "\(color)"), range: (originalText as NSString).range(of: "\(range)"))
+        return attributedText
+    }
     
     fileprivate func setAttribute() {
         view.backgroundColor = .white
@@ -171,23 +181,26 @@ class CommunityDetailViewController: UIViewController {
         boardCollectionView.register(CommunityCollectionViewCell.self, forCellWithReuseIdentifier: "CommunityCollectionViewCell")
         
         commentTableView.register(BoardTableViewCell.self, forCellReuseIdentifier: "commentTableViewCell")
+        commentTableView.delegate = self
     }
     
     fileprivate func setLayout() {
         view.addSubview(scrollView)
         scrollView.snp.makeConstraints {
-            $0.edges.equalTo(view.safeAreaLayoutGuide)
+            $0.top.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+            $0.bottom.equalToSuperview().inset(150)
         }
         
-        scrollView.addSubview(contentView)
-        contentView.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.width.equalToSuperview()
-            $0.centerX.equalToSuperview()
-            $0.height.greaterThanOrEqualToSuperview().offset(500)
-        }
+//        scrollView.addSubview(contentView)
+//        contentView.snp.makeConstraints {
+//            $0.top.equalToSuperview()
+//            $0.width.equalToSuperview()
+//            $0.centerX.equalToSuperview()
+//            $0.bottom.greaterThanOrEqualToSuperview()
+//        }
         
-        contentView.addSubview(boardStackView)
+//        contentView.addSubview(boardStackView)
+        scrollView.addSubview(boardStackView)
         boardStackView.snp.makeConstraints {
             $0.top.equalToSuperview()
             $0.width.equalToSuperview()
@@ -259,28 +272,21 @@ class CommunityDetailViewController: UIViewController {
             $0.leading.equalTo(viewsCountLabel.snp.trailing).offset(2.5)
         }
         
-        contentView.addSubview(commentView)
-        commentView.snp.makeConstraints {
+//        contentView.addSubview(commentView)
+//        commentView.snp.makeConstraints {
+//            $0.top.equalTo(boardStackView.snp.bottom)
+//            $0.width.equalToSuperview()
+//            $0.height.greaterThanOrEqualTo(self.view.bounds.height) //조금되던거
+//            $0.height.greaterThanOrEqualTo(self.contentView.snp.height)
+//        }
+        
+//        commentView.addSubview(commentTableView) //되던거 수정
+//        contentView.addSubview(commentTableView)
+        scrollView.addSubview(commentTableView)
+        commentTableView.snp.makeConstraints {
             $0.top.equalTo(boardStackView.snp.bottom)
             $0.width.equalToSuperview()
-            $0.height.greaterThanOrEqualTo(self.view.bounds.height)
         }
-        
-        commentView.addSubview(commentTableView)
-        commentTableView.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.width.equalToSuperview()
-//            $0.bottom.equalTo(self.scrollView.safeAreaLayoutGuide.snp.bottom)
-            $0.bottom.equalTo(commentView)
-        }
-    }
-    
-    fileprivate func addToDynamicContent() {
-      let uiv = UIView()
-      uiv.heightAnchor.constraint(equalToConstant: 40).isActive = true
-      uiv.backgroundColor = .systemRed
-
-      contentView.addSubview(uiv)
     }
     
     fileprivate func setInputBind() {
@@ -405,45 +411,179 @@ class CommunityDetailViewController: UIViewController {
         viewModel.output.loadCommentOutput
             .scan(into: [CommentContentDetail]()) { comments, response in
                 for i in 0..<(response.data.content.count) {
-                    comments.append(response.data.content[i])
+                    if let childs = response.data.content[i].childs {
+                        comments.append(response.data.content[i])
+                        self.childCommentCnt["\(response.data.content[i].id)", default: 0] += 1
+                        self.isAddedChild["\(response.data.content[i].id)", default: [Bool]()].append(false)
+                        for _ in 0..<(childs.count) {
+                            comments.append(response.data.content[i])
+                            self.childCommentCnt["\(response.data.content[i].id)", default: 0] += 1
+                            self.isAddedChild["\(response.data.content[i].id)", default: [false]].append(false)
+                            print("읽어들인 대댓글 체크용: \(self.isAddedChild)")
+                        }
+                    } else {
+                        comments.append(response.data.content[i])
+                    }
                 }
             }
             .observe(on: MainScheduler.asyncInstance)
             .bind(to: commentTableView.rx.items(cellIdentifier: "commentTableViewCell", cellType: BoardTableViewCell.self)) {
                 (index: Int, element: CommentContentDetail, cell) in
-                if(element.status) {
-                    cell.contentLabel.text = element.content ?? "댓글없음"
-                    cell.hiddenProperty() //댓글전용 셀로 만들기
-                } else { //삭제된 글일경우
-                    cell.setDeleteComment()
-                    cell.contentLabel.text = "(삭제된 댓글입니다)"
+                ///대댓글이 있는 경우
+                if let child = element.childs {
+                    //check child count
+                    let total = self.childCommentCnt["\(element.id)", default: 0]
+                    print("토탈개수: \(total)")
+                    print("차일드 개수: \(child.count)")
+                    if((total - (child.count)) > 0) { //댓글
+                        self.childCommentCnt["\(element.id)", default: 0] -= 1
+                        if(element.status) { //댓글 삭제 분기
+                            cell.contentLabel.text = element.content ?? "댓글없음"
+                            //익명 여부 체크
+                            if let isAnnoymity = element.anonymity {
+                                if(isAnnoymity) {
+                                    cell.userName.text = "(익명)"
+                                } else if(!isAnnoymity) {
+                                    if let isWriter = element.isWriter {
+                                        if isWriter {
+                                            cell.userName.text = (element.user?.nickname ?? "") + "(글쓴이)"
+                                            cell.hiddenProperty()
+                                        }
+                                    }
+                                    if let isMine = element.isMine {
+                                        if isMine {
+                                            cell.userName.text = element.user?.nickname ?? "본인이름없음" + "(본인)"
+                                            cell.hiddenProperty()
+                                        }
+                                    }
+//                                    cell.userName.text = element.user?.nickname ?? "관리자계정"
+                                }
+                            }
+                            cell.hiddenProperty()
+                        } else {
+                            cell.setDeleteComment()
+                        }
+                    } else { //대댓글
+                        if let isAdded = (self.isAddedChild["\(element.id)"]) {
+                            for i in 0..<(isAdded.count-1) {
+                                if (!isAdded[i]) {
+                                    self.isAddedChild["\(element.id)"]?[i] = true
+                                    if let isCommentAlive = element.childs?[i].status { //댓글 삭제 분기
+                                        isCommentAlive ? (cell.contentLabel.text = element.childs?[i].content ?? "에러") : cell.setDeleteComment()
+                                        if(isCommentAlive) {
+                                            //익명분기
+                                            if let isAnnonymity = element.childs?[i].anonymity {
+                                                if(isAnnonymity) {
+                                                    cell.userName.text = "(익명)"
+                                                } else if(!isAnnonymity) {
+                                                    if let isWriter = element.childs?[i].isWriter { //글쓴이 분기
+                                                        if isWriter { (cell.userName.text = (element.childs?[i].user?.nickname ?? "") + "(글쓴이)") }
+                                                    }
+                                                    if let isMine = element.childs?[i].isMine {
+                                                        if isMine { cell.userName.text = (element.childs?[i].user?.nickname ?? "") + "(본인)" }
+                                                    }
+                                                }
+                                            }
+                                            cell.childCommentProperty()
+                                        }
+                                    }
+                                    return
+                                }
+                            }
+                        }
+                    }
+                }
+                ///대댓글이 없는 경우
+                else {
+                    //삭제된 글인지 분기
+                    if(element.status) {
+                        cell.contentLabel.text = element.content ?? "댓글이 삭제 안된 글(에러)"
+                        cell.hiddenProperty()
+                        //삭제된 글이 아니라면 익명성 체크
+                        if let isAnnoymity = element.anonymity {
+                            if(isAnnoymity) {
+                                cell.userName.text = "(익명)"
+                            } else if(!isAnnoymity) {
+//                                cell.userName.text = element.user?.nickname ?? "(익명아닌데 이름 없는경우)"
+                                if let isWriter = element.isWriter {
+                                    if isWriter { cell.userName.text = (element.user?.nickname ?? "") + "(글쓴이)" }
+                                }
+                                if let isMine = element.isMine {
+                                    if isMine {
+                                        cell.userName.text = element.user?.nickname ?? "본인이름없음" + "(본인)"
+                                        cell.hiddenProperty()
+                                    }
+                                }
+                            }
+                        } else {
+                            cell.userName.text = element.user?.nickname ?? "닉네임 불러오기 에러"
+                        }
+                    } else {
+                        cell.setDeleteComment()
+                    }
                 }
                 
-                //댓글 작성자 익명 확인
-//                if(element.user != nil) {
-//                    if let imgurl = element.user?.profileImg,
-//                       let nickname = element.user?.nickname,
-//                       let isMine = element.isMine,
-//                       let isWriter = element.isWriter,
-//                       let anonymity = element.anonymity
-//                    {
-//                        cell.userImageView.kf.setImage(with: URL(string: imgurl))
-//                        if(isMine) {
-//                            cell.userName.text = nickname + "(본인)"
-//                        } else if(isWriter){
-//                            cell.userName.text = nickname + "(글쓴이)"
-//                        } else if(anonymity){
-//                            cell.userName.text = "(익명)"
-//                        } else if(element.status){
-//                            cell.userName.text = "(알 수 없음)"
-//                        }
-//                    }
-//                } else {
-//                    guard let nickname = element.user?.nickname else { return }
-//                    cell.userName.text = nickname
-//                }
-                
-                
+                self.scrollView.updateContentSize()
             }.disposed(by: disposeBag)
+    }
+}
+
+extension CommunityDetailViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerView = UIView.init(frame: CGRect.init(x: 0, y: 0, width: tableView.frame.width, height: 10))
+        
+        tableView.sectionHeaderTopPadding = 0
+        
+        let label = UILabel()
+        label.frame = CGRect.init(x: 5, y: 5, width: headerView.frame.width-10, height: headerView.frame.height-10)
+        label.text = "????에러 개수"
+        label.font = UIFont(name: "AppleSDGothicNeo-Semibold", size: 16)
+        label.textColor = .black
+        
+        self.viewModel.output.commentCntOutput
+            .drive(onNext: { cnt in
+                label.text = ("\(cnt)개의 댓글")
+                label.attributedText = self.attributeText(originalText: label.text ?? "", range: "\(cnt)", color: "5B43EF")
+            }).disposed(by: disposeBag)
+        
+        headerView.addSubview(label)
+        label.snp.makeConstraints {
+            $0.leading.equalToSuperview().inset(21)
+            $0.centerY.equalToSuperview()
+        }
+        
+        return headerView
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 35
+    }
+}
+
+extension UIScrollView {
+    //not use
+   func updateContentView() {
+      contentSize.height = subviews.sorted(by: { $0.frame.maxY < $1.frame.maxY }).last?.frame.maxY ?? contentSize.height
+   }
+}
+
+extension UIScrollView {
+    func updateContentSize() {
+        let unionCalculatedTotalRect = recursiveUnionInDepthFor(view: self)
+        
+        // 계산된 크기로 컨텐츠 사이즈 설정
+        self.contentSize = CGSize(width: self.frame.width, height: unionCalculatedTotalRect.height+75)
+    }
+    
+    private func recursiveUnionInDepthFor(view: UIView) -> CGRect {
+        var totalRect: CGRect = .zero
+        
+        // 모든 자식 View의 컨트롤의 크기를 재귀적으로 호출하며 최종 영역의 크기를 설정
+        for subView in view.subviews {
+            totalRect = totalRect.union(recursiveUnionInDepthFor(view: subView))
+        }
+        
+        // 최종 계산 영역의 크기를 반환
+        return totalRect.union(view.frame)
     }
 }

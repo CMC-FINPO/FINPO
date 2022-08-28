@@ -9,10 +9,20 @@ import Foundation
 import UIKit
 import SnapKit
 import RxSwift
+import SwiftUI
 
 class BoardTableViewCell: UITableViewCell {
 
     var cellBag = DisposeBag()
+    
+    let attributeVC = CommunityDetailViewController()
+    
+    public var commentImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "comment")
+        imageView.layer.masksToBounds = true
+        return imageView
+    }()
     
     public var userImageView: UIImageView = {
         let imageView = UIImageView()
@@ -98,10 +108,12 @@ class BoardTableViewCell: UITableViewCell {
         [userImageView, userName, dateLabel, contentLabel, likeButton, bookMarkButton, likeCountLabel, commentCountLabel, viewsCountLabel].forEach {
             contentView.addSubview($0)
         }
+        contentView.addSubview(commentImageView)
+
         userImageView.layer.masksToBounds = true
         userImageView.layer.cornerRadius = userImageView.frame.width/2
         userImageView.snp.makeConstraints {
-            $0.leading.equalTo(contentView.snp.leading).inset(10)
+            $0.leading.equalTo(contentView.snp.leading).inset(21)
             $0.top.equalTo(contentView.snp.top).inset(10)
             $0.height.width.equalTo(35)
         }
@@ -117,10 +129,9 @@ class BoardTableViewCell: UITableViewCell {
         }
         
         contentLabel.snp.makeConstraints {
+            $0.top.equalTo(userImageView.snp.bottom).offset(21)
             $0.leading.equalTo(userImageView.snp.leading)
-            $0.trailing.equalTo(contentView.snp.trailing)
-            $0.top.equalTo(userImageView.snp.bottom).offset(15)
-
+            $0.trailing.equalTo(contentView.snp.trailing)            
         }
         
         likeButton.snp.makeConstraints {
@@ -163,13 +174,15 @@ class BoardTableViewCell: UITableViewCell {
     public func hiddenProperty() {
         [self.likeButton, self.bookMarkButton, self.likeCountLabel, self.viewsCountLabel, self.commentCountLabel].forEach {
             $0.isHidden = true
-            self.contentView.layoutIfNeeded()
+//            self.contentView.layoutIfNeeded()
         }
+        self.contentView.layoutIfNeeded()
+        
         self.contentLabel.snp.remakeConstraints {
             $0.leading.equalTo(userImageView.snp.leading)
             $0.trailing.equalTo(contentView.snp.trailing)
             $0.top.equalTo(userImageView.snp.bottom).offset(15)
-            $0.bottom.equalTo(contentView.snp.bottom).inset(10)
+            $0.bottom.equalTo(contentView.snp.bottom).inset(15)
         }
         self.contentLabel.layoutIfNeeded()
     }
@@ -180,9 +193,61 @@ class BoardTableViewCell: UITableViewCell {
             self.contentView.layoutIfNeeded()
         }
         self.contentLabel.snp.remakeConstraints {
-            $0.edges.equalTo(contentView).inset(15)
+            $0.edges.equalTo(contentView).inset(21)
+        }
+        self.contentLabel.text = "(삭제된 댓글입니다)"
+        self.contentLabel.attributedText =  self.attributeVC.attributeText(
+            originalText: self.contentLabel.text ?? "",
+            range: "\(self.contentLabel.text ?? "")",
+            color: ComponentsManager.CustomColor.G04.toString
+        )
+        self.contentLabel.layoutIfNeeded()
+    }
+    
+    //대댓글용
+    public func childCommentProperty() {
+        [self.likeButton, self.bookMarkButton, self.likeCountLabel, self.viewsCountLabel, self.commentCountLabel].forEach {
+            $0.isHidden = true
+        }
+        self.contentView.backgroundColor = UIColor(hexString: "F9F9F9")
+        self.contentView.layoutIfNeeded()
+        
+        self.commentImageView.snp.makeConstraints {
+            $0.leading.equalToSuperview().offset(20)
+            $0.top.equalToSuperview().offset(18)
+            $0.width.height.equalTo(25)
+        }
+        self.commentImageView.layoutIfNeeded()
+        
+        self.userImageView.snp.remakeConstraints {
+            $0.leading.equalTo(commentImageView.snp.trailing)
+            $0.top.equalTo(commentImageView.snp.top)
+            $0.width.height.equalTo(35)
+        }
+        self.userImageView.layoutIfNeeded()
+        
+        self.contentLabel.snp.remakeConstraints {
+            $0.leading.equalTo(userImageView.snp.leading)
+            $0.trailing.equalTo(contentView.snp.trailing)
+            $0.top.equalTo(userImageView.snp.bottom).offset(15)
+            $0.bottom.equalTo(contentView.snp.bottom).inset(15)
         }
         self.contentLabel.layoutIfNeeded()
+    }
+    
+    public func addToDynamicContent() {
+        let uiv = UIView()
+        contentView.addSubview(uiv)
+        uiv.snp.makeConstraints {
+            $0.top.equalTo(contentView.snp.bottom)
+            $0.width.equalToSuperview()
+            $0.height.equalTo(80)
+        }
+        uiv.backgroundColor = .systemRed
+        uiv.backgroundColor = .blue
+        
+        
+        self.contentView.layoutIfNeeded()
     }
     
     override func prepareForReuse() {

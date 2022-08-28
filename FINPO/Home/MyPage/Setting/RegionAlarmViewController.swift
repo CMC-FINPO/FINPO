@@ -143,7 +143,7 @@ extension RegionAlarmViewController: UITableViewDelegate {
         }
         
         self.viewModel.output.sendResultRegion
-            .observe(on: MainScheduler.instance)
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] data in
                 guard let self = self else { return }
                 self.alarmSwitch.isOn = data.data.subscribe

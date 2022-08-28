@@ -54,6 +54,7 @@ struct CommentChildDetail: Codable {
     var isModified: Bool?
     var createdAt: String?
     var modifiedAt: String?
+    var user: CommentUserDetail?
     var parent: CommentChildParentDetail?
 }
 

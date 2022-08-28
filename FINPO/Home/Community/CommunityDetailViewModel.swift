@@ -8,6 +8,7 @@
 import Foundation
 import RxSwift
 import RxRelay
+import RxCocoa
 import Alamofire
 
 class CommunityDetailViewModel {
@@ -26,12 +27,17 @@ class CommunityDetailViewModel {
         let bookmarkObserver = PublishRelay<bookmarkAction>()
         
         let loadCommentObserver = PublishRelay<Int>()
+        
+        let commentCntObserver = PublishRelay<Int>()
     }
     
     struct OUTPUT {
         var loadDetailBoardOutput = PublishRelay<CommunityDetailBoardResponseModel>()
         
         var loadCommentOutput = PublishRelay<CommunityCommentResponseModel>()
+        
+        //댓글개수 리턴
+        var commentCntOutput: Driver<Int> = PublishRelay<Int>().asDriver(onErrorJustReturn: -1)
     }
     
     enum likeAction {
@@ -52,8 +58,10 @@ class CommunityDetailViewModel {
                     to: CommunityDetailBoardResponseModel.self,
                     encoding: URLEncoding.default
                 )
+                
             }.subscribe(onNext: { [weak self] boardDetail in
                 self?.output.loadDetailBoardOutput.accept(boardDetail)
+                self?.input.commentCntObserver.accept(boardDetail.data.countOfComment)
             }).disposed(by: disposeBag)
         
         input.likeObserver
@@ -124,5 +132,7 @@ class CommunityDetailViewModel {
                 print("댓글 이벤트 방출")
             }).disposed(by: disposeBag)
         
+        output.commentCntOutput =
+        input.commentCntObserver.asDriver(onErrorJustReturn: -1)
     }
 }
