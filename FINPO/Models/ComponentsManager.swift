@@ -8,9 +8,7 @@
 import Foundation
 
 struct ComponentsManager {
-    
-    static var shared = ComponentsManager()
-    
+
     enum CustomColor {
         case B01
         case W01

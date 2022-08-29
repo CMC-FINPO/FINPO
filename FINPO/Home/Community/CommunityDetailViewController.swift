@@ -169,6 +169,34 @@ class CommunityDetailViewController: UIViewController {
         return tv
     }()
     
+    private lazy var commentTextView: UITextView = {
+        let textView = UITextView()
+        textView.text = "댓글을 입력해주세요"
+        textView.backgroundColor = UIColor(hexString: "\(ComponentsManager.CustomColor.G09.toString)")
+//        textView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 50)
+        textView.textContainerInset = UIEdgeInsets(top: 17.5, left: 10, bottom: 10, right: 10)
+        textView.textColor = .secondaryLabel
+        textView.delegate = self
+        return textView
+    }()
+    
+    private var btnView: UIView = {
+        let view = UIView()
+        view.layer.borderWidth = 1
+        view.layer.masksToBounds = true
+        view.layer.cornerRadius = 5
+        view.backgroundColor = UIColor(hexString: "\(ComponentsManager.CustomColor.G09.toString)")
+        view.layer.borderColor = UIColor(hexString: "\(ComponentsManager.CustomColor.G08.toString)").cgColor
+        return view
+    }()
+    
+    private var sendCommentBtn: UIButton = {
+        let button = UIButton()
+        button.isEnabled = false
+        button.setImage(UIImage(named: "sendButton")?.withRenderingMode(.alwaysOriginal), for: .normal)
+        return button
+    }()
+    
     public func attributeText(originalText: String, range: String, color: String) -> NSMutableAttributedString {
         let attributedText = NSMutableAttributedString(string: originalText)
         attributedText.addAttribute(.foregroundColor, value: UIColor(hexString: "\(color)"), range: (originalText as NSString).range(of: "\(range)"))
@@ -182,6 +210,8 @@ class CommunityDetailViewController: UIViewController {
         
         commentTableView.register(BoardTableViewCell.self, forCellReuseIdentifier: "commentTableViewCell")
         commentTableView.delegate = self
+        
+
     }
     
     fileprivate func setLayout() {
@@ -190,16 +220,7 @@ class CommunityDetailViewController: UIViewController {
             $0.top.leading.trailing.equalTo(view.safeAreaLayoutGuide)
             $0.bottom.equalToSuperview().inset(150)
         }
-        
-//        scrollView.addSubview(contentView)
-//        contentView.snp.makeConstraints {
-//            $0.top.equalToSuperview()
-//            $0.width.equalToSuperview()
-//            $0.centerX.equalToSuperview()
-//            $0.bottom.greaterThanOrEqualToSuperview()
-//        }
-        
-//        contentView.addSubview(boardStackView)
+  
         scrollView.addSubview(boardStackView)
         boardStackView.snp.makeConstraints {
             $0.top.equalToSuperview()
@@ -271,22 +292,35 @@ class CommunityDetailViewController: UIViewController {
             $0.bottom.equalTo(likeCountLabel.snp.bottom)
             $0.leading.equalTo(viewsCountLabel.snp.trailing).offset(2.5)
         }
-        
-//        contentView.addSubview(commentView)
-//        commentView.snp.makeConstraints {
-//            $0.top.equalTo(boardStackView.snp.bottom)
-//            $0.width.equalToSuperview()
-//            $0.height.greaterThanOrEqualTo(self.view.bounds.height) //조금되던거
-//            $0.height.greaterThanOrEqualTo(self.contentView.snp.height)
-//        }
-        
-//        commentView.addSubview(commentTableView) //되던거 수정
-//        contentView.addSubview(commentTableView)
+
         scrollView.addSubview(commentTableView)
         commentTableView.snp.makeConstraints {
             $0.top.equalTo(boardStackView.snp.bottom)
             $0.width.equalToSuperview()
         }
+        
+        //댓글작성
+        view.addSubview(btnView)
+        btnView.snp.makeConstraints {
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-30)
+            $0.leading.trailing.equalToSuperview().inset(15)
+            $0.height.equalTo(50)
+        }
+        
+        btnView.addSubview(commentTextView)
+        commentTextView.snp.makeConstraints {
+            $0.leading.top.bottom.equalToSuperview()
+            $0.trailing.equalToSuperview().inset(50)
+        }
+        
+        btnView.addSubview(sendCommentBtn)
+        sendCommentBtn.snp.makeConstraints {
+            $0.leading.equalTo(commentTextView.snp.trailing).offset(10)
+            $0.centerY.equalToSuperview()
+            $0.width.equalTo(25)
+            $0.height.equalTo(27.5)
+        }
+        
     }
     
     fileprivate func setInputBind() {
@@ -558,6 +592,14 @@ extension CommunityDetailViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 35
     }
+}
+
+extension CommunityDetailViewController: UITextViewDelegate {
+    func textViewDidBeginEditing(_ textView: UITextView) {
+            guard textView.textColor == .secondaryLabel else { return }
+            textView.text = nil
+            textView.textColor = .label
+        }
 }
 
 extension UIScrollView {
