@@ -868,8 +868,7 @@ final class LoginViewModel {
                             KeyChain.create(key: KeyChain.refreshToken, token: refreshToken)
                             
                             //API 액세스 토큰
-                            self.user.accessToken = accessToken
-//                            self.user.accessTokenFromSocial = accessToken ?? ""//필요없을듯
+                            self.user.accessToken  = accessToken
                             self.user.refreshToken = refreshToken
                             UserDefaults.standard.set(accessTokenExpireDate, forKey: "accessTokenExpiresIn")
                             

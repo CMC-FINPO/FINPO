@@ -26,14 +26,11 @@ class LoginSemiCompleteViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-//        navigationItem.setHidesBackButton(true, animated: false)
         self.navigationController?.isNavigationBarHidden = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-//        navigationItem.setHidesBackButton(false, animated: false)
-//        self.navigationController?.isNavigationBarHidden = false
     }
     
     private var imageView: UIImageView = {
@@ -46,7 +43,7 @@ class LoginSemiCompleteViewController: UIViewController {
         let label = UILabel()
         label.textAlignment = .center
         label.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 32)
-        label.textColor = UIColor(hexString: "000000")
+        label.textColor = UIColor.B01
         label.text = "가입이 완료되었어요!"
         return label
     }()
@@ -55,7 +52,7 @@ class LoginSemiCompleteViewController: UIViewController {
         let label = UILabel()
         label.textAlignment = .center
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 18)
-        label.textColor = UIColor(hexString: "494949")
+        label.textColor = UIColor.G01
         label.numberOfLines = 2
         label.text = "현재 상태와 이용 목적\n추가 관심 지역을 선택하러 가볼까요?"
         return label
@@ -64,8 +61,8 @@ class LoginSemiCompleteViewController: UIViewController {
     private var addInfoButton: UIButton = {
         let button = UIButton()
         button.setTitle("추가 정보 입력하기", for: .normal)
-        button.setTitleColor(UIColor(hexString: "FFFFFF"), for: .normal)
-        button.backgroundColor = UIColor(hexString: "5B43EF")
+        button.setTitleColor(UIColor.W01, for: .normal)
+        button.backgroundColor = UIColor.P01
         button.layer.cornerRadius = 5
         return button
     }()
@@ -73,15 +70,15 @@ class LoginSemiCompleteViewController: UIViewController {
     private var laterButton: UIButton = {
         let button = UIButton()
         button.setTitle("나중에 할게요", for: .normal)
-        button.setTitleColor(UIColor(hexString: "616161"), for: .normal)
-        button.backgroundColor = UIColor(hexString: "F0F0F0")
+        button.setTitleColor(UIColor.G02, for: .normal)
+        button.backgroundColor = UIColor.G08
         button.layer.cornerRadius = 5
         return button
     }()
     
     fileprivate func setAttribute() {
 //        navigationItem.setHidesBackButton(true, animated: false)
-        view.backgroundColor = UIColor(hexString: "FFFFFF")
+        view.backgroundColor = UIColor.W01
     }
     
     fileprivate func setLayout() {

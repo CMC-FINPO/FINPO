@@ -36,8 +36,8 @@ class LoginDetailViewController: UIViewController {
     
     private var progressBar: UIProgressView = {
         let progressBar = UIProgressView()
-        progressBar.trackTintColor = UIColor(hexString: "C4C4C5", alpha: 1)
-        progressBar.progressTintColor = UIColor(hexString: "5B43EF", alpha: 1)
+        progressBar.trackTintColor = UIColor.G05
+        progressBar.progressTintColor = UIColor.P01
         progressBar.progress = 1/6
         progressBar.clipsToBounds = true
         return progressBar
@@ -46,7 +46,7 @@ class LoginDetailViewController: UIViewController {
     private var progressLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.textColor = UIColor(hexString: "C4C4C5")
+        label.textColor = UIColor.G05
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
         label.text = "1/6"
         return label
@@ -92,7 +92,7 @@ class LoginDetailViewController: UIViewController {
         button.clipsToBounds = true
         button.layer.cornerRadius = 5
         button.isEnabled = false
-        button.backgroundColor = UIColor(hexString: "F0F0F0")
+        button.backgroundColor = UIColor.G08
         return button
     }()
     
@@ -103,10 +103,10 @@ class LoginDetailViewController: UIViewController {
         tableView.dataSource = self
         let nibName = String(describing: TermsCell.self)
         tableView.register(UINib(nibName: nibName, bundle: nil), forCellReuseIdentifier: nibName)
-        acceptButton.setBackgroundColor(UIColor(hexString: "5B43EF"), for: .normal)
-        acceptButton.setTitleColor(UIColor(hexString: "FFFFFF"), for: .normal)
-        acceptButton.setBackgroundColor(UIColor(hexString: "F0F0F0"), for: .disabled)
-        acceptButton.setTitleColor(UIColor(hexString: "616161"), for: .disabled)
+        acceptButton.setBackgroundColor(UIColor.P01, for: .normal)
+        acceptButton.setTitleColor(UIColor.W01, for: .normal)
+        acceptButton.setBackgroundColor(UIColor.G08, for: .disabled)
+        acceptButton.setTitleColor(UIColor.G02, for: .disabled)
     }
     
     fileprivate func setLayout() {

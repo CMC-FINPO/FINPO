@@ -22,7 +22,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         ///string -> object 수정
         let acToken = KeyChain.read(key: KeyChain.accessToken)
-        print("acToken: \(acToken)")
+        debugPrint("acToken: \(acToken)")
         
         if(acToken != nil) {
             ///Using semaphore

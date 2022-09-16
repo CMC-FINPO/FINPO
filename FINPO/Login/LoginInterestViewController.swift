@@ -30,7 +30,7 @@ class LoginInterestViewController: UIViewController, UICollectionViewDelegate {
     private var progressBar: UIProgressView = {
         let progressBar = UIProgressView()
         progressBar.trackTintColor = UIColor(hexString: "C4C4C5", alpha: 1)
-        progressBar.progressTintColor = UIColor(hexString: "5B43EF", alpha: 1)
+        progressBar.progressTintColor = UIColor.P01
         progressBar.progress = 4/6
         progressBar.clipsToBounds = true
         progressBar.layer.cornerRadius = 3
@@ -40,7 +40,7 @@ class LoginInterestViewController: UIViewController, UICollectionViewDelegate {
     private var progressLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.textColor = UIColor(hexString: "C4C4C5")
+        label.textColor = UIColor.G05
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
         label.text = "4/6"
         return label
@@ -58,7 +58,7 @@ class LoginInterestViewController: UIViewController, UICollectionViewDelegate {
     private var subtitleLabel: UILabel = {
         let label = UILabel()
         label.text = "관심 분야 (복수 선택 가능)"
-        label.textColor = UIColor(hexString: "494949")
+        label.textColor = UIColor.G01
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
         return label
     }()
@@ -76,8 +76,8 @@ class LoginInterestViewController: UIViewController, UICollectionViewDelegate {
         let button = UIButton()
         button.titleLabel?.font = UIFont(name: "AppleSDGothicNeo-SemiBold", size: 18)
         button.setTitle("선택 완료", for: .normal)
-        button.setTitleColor(UIColor(hexString: "616161"), for: .normal)
-        button.backgroundColor = UIColor(hexString: "F0F0F0")
+        button.setTitleColor(UIColor.G02, for: .normal)
+        button.backgroundColor = UIColor.G08
         button.layer.cornerRadius = 5
         button.isEnabled = false
         button.layer.masksToBounds = true
@@ -87,8 +87,8 @@ class LoginInterestViewController: UIViewController, UICollectionViewDelegate {
     fileprivate func setAttribute() {
         navigationController?.navigationBar.topItem?.backButtonTitle = ""
         let attributedText = NSMutableAttributedString(string: subtitleLabel.text!)
-        attributedText.addAttribute(.foregroundColor, value: UIColor(hexString: "494949"), range: (subtitleLabel.text! as NSString).range(of: "관심 분야"))
-        attributedText.addAttribute(.foregroundColor, value: UIColor(hexString: "5B43EF"), range: (subtitleLabel.text! as NSString).range(of: "(복수 선택 가능)"))
+        attributedText.addAttribute(.foregroundColor, value: UIColor.G01, range: (subtitleLabel.text! as NSString).range(of: "관심 분야"))
+        attributedText.addAttribute(.foregroundColor, value: UIColor.P01, range: (subtitleLabel.text! as NSString).range(of: "(복수 선택 가능)"))
         subtitleLabel.attributedText = attributedText
         
         interestCollectionView.delegate = self
@@ -181,12 +181,12 @@ class LoginInterestViewController: UIViewController, UICollectionViewDelegate {
                     print("트루들옴")
                     self?.confirmButton.isEnabled = valid
                     self?.confirmButton.setTitleColor(UIColor(hexString: "FFFFFF"), for: .normal)
-                    self?.confirmButton.backgroundColor = UIColor(hexString: "5B43EF")
+                    self?.confirmButton.backgroundColor = UIColor.P01
                 } else {
                     self?.confirmButton.isEnabled = false
                     print("컨펌버튼 비활성화, 색상변경")
-                    self?.confirmButton.setTitleColor(UIColor(hexString: "616161"), for: .normal)
-                    self?.confirmButton.backgroundColor = UIColor(hexString: "F0F0F0")
+                    self?.confirmButton.setTitleColor(UIColor.G02, for: .normal)
+                    self?.confirmButton.backgroundColor = UIColor.G08
                 }
             }).disposed(by: disposeBag)
         

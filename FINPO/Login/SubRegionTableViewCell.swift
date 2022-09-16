@@ -12,14 +12,14 @@ class SubRegionTableViewCell: UITableViewCell {
     public var subRegionLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.textColor = UIColor(hexString: "616161", alpha: 1)
+        label.textColor = UIColor.G02
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 18)
         return label
     }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        contentView.backgroundColor = UIColor(hexString: "F9F9F9", alpha: 1)
+        contentView.backgroundColor = UIColor.G09
         contentView.addSubview(subRegionLabel)
     }
     

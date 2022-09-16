@@ -37,7 +37,7 @@ class LoginViewController: UIViewController {
         let label = UILabel()
         label.textAlignment = .center
         label.font = UIFont(name: "AppleSDGothicNeo-Semibold", size: 20)
-        label.textColor = UIColor(hexString: "5B43EF")
+        label.textColor = UIColor.P01
         label.text = "내 지원금은 내가 챙기자!"
         return label
     }()

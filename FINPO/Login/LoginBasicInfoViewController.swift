@@ -27,16 +27,16 @@ class LoginBasicInfoViewController: UIViewController {
     }
     
     override func viewDidLayoutSubviews() {
-        nameTextField.addBottomBorder(color: UIColor(hexString: "EBEBEB").cgColor)
-        nickNameTextField.addBottomBorder(color: UIColor(hexString: "EBEBEB").cgColor)
-        birthTextField.addBottomBorder(color: UIColor(hexString: "EBEBEB").cgColor)
+        nameTextField.addBottomBorder(color: UIColor.G07.cgColor)
+        nickNameTextField.addBottomBorder(color: UIColor.G07.cgColor)
+        birthTextField.addBottomBorder(color: UIColor.G07.cgColor)
 //        emailTextField.addBottomBorder(color: UIColor.systemGray.withAlphaComponent(0.3).cgColor)
     }
     
     private var progressBar: UIProgressView = {
         let progressBar = UIProgressView()
-        progressBar.trackTintColor = UIColor(hexString: "C4C4C5", alpha: 1)
-        progressBar.progressTintColor = UIColor(hexString: "5B43EF", alpha: 1)
+        progressBar.trackTintColor = UIColor.G05
+        progressBar.progressTintColor = UIColor.P01
         progressBar.progress = 2/6
         progressBar.clipsToBounds = true
         return progressBar
@@ -45,7 +45,7 @@ class LoginBasicInfoViewController: UIViewController {
     private var progressLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.textColor = UIColor(hexString: "C4C4C5")
+        label.textColor = UIColor.G05
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
         label.text = "2/6"
         return label
@@ -63,7 +63,7 @@ class LoginBasicInfoViewController: UIViewController {
         let label = UILabel()
         label.textAlignment = .center
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
-        label.textColor = UIColor(hexString: "494949")
+        label.textColor = UIColor.G01
         label.text = "이름"
         return label
     }()
@@ -73,7 +73,7 @@ class LoginBasicInfoViewController: UIViewController {
         tf.textAlignment = .left
         tf.font = UIFont(name: "AppleSDGothicNeo-Regular", size: 18)
         tf.borderStyle = .none
-        tf.textColor = UIColor(hexString: "000000")
+        tf.textColor = UIColor.B01
         tf.becomeFirstResponder()
         return tf
     }()
@@ -83,7 +83,7 @@ class LoginBasicInfoViewController: UIViewController {
         label.isHidden = true
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
         label.textAlignment = .center
-        label.textColor = UIColor(hexString: "FF3C00")
+        label.textColor = UIColor.E12
         label.text = "13자 이하만 가능해요"
         return label
     }()
@@ -93,7 +93,7 @@ class LoginBasicInfoViewController: UIViewController {
         label.text = "닉네임"
         label.textAlignment = .center
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
-        label.textColor = UIColor(hexString: "494949")
+        label.textColor = UIColor.G01
         return label
     }()
     
@@ -111,7 +111,7 @@ class LoginBasicInfoViewController: UIViewController {
         label.textColor = .red
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
         label.textAlignment = .center
-        label.textColor = UIColor(hexString: "FF3C00")
+        label.textColor = UIColor.E12
         return label
     }()
     
@@ -121,7 +121,7 @@ class LoginBasicInfoViewController: UIViewController {
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 15, weight: .medium)
         label.text = "생년월일"
-        label.textColor = UIColor(hexString: "494949")
+        label.textColor = UIColor.G01
         return label
     }()
     
@@ -134,7 +134,7 @@ class LoginBasicInfoViewController: UIViewController {
     private var genderLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.textColor = UIColor(hexString: "494949")
+        label.textColor = UIColor.G01
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
         label.text = "성별"
         return label
@@ -142,21 +142,14 @@ class LoginBasicInfoViewController: UIViewController {
     
     private var maleButton: UIButton = {
         let button = UIButton()
-//        button.setTitle("남성", for: .normal)
-//        button.setTitleColor(UIColor(hexString: "616161"), for: .normal)
-//        button.layer.cornerRadius = 5
-//        button.layer.borderColor = UIColor(hexString: "D9D9D9").cgColor
-//        button.layer.borderWidth = 1
-//        button.layer.masksToBounds = true
-//        button.isUserInteractionEnabled = true
         button.setTitle("남성", for: .normal)
-        button.setTitleColor(UIColor(hexString: "616161"), for: .normal)
-        button.setTitleColor(UIColor(hexString: "616161"), for: .disabled)
-        button.setTitleColor(UIColor(hexString: "5B43EF"), for: .selected)
-        button.setBackgroundColor(UIColor(hexString: "5B43EF").withAlphaComponent(0.1), for: .selected)
+        button.setTitleColor(UIColor.G02, for: .normal)
+        button.setTitleColor(UIColor.G02, for: .disabled)
+        button.setTitleColor(UIColor.P01, for: .selected)
+        button.setBackgroundColor(UIColor.P01.withAlphaComponent(0.1), for: .selected)
         button.setBackgroundColor(UIColor.white, for: .normal)
         button.layer.cornerRadius = 5
-        button.layer.borderColor = UIColor(hexString: "D9D9D9").cgColor
+        button.layer.borderColor = UIColor.G06.cgColor
         button.layer.borderWidth = 1
         button.layer.masksToBounds = true
         button.isUserInteractionEnabled = true
@@ -166,19 +159,13 @@ class LoginBasicInfoViewController: UIViewController {
     private var femaleButton: UIButton = {
         let button = UIButton()
         button.setTitle("여성", for: .normal)
-//        button.setTitleColor(UIColor(hexString: "616161"), for: .normal)
-//        button.layer.cornerRadius = 5
-//        button.layer.borderColor = UIColor(hexString: "D9D9D9").cgColor
-//        button.layer.borderWidth = 1
-//        button.layer.masksToBounds = true
-//        button.isUserInteractionEnabled = true
-        button.setTitleColor(UIColor(hexString: "616161"), for: .normal)
-        button.setTitleColor(UIColor(hexString: "616161"), for: .disabled)
-        button.setTitleColor(UIColor(hexString: "5B43EF"), for: .selected)
-        button.setBackgroundColor(UIColor(hexString: "5B43EF").withAlphaComponent(0.1), for: .selected)
+        button.setTitleColor(UIColor.G02, for: .normal)
+        button.setTitleColor(UIColor.G02, for: .disabled)
+        button.setTitleColor(UIColor.P01, for: .selected)
+        button.setBackgroundColor(UIColor.P01.withAlphaComponent(0.1), for: .selected)
         button.setBackgroundColor(UIColor.white, for: .normal)
         button.layer.cornerRadius = 5
-        button.layer.borderColor = UIColor(hexString: "D9D9D9").cgColor
+        button.layer.borderColor = UIColor.G06.cgColor
         button.layer.borderWidth = 1
         button.layer.masksToBounds = true
         button.isUserInteractionEnabled = true
@@ -212,8 +199,8 @@ class LoginBasicInfoViewController: UIViewController {
     private var confirmButton: UIButton = {
         let button = UIButton()
         button.setTitle("다음", for: .normal)
-        button.setTitleColor(UIColor(hexString: "616161"), for: .normal)
-        button.backgroundColor = UIColor(hexString: "F0F0F0")
+        button.setTitleColor(UIColor.G02, for: .normal)
+        button.backgroundColor = UIColor.G08
         button.layer.cornerRadius = 5
         button.isEnabled = false
         button.layer.masksToBounds = true
@@ -426,13 +413,13 @@ class LoginBasicInfoViewController: UIViewController {
                 if valid {
 //                    self?.nameTextField.setRight()
                     self?.nameAlertLabel.isHidden = true
-                    self?.nameLabel.textColor = UIColor(hexString: "494949")
-                    self?.nameTextField.addBottomBorder(color: UIColor(hexString: "EBEBEB").cgColor)
+                    self?.nameLabel.textColor = UIColor.G01
+                    self?.nameTextField.addBottomBorder(color: UIColor.G07.cgColor)
                 } else { //13자 이상(false)
 //                    self?.nameTextField.setErrorRight()
                     self?.nameAlertLabel.isHidden = false
-                    self?.nameLabel.textColor = UIColor(hexString: "FF3C00")
-                    self?.nameTextField.addBottomBorder(color: UIColor(hexString: "FF3C00", alpha: 1.0).cgColor)
+                    self?.nameLabel.textColor = UIColor.E12
+                    self?.nameTextField.addBottomBorder(color: UIColor.E12.cgColor)
                     self?.nameTextField.layoutIfNeeded()
                 }
             }).disposed(by: disposeBag)
@@ -444,15 +431,15 @@ class LoginBasicInfoViewController: UIViewController {
                     self?.nickNameAlertLabel.isHidden = false
                     self?.nickNameTextField.setErrorRight()
                     self?.nickNameLabel.textColor = .red
-                    self?.nickNameTextField.addBottomBorder(color: UIColor(hexString: "FF3C00", alpha: 1.0).cgColor)
+                    self?.nickNameTextField.addBottomBorder(color: UIColor.E12.cgColor)
                     self?.nickNameAlertLabel.text = "중복된 닉네임입니다"
-                    self?.nickNameAlertLabel.textColor = .red
+                    self?.nickNameAlertLabel.textColor = UIColor.E12
                 } else {
                     if(self?.nickNameTextField.text == "") { return }
                     else {
                         self?.nickNameTextField.setRight()
-                        self?.nickNameLabel.textColor = UIColor(hexString: "494949")
-                        self?.nickNameTextField.addBottomBorder(color: UIColor(hexString: "EBEBEB").cgColor)
+                        self?.nickNameLabel.textColor = UIColor.G01
+                        self?.nickNameTextField.addBottomBorder(color: UIColor.G07.cgColor)
                         self?.nickNameAlertLabel.isHidden = true
                     }
                 }
@@ -464,14 +451,14 @@ class LoginBasicInfoViewController: UIViewController {
                 switch gender {
                 case .male:
                     self.maleButton.isSelected = true
-                    self.maleButton.layer.borderColor = UIColor(hexString: "5B43EF").cgColor
+                    self.maleButton.layer.borderColor = UIColor.P01.cgColor
                     self.femaleButton.isSelected = false
-                    self.femaleButton.layer.borderColor = UIColor(hexString: "D9D9D9").cgColor
+                    self.femaleButton.layer.borderColor = UIColor.G06.cgColor
                 case .female:
                     self.femaleButton.isSelected = true
-                    self.femaleButton.layer.borderColor = UIColor(hexString: "5B43EF").cgColor
+                    self.femaleButton.layer.borderColor = UIColor.P01.cgColor
                     self.maleButton.isSelected = false
-                    self.maleButton.layer.borderColor = UIColor(hexString: "D9D9D9").cgColor
+                    self.maleButton.layer.borderColor = UIColor.G06.cgColor
                 case .none:
                     break
                 }
@@ -509,13 +496,13 @@ class LoginBasicInfoViewController: UIViewController {
                 if valid {
                     print("방출된 이벤트 받음 -> 버튼 색상 변경 됨")
                     self?.confirmButton.isEnabled = true
-                    self?.confirmButton.backgroundColor = UIColor(hexString: "5B43EF")
-                    self?.confirmButton.setTitleColor(UIColor(hexString: "FFFFFF"), for: .normal)
+                    self?.confirmButton.backgroundColor = UIColor.P01
+                    self?.confirmButton.setTitleColor(UIColor.W01, for: .normal)
                 } else {
                     print("방출 이벤트 false!!!!!!")
                     self?.confirmButton.isEnabled = false
-                    self?.confirmButton.backgroundColor = UIColor(hexString: "F0F0F0")
-                    self?.confirmButton.setTitleColor(UIColor(hexString: "616161"), for: .normal)
+                    self?.confirmButton.backgroundColor = UIColor.G08
+                    self?.confirmButton.setTitleColor(UIColor.G02, for: .normal)
                 }
             }).disposed(by: disposeBag)
         

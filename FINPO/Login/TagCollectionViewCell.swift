@@ -11,7 +11,7 @@ import UIKit
 class TagCollectionViewCell: UICollectionViewCell {
     let tagLabel = PaddingLabel().then {
         $0.font = UIFont(name: "AppleSDGothicNeo-SemiBold", size: 16)
-        $0.textColor = UIColor(hexString: "5B43EF")
+        $0.textColor = UIColor.P01
         $0.leftInset = 9
         $0.topInset = 8
         $0.bottomInset = 7

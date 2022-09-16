@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import RxSwift
+import RxCocoa
 import SnapKit
 import Kingfisher
 
@@ -25,6 +26,9 @@ class CommunityDetailViewController: UIViewController {
     var childCommentCnt = [String:Int]()
     //대댓글 불러온 적 있는지 체크
     var isAddedChild = [String:[Bool]]()
+    //대댓글작성 시 댓글 Parent Id 저장
+    var commentParentId = [Int]()
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -192,7 +196,6 @@ class CommunityDetailViewController: UIViewController {
     
     private var sendCommentBtn: UIButton = {
         let button = UIButton()
-        button.isEnabled = false
         button.setImage(UIImage(named: "sendButton")?.withRenderingMode(.alwaysOriginal), for: .normal)
         return button
     }()
@@ -329,6 +332,10 @@ class CommunityDetailViewController: UIViewController {
                 guard let id = self?.pageId else { return }
                 self?.viewModel.input.loadDetailBoardObserver.accept(id)
                 self?.viewModel.input.loadCommentObserver.accept(id)
+                
+                //댓글 달 때 미리 pageId 넣어두기
+                self?.viewModel.input.isNestedObserver.accept(.comment(id: id))
+                self?.viewModel.input.pageIdObserver.accept(id)
             }).disposed(by: disposeBag)
         
         likeButton.rx.tap
@@ -359,6 +366,42 @@ class CommunityDetailViewController: UIViewController {
                     self.bookMarkButton.setImage(UIImage(named: "scrap_active"), for: .normal)
                 }
             }.disposed(by: disposeBag)
+        
+        //댓글 TextView
+        commentTextView.rx.text
+            .distinctUntilChanged()
+            .bind { [weak self] text in
+                if let text = text {
+                    self?.viewModel.input.commentTextObserver.accept(text)
+                }
+            }.disposed(by: disposeBag)
+        
+        //댓글 작성 버튼 클릭
+        sendCommentBtn.rx.tap
+            .bind { [weak self] _ in                
+                self?.viewModel.input.commentBtnObserver.accept(())
+            }.disposed(by: disposeBag)
+        
+        //대댓글 작성
+        commentTableView.rx.itemSelected
+            .subscribe(onNext: { [weak self] indexPath in
+                if let parentId = self?.commentParentId[indexPath.row] {
+                    if parentId == -1 { //삭제된 글
+                        return
+                    } else {
+                        self?.viewModel.input.isNestedObserver.accept(.nested(parentId: parentId))
+                    }
+                }
+            }).disposed(by: disposeBag)
+
+        commentTableView.rx.itemDeselected
+            .subscribe(onNext: { [weak self] _ in
+                if let pageId = self?.pageId {
+                    //다시 재클릭할 경우 대댓글이 아닌 일반댓글로 작성
+                    self?.viewModel.input.isNestedObserver.accept(.comment(id: pageId))
+                }
+            }).disposed(by: disposeBag)
+        
     }
     
     fileprivate func setOutputBind() {
@@ -444,6 +487,9 @@ class CommunityDetailViewController: UIViewController {
             
         viewModel.output.loadCommentOutput
             .scan(into: [CommentContentDetail]()) { comments, response in
+                //댓글*대댓글 추가 시 리로드
+                comments.removeAll()
+                
                 for i in 0..<(response.data.content.count) {
                     if let childs = response.data.content[i].childs {
                         comments.append(response.data.content[i])
@@ -463,6 +509,8 @@ class CommunityDetailViewController: UIViewController {
             .observe(on: MainScheduler.asyncInstance)
             .bind(to: commentTableView.rx.items(cellIdentifier: "commentTableViewCell", cellType: BoardTableViewCell.self)) {
                 (index: Int, element: CommentContentDetail, cell) in
+                cell.selectionStyle = .none
+                
                 ///대댓글이 있는 경우
                 if let child = element.childs {
                     //check child count
@@ -494,8 +542,12 @@ class CommunityDetailViewController: UIViewController {
                                 }
                             }
                             cell.hiddenProperty()
-                        } else {
+                            self.commentParentId.append(element.id)
+                            print("대댓글이 있는 경우 댓글 ParentId 추가: \(self.commentParentId)")
+                        } else { //삭제된 댓글
                             cell.setDeleteComment()
+                            self.commentParentId.append(-1)
+                            print("삭제된 글 && 대댓글이 있는 경우 댓글 parentId 추가: \(self.commentParentId)")
                         }
                     } else { //대댓글
                         if let isAdded = (self.isAddedChild["\(element.id)"]) {
@@ -503,7 +555,7 @@ class CommunityDetailViewController: UIViewController {
                                 if (!isAdded[i]) {
                                     self.isAddedChild["\(element.id)"]?[i] = true
                                     if let isCommentAlive = element.childs?[i].status { //댓글 삭제 분기
-                                        isCommentAlive ? (cell.contentLabel.text = element.childs?[i].content ?? "에러") : cell.setDeleteComment()
+                                        isCommentAlive ? (cell.contentLabel.text = element.childs?[i].content ?? "에러") : (cell.setDeleteComment())
                                         if(isCommentAlive) {
                                             //익명분기
                                             if let isAnnonymity = element.childs?[i].anonymity {
@@ -519,6 +571,11 @@ class CommunityDetailViewController: UIViewController {
                                                 }
                                             }
                                             cell.childCommentProperty()
+                                            self.commentParentId.append(element.childs?[i].parent?.id ?? -1)
+                                            print("대댓글 ParentId 추가: \(self.commentParentId)")
+                                        } else { //삭제된 대댓글
+                                            self.commentParentId.append(-1)
+                                            print("삭제된 대댓글 && 대댓글이 있는 경우 parentId 추가: \(self.commentParentId)")
                                         }
                                     }
                                     return
@@ -552,11 +609,14 @@ class CommunityDetailViewController: UIViewController {
                         } else {
                             cell.userName.text = element.user?.nickname ?? "닉네임 불러오기 에러"
                         }
+                        self.commentParentId.append(element.id)
+                        print("대댓글이 없는경우 댓글 ParentId 추가: \(self.commentParentId)")
                     } else {
                         cell.setDeleteComment()
+                        self.commentParentId.append(-1)
+                        print("삭제된 글 && 대댓글이 없는 경우 parentId 추가: \(self.commentParentId)")
                     }
                 }
-                
                 self.scrollView.updateContentSize()
             }.disposed(by: disposeBag)
     }

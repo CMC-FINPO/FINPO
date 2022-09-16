@@ -31,7 +31,7 @@ class InterestCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.text = "test"
         label.font = UIFont(name: "AppleSDGothicNeo-SemiBold", size: 16)
-        label.textColor = UIColor(hexString: "000000")
+        label.textColor = UIColor.B01
         return label
     }()
     
@@ -74,14 +74,14 @@ class InterestCollectionViewCell: UICollectionViewCell {
     override var isSelected: Bool {
         didSet {
             if isSelected {
-                contentView.layer.borderColor = UIColor(hexString: "5B43EF").cgColor
-                contentView.backgroundColor = UIColor(hexString: "5B43EF").withAlphaComponent(0.1)
-                titleLabel.textColor = UIColor(hexString: "5B43EF")
+                contentView.layer.borderColor = UIColor.P01.cgColor
+                contentView.backgroundColor = UIColor.P01.withAlphaComponent(0.1)
+                titleLabel.textColor = UIColor.P01
                 checkImage.isHidden = false
             } else {
-                contentView.layer.borderColor = UIColor(hexString: "000000").cgColor
+                contentView.layer.borderColor = UIColor.B01.cgColor
                 contentView.backgroundColor = .clear
-                titleLabel.textColor = UIColor(hexString: "000000")
+                titleLabel.textColor = UIColor.B01
                 self.viewModel?.user.category.removeAll { $0 == id }
                 self.viewModel?.input.interestButtonTapped.accept(())
                 checkImage.isHidden = true

@@ -14,7 +14,7 @@ class MainRegionTableViewCell: UITableViewCell {
     public var mainRegionLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.textColor = UIColor(hexString: "616161", alpha: 1)
+        label.textColor = UIColor.G02
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 18)
         return label
     }()
@@ -22,11 +22,11 @@ class MainRegionTableViewCell: UITableViewCell {
     public var notReadyRegionLabel: PaddingLabel = {
         let label = PaddingLabel()
         label.textAlignment = .center
-        label.textColor = UIColor(hexString: "FFFFFF")
+        label.textColor = UIColor.W01
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
         label.layer.masksToBounds = true
         label.layer.cornerRadius = 5
-        label.backgroundColor = UIColor(hexString: "C4C4C5")
+        label.backgroundColor = UIColor.G05
         label.text = "준비중"
         label.isHidden = true
         label.topInset = 5
@@ -38,7 +38,7 @@ class MainRegionTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        contentView.backgroundColor = UIColor(hexString: "F9F9F9", alpha: 1)
+        contentView.backgroundColor = UIColor.G09
         contentView.addSubview(mainRegionLabel)
         contentView.addSubview(notReadyRegionLabel)
     }
@@ -65,7 +65,7 @@ class MainRegionTableViewCell: UITableViewCell {
     }
     
     func setLayout() {
-        mainRegionLabel.textColor = UIColor(hexString: "C4C4C5")
+        mainRegionLabel.textColor = UIColor.G05
         mainRegionLabel.textAlignment = .left
         mainRegionLabel.snp.makeConstraints {
             $0.leading.equalTo(contentView.snp.leading).offset(15)
@@ -81,7 +81,7 @@ class MainRegionTableViewCell: UITableViewCell {
     }
     
     override func setSelected(_ selected: Bool, animated: Bool) {
-        mainRegionLabel.textColor = selected ? UIColor(hexString: "FFFFFF", alpha: 1) : UIColor(hexString: "616161")
-        contentView.backgroundColor = selected ? UIColor(hexString: "5B43EF") : UIColor(hexString: "F9F9F9")
+        mainRegionLabel.textColor = selected ? UIColor.W01 : UIColor.G02
+        contentView.backgroundColor = selected ? UIColor.P01 : UIColor.G09
     }
 }

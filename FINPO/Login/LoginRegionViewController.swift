@@ -34,8 +34,8 @@ class LoginRegionViewController: UIViewController {
     
     private var progressBar: UIProgressView = {
         let progressBar = UIProgressView()
-        progressBar.trackTintColor = UIColor(hexString: "C4C4C5", alpha: 1)
-        progressBar.progressTintColor = UIColor(hexString: "5B43EF", alpha: 1)
+        progressBar.trackTintColor = UIColor.G05
+        progressBar.progressTintColor = UIColor.P01
         progressBar.progress = 3/6
         progressBar.clipsToBounds = true
         progressBar.layer.cornerRadius = 3
@@ -45,7 +45,7 @@ class LoginRegionViewController: UIViewController {
     private var progressLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.textColor = UIColor(hexString: "C4C4C5")
+        label.textColor = UIColor.G05
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
         label.text = "3/6"
         return label
@@ -72,7 +72,7 @@ class LoginRegionViewController: UIViewController {
     private var mainRegionTableView: UITableView = {
         let tv = UITableView()
         tv.rowHeight = CGFloat(60)
-        tv.backgroundColor = UIColor(hexString: "F9F9F9")
+        tv.backgroundColor = UIColor.G09
         tv.bounces = false
         tv.showsHorizontalScrollIndicator = false
         tv.showsVerticalScrollIndicator = false
@@ -82,7 +82,7 @@ class LoginRegionViewController: UIViewController {
     private var localRegionTableView: UITableView = {
         let tv = UITableView()
         tv.rowHeight = CGFloat(40)
-        tv.backgroundColor = UIColor(hexString: "F9F9F9")
+        tv.backgroundColor = UIColor.G09
         tv.bounces = false
         tv.showsHorizontalScrollIndicator = false
         tv.showsVerticalScrollIndicator = false
@@ -93,8 +93,8 @@ class LoginRegionViewController: UIViewController {
         let button = UIButton()
         button.titleLabel?.font = UIFont(name: "AppleSDGothicNeo-SemiBold", size: 18)
         button.setTitle("선택 완료", for: .normal)
-        button.setTitleColor(UIColor(hexString: "616161"), for: .normal)
-        button.backgroundColor = UIColor(hexString: "F0F0F0")
+        button.setTitleColor(UIColor.G02, for: .normal)
+        button.backgroundColor = UIColor.G08
         button.layer.cornerRadius = 5
         button.isEnabled = false
         button.layer.masksToBounds = true
@@ -126,12 +126,12 @@ class LoginRegionViewController: UIViewController {
         
         let views = UIView(frame: CGRect(x: 5, y: 5, width: size.width, height: size.height))
         views.layer.borderWidth = 1
-        views.layer.borderColor = UIColor(hexString: "A2A2A2").cgColor
+        views.layer.borderColor = UIColor.G04.cgColor
         views.bounds = views.frame.insetBy(dx: -5, dy: -5)
         views.layer.cornerRadius = 3
         let titleLabel = UILabel()
         titleLabel.font = UIFont(name: "AppleSDGothicNeo-SemiBold", size: 16)
-        titleLabel.textColor = UIColor(hexString: "A2A2A2")
+        titleLabel.textColor = UIColor.G04
         titleLabel.text = "어디 사시나요..?👀"
         self.tagCollectionView.addSubview(views)
         views.addSubview(titleLabel)
@@ -250,9 +250,6 @@ class LoginRegionViewController: UIViewController {
                     LoginViewModel.isMainRegionSelected = false
                     self?.isSelected = false
                     self?.viewModel.input.regeionButtonObserver.accept(false)
-                    print("기본 텍스트 표시할 카운트\(self?.setStr.count)")
-                    print("인덱스 \(indexPath.row)")
-                    print("테이블뷰 뷰컨 \(self?.viewModel.user.region)")
                 } else {
                     self?.isSelected = false
                 }
@@ -274,7 +271,6 @@ class LoginRegionViewController: UIViewController {
             .observe(on: MainScheduler.instance)
             .bind(to: mainRegionTableView.rx.items(cellIdentifier: "cell")) {
                 (index: Int, element: MainRegion, cell: MainRegionTableViewCell) in
-                print("인덱스 값: \(index)")
                 if index > 2 {
                     cell.setLayout()
                 }
@@ -309,10 +305,9 @@ class LoginRegionViewController: UIViewController {
                     cell.setLayout()
                     self?.setStr.append(element.unionRegionName)
                     cell.tagLabel.text = element.unionRegionName
-                    cell.layer.borderColor = UIColor(hexString: "5B43EF").cgColor
+                    cell.layer.borderColor = UIColor.P01.cgColor
                     cell.layer.borderWidth = 1
                     cell.layer.cornerRadius = 3
-//                    cell.bounds = cell.frame.insetBy(dx: 0, dy: -)
                 }
             }.disposed(by: disposeBag)
         
@@ -321,13 +316,12 @@ class LoginRegionViewController: UIViewController {
             .drive(onNext: { [weak self] valid in
                 if valid {
                     self?.confirmButton.isEnabled = valid
-                    self?.confirmButton.setTitleColor(UIColor(hexString: "FFFFFF"), for: .normal)
-                    self?.confirmButton.backgroundColor = UIColor(hexString: "5B43EF")
+                    self?.confirmButton.setTitleColor(UIColor.W01, for: .normal)
+                    self?.confirmButton.backgroundColor = UIColor.P01
                 } else {
                     self?.confirmButton.isEnabled = false
-                    print("컨펌버튼 비활성화, 색상변경")
-                    self?.confirmButton.setTitleColor(UIColor(hexString: "616161"), for: .disabled)
-                    self?.confirmButton.backgroundColor = UIColor(hexString: "F0F0F0")
+                    self?.confirmButton.setTitleColor(UIColor.G02, for: .disabled)
+                    self?.confirmButton.backgroundColor = UIColor.G08
                 }
             }).disposed(by: disposeBag)
     }

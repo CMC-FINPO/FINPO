@@ -29,6 +29,14 @@ class CommunityDetailViewModel {
         let loadCommentObserver = PublishRelay<Int>()
         
         let commentCntObserver = PublishRelay<Int>()
+        
+        //댓글작성 후 송신버튼 클릭 시 등록
+        let commentBtnObserver = PublishRelay<Void>()
+        let commentTextObserver = PublishRelay<String>()
+        //댓글인지 대댓글인지 여부
+        let isNestedObserver = PublishRelay<commentSendAction>()
+        //커뮤니티 상세페이지 id
+        let pageIdObserver = PublishRelay<Int>()
     }
     
     struct OUTPUT {
@@ -38,6 +46,9 @@ class CommunityDetailViewModel {
         
         //댓글개수 리턴
         var commentCntOutput: Driver<Int> = PublishRelay<Int>().asDriver(onErrorJustReturn: -1)
+        
+        //댓글*대댓글 방출
+        var sendComment: Driver<Bool> = PublishRelay<Bool>().asDriver(onErrorJustReturn: false)
     }
     
     enum likeAction {
@@ -48,6 +59,12 @@ class CommunityDetailViewModel {
     enum bookmarkAction {
         case doBook(id: Int)
         case undoBook(id: Int)
+    }
+    
+    // 댓글*대댓글 액션 분할
+    enum commentSendAction {
+        case comment(id: Int)
+        case nested(parentId: Int) //대댓글
     }
     
     init() {
@@ -134,5 +151,44 @@ class CommunityDetailViewModel {
         
         output.commentCntOutput =
         input.commentCntObserver.asDriver(onErrorJustReturn: -1)
+        
+        
+        ///댓글작성
+        _ = input.commentBtnObserver
+            .withLatestFrom(Observable.combineLatest(input.commentTextObserver.asObservable(),
+                                                     input.isNestedObserver.asObservable(),
+                                                     input.pageIdObserver.asObservable()))
+        { ($0, $1.0, $1.1, $1.2) }
+            .subscribe(onNext: { _, text, nested, pageId in
+                switch nested {
+                case .comment(let id):
+                    let parameter: Parameters = [
+                        "content": text,
+                        "anonymity": false
+                    ]
+                    ApiManager.postData(
+                        with: parameter as? Encodable,
+                        from: BaseURL.url.appending("post/\(id)/comment"),
+                        to: PostCommentResponseModel.self,
+                        encoding: JSONEncoding.default)
+                    .subscribe(onNext: { [weak self] _ in
+                        self?.input.loadCommentObserver.accept(id)
+                    }).disposed(by: self.disposeBag)
+                case .nested(let parentId):
+                    let parameter: Parameters = [
+                        "content": text,
+                        "anonymity": false,
+                        "parent": ["id": parentId]
+                    ]
+                    ApiManager.postData(
+                        with: parameter as? Encodable,
+                        from: BaseURL.url.appending("post/\(pageId)/comment"),
+                        to: PostCommentResponseModel.self,
+                        encoding: JSONEncoding.default)
+                    .subscribe(onNext: { [weak self] _ in
+                        self?.input.loadCommentObserver.accept(pageId)
+                    }).disposed(by: self.disposeBag)
+                }
+            }).disposed(by: disposeBag)
     }
 }

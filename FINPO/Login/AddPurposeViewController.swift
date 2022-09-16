@@ -35,8 +35,8 @@ class AddPurposeViewController: UIViewController {
     
     private var progressBar: UIProgressView = {
         let progressBar = UIProgressView()
-        progressBar.trackTintColor = UIColor(hexString: "C4C4C5", alpha: 1)
-        progressBar.progressTintColor = UIColor(hexString: "5B43EF", alpha: 1)
+        progressBar.trackTintColor = UIColor.G05
+        progressBar.progressTintColor = UIColor.P01
         progressBar.progress = 5/6
         progressBar.clipsToBounds = true
         progressBar.layer.cornerRadius = 3
@@ -47,7 +47,7 @@ class AddPurposeViewController: UIViewController {
         let label = UILabel()
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
         label.textAlignment = .center
-        label.textColor = UIColor(hexString: "C4C4C4")
+        label.textColor = UIColor.G05
         label.text = "5/6"
         return label
     }()
@@ -64,7 +64,7 @@ class AddPurposeViewController: UIViewController {
         let label = UILabel()
         label.text = "현재 상태"
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
-        label.textColor = UIColor(hexString: "494949")
+        label.textColor = UIColor.G01
         return label
     }()
     
@@ -81,7 +81,7 @@ class AddPurposeViewController: UIViewController {
     
     private var bottomBorderView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(hexString: "D9D9D9")
+        view.backgroundColor = UIColor.G06
         return view
     }()
     
@@ -89,7 +89,7 @@ class AddPurposeViewController: UIViewController {
         let label = UILabel()
         label.text = "이용 목적 (복수 선택 가능)"
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
-        label.textColor = UIColor(hexString: "494949")
+        label.textColor = UIColor.G01
         return label
     }()
     
@@ -109,8 +109,8 @@ class AddPurposeViewController: UIViewController {
         let button = UIButton()
         button.titleLabel?.font = UIFont(name: "AppleSDGothicNeo-SemiBold", size: 18)
         button.setTitle("선택 완료", for: .normal)
-        button.setTitleColor(UIColor(hexString: "616161"), for: .normal)
-        button.backgroundColor = UIColor(hexString: "F0F0F0")
+        button.setTitleColor(UIColor.G02, for: .normal)
+        button.backgroundColor = UIColor.G08
         button.layer.cornerRadius = 5
         button.isEnabled = false
         button.layer.masksToBounds = true
@@ -121,7 +121,7 @@ class AddPurposeViewController: UIViewController {
         navigationController?.navigationBar.tintColor = .black
         navigationController?.navigationBar.topItem?.backButtonTitle = ""
         navigationController?.navigationBar.topItem?.rightBarButtonItem = UIBarButtonItem(title: "나중에 할게요", style: .plain, target: self, action: #selector(skipThisView))
-        self.navigationItem.rightBarButtonItem?.tintColor = UIColor(hexString: "999999")
+        self.navigationItem.rightBarButtonItem?.tintColor = UIColor.G03
         let attributes = [NSAttributedString.Key.font: UIFont(name: "AppleSDGothicNeo-Medium", size: 10)!]
 //        self.navigationController?.navigationBar.titleTextAttributes = attributes
         self.navigationController?.navigationItem.rightBarButtonItem?.setTitleTextAttributes(attributes, for: [.normal, .selected])
@@ -133,8 +133,8 @@ class AddPurposeViewController: UIViewController {
         purposeCollectionView.register(AddPurposeCollectionViewCell.self, forCellWithReuseIdentifier: "AddPurposeCollectionViewCell")
         
         let attributedText = NSMutableAttributedString(string: purposeLabel.text!)
-        attributedText.addAttribute(.foregroundColor, value: UIColor(hexString: "494949"), range: (purposeLabel.text! as NSString).range(of: "이용 목적"))
-        attributedText.addAttribute(.foregroundColor, value: UIColor(hexString: "5B43EF"), range: (purposeLabel.text! as NSString).range(of: "(복수 선택 가능)"))
+        attributedText.addAttribute(.foregroundColor, value: UIColor.G01, range: (purposeLabel.text! as NSString).range(of: "이용 목적"))
+        attributedText.addAttribute(.foregroundColor, value: UIColor.P01, range: (purposeLabel.text! as NSString).range(of: "(복수 선택 가능)"))
         purposeLabel.attributedText = attributedText
     }
     
@@ -293,13 +293,13 @@ class AddPurposeViewController: UIViewController {
                 if valid {
                     print("버튼 활성화")
                     self.confirmButton.isEnabled = valid
-                    self.confirmButton.backgroundColor = UIColor(hexString: "5B43EF")
-                    self.confirmButton.setTitleColor(UIColor(hexString: "FFFFFF"), for: .normal)
+                    self.confirmButton.backgroundColor = UIColor.P01
+                    self.confirmButton.setTitleColor(UIColor.W01, for: .normal)
                 } else {
                     print("버튼 비활성화")
                     self.confirmButton.isEnabled = valid
-                    self.confirmButton.backgroundColor = UIColor(hexString: "F0F0F0")
-                    self.confirmButton.setTitleColor(UIColor(hexString: "616161"), for: .normal)
+                    self.confirmButton.backgroundColor = UIColor.G08
+                    self.confirmButton.setTitleColor(UIColor.G02, for: .normal)
                 }
             }).disposed(by: disposeBag)
     }

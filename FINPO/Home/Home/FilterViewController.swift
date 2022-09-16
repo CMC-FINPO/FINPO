@@ -53,7 +53,7 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
     @objc func didDismissDetailNotification(_ notification: Notification) {
         self.viewModel.input.tagLoadActionObserver.accept(.isFirstLoad(FilterRegionViewController.filteredDataList))
         self.viewModel.input.categoryObserver.accept(())
-}
+    }
     
     override func viewWillAppear(_ animated: Bool) {
         self.tabBarController?.tabBar.isHidden = true

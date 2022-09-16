@@ -6,6 +6,24 @@
 //
 
 import Foundation
+import UIKit
+
+extension UIColor {
+    static let B01 = UIColor(hexString: "000000")
+    static let W01 = UIColor(hexString: "FFFFFF")
+    static let G01 = UIColor(hexString: "494949")
+    static let G02 = UIColor(hexString: "616161")
+    static let G03 = UIColor(hexString: "999999")
+    static let G04 = UIColor(hexString: "A2A2A2")
+    static let G05 = UIColor(hexString: "C4C4C5")
+    static let G06 = UIColor(hexString: "D9D9D9")
+    static let G07 = UIColor(hexString: "EBEBEB")
+    static let G08 = UIColor(hexString: "F0F0F0")
+    static let G09 = UIColor(hexString: "F9F9F9")
+    static let P01 = UIColor(hexString: "5B43EF")
+    static let E12 = UIColor(hexString: "FF3C00")
+    
+}
 
 struct ComponentsManager {
 
