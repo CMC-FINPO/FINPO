@@ -37,6 +37,8 @@ class CommunityDetailViewModel {
         let isNestedObserver = PublishRelay<commentSendAction>()
         //커뮤니티 상세페이지 id
         let pageIdObserver = PublishRelay<Int>()
+        //익명버튼 체크 활성화 옵저버
+        let isAnonyBtnClicked = PublishRelay<Bool>()
     }
     
     struct OUTPUT {
@@ -189,6 +191,11 @@ class CommunityDetailViewModel {
                         self?.input.loadCommentObserver.accept(pageId)
                     }).disposed(by: self.disposeBag)
                 }
+            }).disposed(by: disposeBag)
+        
+        input.isAnonyBtnClicked
+            .subscribe(onNext: { valid in
+                print(valid)
             }).disposed(by: disposeBag)
     }
 }

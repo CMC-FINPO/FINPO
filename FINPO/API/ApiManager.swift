@@ -99,13 +99,12 @@ struct ApiManager {
         ///비동기 처리의 동기화 -> 세마포어 사용
         let semaphore = DispatchSemaphore(value: 0)
         //alamofre의 completion handler가({}) DispatchQueue.main에서 실행되므로, DispatchSemaphore를 DispatchQueue.main 실행하게 되면 completionHandler의 실행까지 멈춰버리므로 데드락 발생
-        let queue = DispatchQueue.global(qos: .utility)
+        let queue = DispatchQueue.global(qos: .utility) //Main Queue에서 작동하는 걸 Global Queue로 바꿈
         //따라서 completionHandler를 DispatchQueue.main 이외의 스레드로 실행하면 되기에 response 매개변수에 실행하고자 하는 queue로 교체
         
         API.session.request(url, method: .post, parameters: parameter, encoding: JSONEncoding.default, headers: nil)
             .validate()
             .response(queue: queue) { response in
-                
                 switch response.result {
                 case .success(let data):
                     if let data = data {

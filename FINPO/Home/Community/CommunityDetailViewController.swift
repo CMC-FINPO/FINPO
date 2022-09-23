@@ -28,6 +28,8 @@ class CommunityDetailViewController: UIViewController {
     var isAddedChild = [String:[Bool]]()
     //대댓글작성 시 댓글 Parent Id 저장
     var commentParentId = [Int]()
+    //익명댓글 체크 여부
+    var isAnonyBtnClicked: Bool = false
 
     
     override func viewDidLoad() {
@@ -200,6 +202,12 @@ class CommunityDetailViewController: UIViewController {
         return button
     }()
     
+    private var anonyBtn: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "anonyUnabled")?.withRenderingMode(.alwaysOriginal), for: .normal)
+        return button
+    }()
+    
     public func attributeText(originalText: String, range: String, color: String) -> NSMutableAttributedString {
         let attributedText = NSMutableAttributedString(string: originalText)
         attributedText.addAttribute(.foregroundColor, value: UIColor(hexString: "\(color)"), range: (originalText as NSString).range(of: "\(range)"))
@@ -213,7 +221,7 @@ class CommunityDetailViewController: UIViewController {
         
         commentTableView.register(BoardTableViewCell.self, forCellReuseIdentifier: "commentTableViewCell")
         commentTableView.delegate = self
-        
+
 
     }
     
@@ -310,9 +318,18 @@ class CommunityDetailViewController: UIViewController {
             $0.height.equalTo(50)
         }
         
+        btnView.addSubview(anonyBtn)
+        anonyBtn.snp.makeConstraints {
+            $0.leading.equalToSuperview().offset(10)
+            $0.centerY.equalToSuperview()
+            $0.width.equalTo(45)
+            $0.height.equalTo(18)
+        }
+        
         btnView.addSubview(commentTextView)
         commentTextView.snp.makeConstraints {
-            $0.leading.top.bottom.equalToSuperview()
+            $0.leading.equalTo(anonyBtn.snp.trailing)
+            $0.top.bottom.equalToSuperview()
             $0.trailing.equalToSuperview().inset(50)
         }
         
@@ -340,7 +357,6 @@ class CommunityDetailViewController: UIViewController {
         
         likeButton.rx.tap
             .bind { [weak self] _ in
-                print("aksdjlaksjdlaksjdla")
                 guard let self = self else { return }
                 if self.isLiked {
                     self.viewModel.input.likeObserver.accept(.undoLike(id: self.pageId ?? -1))
@@ -401,6 +417,15 @@ class CommunityDetailViewController: UIViewController {
                     self?.viewModel.input.isNestedObserver.accept(.comment(id: pageId))
                 }
             }).disposed(by: disposeBag)
+        
+        //익명버튼 체크
+        anonyBtn.rx.tap
+            .bind { [weak self] _ in
+                guard let self = self else { return }
+                self.viewModel.input.isAnonyBtnClicked.accept(self.isAnonyBtnClicked)
+                self.isAnonyBtnClicked.toggle()
+                self.isAnonyBtnClicked ? (self.anonyBtn.setImage(UIImage(named: "anonyAbled")?.withRenderingMode(.alwaysOriginal), for: .normal)) : (self.anonyBtn.setImage(UIImage(named: "anonyUnabled")?.withRenderingMode(.alwaysOriginal), for: .normal))
+            }.disposed(by: disposeBag)
         
     }
     

@@ -23,7 +23,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         ///string -> object 수정
         let acToken = KeyChain.read(key: KeyChain.accessToken)
         debugPrint("acToken: \(acToken)")
-        
+        //여기서 acToken은 Critical Section으로 동시에 접근하면 안되는 자원임
         if(acToken != nil) {
             ///Using semaphore
             let tokenValidationResult = ApiManager.checkTokenValidation()
