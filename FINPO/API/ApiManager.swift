@@ -42,16 +42,15 @@ struct ApiManager {
         }
     }
     
-    static func postData<T: Decodable>(with param: Encodable? = nil, from url: String, to model: T.Type, encoding: ParameterEncoding) -> Observable<T> {
+    static func postData<T: Decodable>(with param: Parameters? = nil, from url: String, to model: T.Type, encoding: ParameterEncoding) -> Observable<T> {
         return Observable.create { observer in
             let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
             let header = ApiManager.createHeader(token: accessToken)
             
             let queue = DispatchQueue.global(qos: .utility)
-            
-            API.session.request(url, method: .post, parameters: param?.dictionary, encoding: encoding, headers: header, interceptor: MyRequestInterceptor())
+            API.session.request(url, method: .post, parameters: param, encoding: encoding, headers: header, interceptor: MyRequestInterceptor())
                 .validate(statusCode: 200..<300)
-                .responseDecodable(of: model.self, queue: queue,completionHandler: { response in
+                .responseDecodable(of: model.self, queue: queue, completionHandler: { response in
                     switch response.value {
                     case .some(let models):
                         observer.onNext(models)

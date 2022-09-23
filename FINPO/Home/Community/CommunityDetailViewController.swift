@@ -113,9 +113,11 @@ class CommunityDetailViewController: UIViewController {
     }()
     
     private var boardCollectionView: UICollectionView = {
-        let flow = UICollectionViewFlowLayout()
+        let flow = LeftAlignedCollectionViewFlowLayout()
         flow.scrollDirection = .horizontal
+        flow.minimumInteritemSpacing = 10
         let cv = UICollectionView(frame: .zero, collectionViewLayout: flow)
+        cv.showsVerticalScrollIndicator = false
         return cv
     }()
     
@@ -218,11 +220,10 @@ class CommunityDetailViewController: UIViewController {
         view.backgroundColor = .white
         
         boardCollectionView.register(CommunityCollectionViewCell.self, forCellWithReuseIdentifier: "CommunityCollectionViewCell")
+        boardCollectionView.delegate = self
         
         commentTableView.register(BoardTableViewCell.self, forCellReuseIdentifier: "commentTableViewCell")
         commentTableView.delegate = self
-
-
     }
     
     fileprivate func setLayout() {
@@ -269,7 +270,8 @@ class CommunityDetailViewController: UIViewController {
         boardCollectionView.snp.makeConstraints {
             $0.top.equalTo(contentLabel.snp.bottom).offset(10)
             $0.leading.equalTo(contentLabel.snp.leading)
-            $0.height.equalTo(90)
+            $0.trailing.equalToSuperview()
+            $0.height.equalTo(100)
         }
         
         boardStackView.addSubview(likeButton)
@@ -353,6 +355,7 @@ class CommunityDetailViewController: UIViewController {
                 //댓글 달 때 미리 pageId 넣어두기
                 self?.viewModel.input.isNestedObserver.accept(.comment(id: id))
                 self?.viewModel.input.pageIdObserver.accept(id)
+                self?.viewModel.input.isAnonyBtnClicked.accept(false)
             }).disposed(by: disposeBag)
         
         likeButton.rx.tap
@@ -396,6 +399,7 @@ class CommunityDetailViewController: UIViewController {
         sendCommentBtn.rx.tap
             .bind { [weak self] _ in                
                 self?.viewModel.input.commentBtnObserver.accept(())
+                
             }.disposed(by: disposeBag)
         
         //대댓글 작성
@@ -422,9 +426,11 @@ class CommunityDetailViewController: UIViewController {
         anonyBtn.rx.tap
             .bind { [weak self] _ in
                 guard let self = self else { return }
-                self.viewModel.input.isAnonyBtnClicked.accept(self.isAnonyBtnClicked)
                 self.isAnonyBtnClicked.toggle()
-                self.isAnonyBtnClicked ? (self.anonyBtn.setImage(UIImage(named: "anonyAbled")?.withRenderingMode(.alwaysOriginal), for: .normal)) : (self.anonyBtn.setImage(UIImage(named: "anonyUnabled")?.withRenderingMode(.alwaysOriginal), for: .normal))
+                self.viewModel.input.isAnonyBtnClicked.accept(self.isAnonyBtnClicked)
+                DispatchQueue.main.async {
+                    self.isAnonyBtnClicked ? (self.anonyBtn.setImage(UIImage(named: "anonyAbled")?.withRenderingMode(.alwaysOriginal), for: .normal)) : (self.anonyBtn.setImage(UIImage(named: "anonyUnabled")?.withRenderingMode(.alwaysOriginal), for: .normal))
+                }
             }.disposed(by: disposeBag)
         
     }
@@ -487,6 +493,17 @@ class CommunityDetailViewController: UIViewController {
                     for i in 0..<(imagsCnt.count) {
                         imgs.append(imagsCnt[i])
                     }
+                    DispatchQueue.main.async {
+                        self.likeButton.snp.remakeConstraints({
+                            $0.top.equalTo(self.boardCollectionView.snp.bottom).offset(15)
+                            $0.leading.equalTo(self.boardCollectionView.snp.leading)
+                        })
+                        self.likeButton.layoutIfNeeded()
+                        self.commentTableView.snp.remakeConstraints {
+                            $0.top.equalTo(self.likeButton.snp.bottom).offset(15)
+                        }
+                        self.commentTableView.layoutIfNeeded()
+                    }
                 }
                 else {
                     DispatchQueue.main.async {
@@ -503,10 +520,27 @@ class CommunityDetailViewController: UIViewController {
             .observe(on: MainScheduler.asyncInstance)
             .bind(to: boardCollectionView.rx.items(cellIdentifier: "CommunityCollectionViewCell", cellType: CommunityCollectionViewCell.self)) {
                 (index: Int, element: BoardImgDetail, cell) in
-                if let url = URL(string: element.img) {
-                    cell.imageView.kf.setImage(with: url)
-                } else {
-                    cell.imageView.image = UIImage(named: "MainInterest1")
+                DispatchQueue.global().async {
+                    //캐시에 있는지 확인 후 없다면 메모리 캐시에 저장
+                    let imgUrl: String = String(element.img)
+                    print("저장될 이미지 url: \(imgUrl)") //54509b55-10ea-4886-a001-7d75795ed5df.jpeg
+                    //가져오기
+                    if let cachedImg = CacheManager.shared.object(forKey: NSString(string: imgUrl).lastPathComponent as NSString) {
+                        DispatchQueue.main.async {
+                            debugPrint("캐시에서 가져옴!!!")
+                            cell.imageView.image = cachedImg
+                        }
+                    } else { //없다면 메모리 캐시 저장 후 적용
+                        if let url = URL(string: imgUrl) {
+                            if let data = try? Data(contentsOf: url) {
+                                guard let img = UIImage(data: data) else { return }
+                                CacheManager.shared.setObject(img, forKey: NSString(string: imgUrl).lastPathComponent as NSString)
+                                DispatchQueue.main.async {
+                                    cell.imageView.image = img
+                                }
+                            }
+                        }
+                    }
                 }
             }.disposed(by: disposeBag)
             
@@ -514,7 +548,6 @@ class CommunityDetailViewController: UIViewController {
             .scan(into: [CommentContentDetail]()) { comments, response in
                 //댓글*대댓글 추가 시 리로드
                 comments.removeAll()
-                
                 for i in 0..<(response.data.content.count) {
                     if let childs = response.data.content[i].childs {
                         comments.append(response.data.content[i])
@@ -712,5 +745,11 @@ extension UIScrollView {
         
         // 최종 계산 영역의 크기를 반환
         return totalRect.union(view.frame)
+    }
+}
+
+extension CommunityDetailViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: 90, height: 90)
     }
 }

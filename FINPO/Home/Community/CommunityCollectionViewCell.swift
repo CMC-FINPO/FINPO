@@ -29,12 +29,14 @@ class CommunityCollectionViewCell: UICollectionViewCell {
         
         addSubview(imageView)
         imageView.snp.makeConstraints {
-            $0.top.equalTo(safeAreaLayoutGuide.snp.top).offset(15)
-            $0.centerX.equalTo(contentView.snp.centerX)
+//            $0.leading.equalToSuperview().offset(5)
+//            $0.centerY.equalToSuperview()
             $0.width.equalTo(90)
             $0.height.equalTo(90)
+            $0.center.equalToSuperview()
         }
-        imageView.layer.masksToBounds = true
+//        imageView.layer.masksToBounds = true
+        imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 5
     }
     

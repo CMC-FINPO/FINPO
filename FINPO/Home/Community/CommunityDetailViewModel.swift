@@ -159,17 +159,19 @@ class CommunityDetailViewModel {
         _ = input.commentBtnObserver
             .withLatestFrom(Observable.combineLatest(input.commentTextObserver.asObservable(),
                                                      input.isNestedObserver.asObservable(),
-                                                     input.pageIdObserver.asObservable()))
-        { ($0, $1.0, $1.1, $1.2) }
-            .subscribe(onNext: { _, text, nested, pageId in
+                                                     input.pageIdObserver.asObservable(),
+                                                     input.isAnonyBtnClicked.asObservable()))
+        { ($0, $1.0, $1.1, $1.2, $1.3) }
+            .debug()
+            .subscribe(onNext: { _, text, nested, pageId, isAnony in
                 switch nested {
                 case .comment(let id):
                     let parameter: Parameters = [
                         "content": text,
-                        "anonymity": false
+                        "anonymity": isAnony
                     ]
                     ApiManager.postData(
-                        with: parameter as? Encodable,
+                        with: parameter as? Parameters,
                         from: BaseURL.url.appending("post/\(id)/comment"),
                         to: PostCommentResponseModel.self,
                         encoding: JSONEncoding.default)
@@ -179,11 +181,11 @@ class CommunityDetailViewModel {
                 case .nested(let parentId):
                     let parameter: Parameters = [
                         "content": text,
-                        "anonymity": false,
+                        "anonymity": isAnony,
                         "parent": ["id": parentId]
                     ]
                     ApiManager.postData(
-                        with: parameter as? Encodable,
+                        with: parameter as? Parameters,
                         from: BaseURL.url.appending("post/\(pageId)/comment"),
                         to: PostCommentResponseModel.self,
                         encoding: JSONEncoding.default)
@@ -197,5 +199,6 @@ class CommunityDetailViewModel {
             .subscribe(onNext: { valid in
                 print(valid)
             }).disposed(by: disposeBag)
+        
     }
 }
