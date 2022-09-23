@@ -28,6 +28,7 @@ class BoardTableViewCell: UITableViewCell {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "profile")
         imageView.layer.masksToBounds = true
+        imageView.layer.cornerRadius = 17.5
         return imageView
     }()
     
@@ -110,13 +111,12 @@ class BoardTableViewCell: UITableViewCell {
         }
         contentView.addSubview(commentImageView)
 
-        userImageView.layer.masksToBounds = true
-        userImageView.layer.cornerRadius = userImageView.frame.width/2
         userImageView.snp.makeConstraints {
             $0.leading.equalTo(contentView.snp.leading).inset(21)
             $0.top.equalTo(contentView.snp.top).inset(10)
             $0.height.width.equalTo(35)
         }
+//        userImageView.layer.cornerRadius = userImageView.bounds.width/2
         
         userName.snp.makeConstraints {
             $0.top.equalTo(userImageView.snp.top).offset(3)
@@ -245,7 +245,6 @@ class BoardTableViewCell: UITableViewCell {
         }
         uiv.backgroundColor = .systemRed
         uiv.backgroundColor = .blue
-        
         
         self.contentView.layoutIfNeeded()
     }

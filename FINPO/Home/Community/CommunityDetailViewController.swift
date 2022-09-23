@@ -81,6 +81,7 @@ class CommunityDetailViewController: UIViewController {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "profile")?.withRenderingMode(.alwaysOriginal)
         imageView.layer.masksToBounds = true
+        imageView.layer.cornerRadius = 17.5
         return imageView
     }()
     
@@ -517,17 +518,15 @@ class CommunityDetailViewController: UIViewController {
                     return
                 }
             }
-            .observe(on: MainScheduler.asyncInstance)
             .bind(to: boardCollectionView.rx.items(cellIdentifier: "CommunityCollectionViewCell", cellType: CommunityCollectionViewCell.self)) {
                 (index: Int, element: BoardImgDetail, cell) in
                 DispatchQueue.global().async {
                     //캐시에 있는지 확인 후 없다면 메모리 캐시에 저장
                     let imgUrl: String = String(element.img)
-                    print("저장될 이미지 url: \(imgUrl)") //54509b55-10ea-4886-a001-7d75795ed5df.jpeg
+                    debugPrint("저장될 이미지 url: \(imgUrl)") //54509b55-10ea-4886-a001-7d75795ed5df.jpeg
                     //가져오기
                     if let cachedImg = CacheManager.shared.object(forKey: NSString(string: imgUrl).lastPathComponent as NSString) {
                         DispatchQueue.main.async {
-                            debugPrint("캐시에서 가져옴!!!")
                             cell.imageView.image = cachedImg
                         }
                     } else { //없다면 메모리 캐시 저장 후 적용
@@ -564,11 +563,9 @@ class CommunityDetailViewController: UIViewController {
                     }
                 }
             }
-            .observe(on: MainScheduler.asyncInstance)
             .bind(to: commentTableView.rx.items(cellIdentifier: "commentTableViewCell", cellType: BoardTableViewCell.self)) {
                 (index: Int, element: CommentContentDetail, cell) in
                 cell.selectionStyle = .none
-                
                 ///대댓글이 있는 경우
                 if let child = element.childs {
                     //check child count
@@ -596,7 +593,6 @@ class CommunityDetailViewController: UIViewController {
                                             cell.hiddenProperty()
                                         }
                                     }
-//                                    cell.userName.text = element.user?.nickname ?? "관리자계정"
                                 }
                             }
                             cell.hiddenProperty()
@@ -641,6 +637,22 @@ class CommunityDetailViewController: UIViewController {
                             }
                         }
                     }
+                    //Date
+                    let format = DateFormatter()
+                    format.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+                    format.locale = Locale(identifier: "ko")
+                    format.timeZone = TimeZone(abbreviation: "KST")
+                    var tempDate: Date
+                    guard let isModified = element.isModified,
+                          let modifiedAt = element.modifiedAt,
+                          let createdAt  = element.createdAt
+                    else { return }
+                    isModified ? (tempDate = format.date(from: modifiedAt) ?? Date()) : (tempDate = format.date(from: createdAt) ?? Date())
+                    format.dateFormat = "yyyy년 MM월 dd일 a hh:mm"
+                    format.amSymbol = "오전"
+                    format.pmSymbol = "오후"
+                    let str = format.string(from: tempDate)
+                    isModified ? (cell.dateLabel.text = str + "(수정됨)") : (cell.dateLabel.text = str)
                 }
                 ///대댓글이 없는 경우
                 else {
@@ -653,7 +665,6 @@ class CommunityDetailViewController: UIViewController {
                             if(isAnnoymity) {
                                 cell.userName.text = "(익명)"
                             } else if(!isAnnoymity) {
-//                                cell.userName.text = element.user?.nickname ?? "(익명아닌데 이름 없는경우)"
                                 if let isWriter = element.isWriter {
                                     if isWriter { cell.userName.text = (element.user?.nickname ?? "") + "(글쓴이)" }
                                 }
@@ -663,13 +674,33 @@ class CommunityDetailViewController: UIViewController {
                                         cell.hiddenProperty()
                                     }
                                 }
+                                //Profile Img
+                                if let imgUrl = element.user?.profileImg {
+                                    cell.userImageView.kf.setImage(with: URL(string: imgUrl))
+                                }
                             }
                         } else {
                             cell.userName.text = element.user?.nickname ?? "닉네임 불러오기 에러"
                         }
                         self.commentParentId.append(element.id)
                         print("대댓글이 없는경우 댓글 ParentId 추가: \(self.commentParentId)")
-                    } else {
+                        //Date
+                        let format = DateFormatter()
+                        format.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+                        format.locale = Locale(identifier: "ko")
+                        format.timeZone = TimeZone(abbreviation: "KST")
+                        var tempDate: Date
+                        guard let isModified = element.isModified,
+                              let modifiedAt = element.modifiedAt,
+                              let createdAt  = element.createdAt
+                        else { return }
+                        isModified ? (tempDate = format.date(from: modifiedAt) ?? Date()) : (tempDate = format.date(from: createdAt) ?? Date())
+                        format.dateFormat = "yyyy년 MM월 dd일 a hh:mm"
+                        format.amSymbol = "오전"
+                        format.pmSymbol = "오후"
+                        let str = format.string(from: tempDate)
+                        isModified ? (cell.dateLabel.text = str + "(수정됨)") : (cell.dateLabel.text = str)
+                    } else { //삭제된 글인 경우
                         cell.setDeleteComment()
                         self.commentParentId.append(-1)
                         print("삭제된 글 && 대댓글이 없는 경우 parentId 추가: \(self.commentParentId)")

@@ -14,6 +14,7 @@ class CommunityCollectionViewCell: UICollectionViewCell {
     
     public var imageView: UIImageView = {
         let imageView = UIImageView()
+        imageView.contentMode = .scaleToFill
         return imageView
     }()
     
@@ -29,13 +30,10 @@ class CommunityCollectionViewCell: UICollectionViewCell {
         
         addSubview(imageView)
         imageView.snp.makeConstraints {
-//            $0.leading.equalToSuperview().offset(5)
-//            $0.centerY.equalToSuperview()
             $0.width.equalTo(90)
             $0.height.equalTo(90)
             $0.center.equalToSuperview()
         }
-//        imageView.layer.masksToBounds = true
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 5
     }
