@@ -22,17 +22,19 @@ class CommunityDetailViewController: UIViewController {
     var isLiked: Bool = false
     var isBookmarked: Bool = false
     
-    //대댓글 개수 체크
+    ///대댓글 개수 체크
     var childCommentCnt = [String:Int]()
-    //대댓글 불러온 적 있는지 체크
+    ///대댓글 불러온 적 있는지 체크
     var isAddedChild = [String:[Bool]]()
-    //대댓글작성 시 댓글 Parent Id 저장
+    ///대댓글작성 시 댓글 Parent Id 저장
     var commentParentId = [Int]()
-    //익명댓글 체크 여부
+    ///익명댓글 체크 여부
     var isAnonyBtnClicked: Bool = false
 
-    //대댓글 작성 시 알럿뷰
+    ///대댓글 작성 시 알럿뷰
     let nestCommentView = NestCommentView()
+    ///대댓글 작성 시 유저명 저장(익명 포함)
+    var userNames = [String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,6 +52,11 @@ class CommunityDetailViewController: UIViewController {
     func initialize(id: Int) {
         self.pageId = id
         print("커뮤니티 상세 받은 아이디값: \(String(describing: self.pageId))")
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        print("저장된 유저명: \(self.userNames)")
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -393,9 +400,9 @@ class CommunityDetailViewController: UIViewController {
         
         //댓글 TextView
         commentTextView.rx.text
-            .distinctUntilChanged()
             .bind { [weak self] text in
                 if let text = text {
+                    print("텍스트뷰 이벤트 방출")
                     self?.viewModel.input.commentTextObserver.accept(text)
                 }
             }.disposed(by: disposeBag)
@@ -410,14 +417,18 @@ class CommunityDetailViewController: UIViewController {
         //대댓글 작성
         commentTableView.rx.itemSelected
             .subscribe(onNext: { [weak self] indexPath in
-                if let parentId = self?.commentParentId[indexPath.row], let self = self  {
+                if let parentId = self?.commentParentId[indexPath.row], let self = self, let pageId = self.pageId  {
                     if parentId == -1 { //삭제된 글
                         return
                     } else {
-                        self.viewModel.input.isNestedObserver.accept(.nested(parentId: parentId))
-                        self.nestCommentView.setProperty("asjkdlasjd", self.viewModel)
-                        let size = self.scrollView.frame.size.height + self.boardStackView.frame.size.height/2
-                        self.nestCommentView.showView(on: self, size)
+                        if self.userNames[indexPath.row] == "X" {
+                            return
+                        } else {
+                            self.nestCommentView.setProperty(self.userNames[indexPath.row], self.viewModel, pageId: pageId)
+                            let size = self.scrollView.frame.size.height + self.boardStackView.frame.size.height/2
+                            self.nestCommentView.showView(on: self, size)
+                            self.viewModel.input.isNestedObserver.accept(.nested(parentId: parentId))
+                        }
                     }
                 }
             }).disposed(by: disposeBag)
@@ -561,6 +572,11 @@ class CommunityDetailViewController: UIViewController {
             .scan(into: [CommentContentDetail]()) { comments, response in
                 //댓글*대댓글 추가 시 리로드
                 comments.removeAll()
+                self.childCommentCnt.removeAll()
+                self.isAddedChild.removeAll()
+                self.commentParentId.removeAll()
+                self.userNames.removeAll()
+                
                 for i in 0..<(response.data.content.count) {
                     if let childs = response.data.content[i].childs {
                         comments.append(response.data.content[i])
@@ -584,8 +600,8 @@ class CommunityDetailViewController: UIViewController {
                 if let child = element.childs {
                     //check child count
                     let total = self.childCommentCnt["\(element.id)", default: 0]
-                    print("토탈개수: \(total)")
-                    print("차일드 개수: \(child.count)")
+//                    print("토탈개수: \(total)")
+//                    print("차일드 개수: \(child.count)")
                     if((total - (child.count)) > 0) { //댓글
                         self.childCommentCnt["\(element.id)", default: 0] -= 1
                         if(element.status) { //댓글 삭제 분기
@@ -594,6 +610,8 @@ class CommunityDetailViewController: UIViewController {
                             if let isAnnoymity = element.anonymity {
                                 if(isAnnoymity) {
                                     cell.userName.text = "(익명)"
+                                    //대댓글 달 때 유저이름 저장
+                                    self.userNames.append("(익명)")
                                 } else if(!isAnnoymity) {
                                     if let isWriter = element.isWriter {
                                         if isWriter {
@@ -607,6 +625,12 @@ class CommunityDetailViewController: UIViewController {
                                             cell.hiddenProperty()
                                         }
                                     }
+                                    //Profile Img
+                                    if let imgUrl = element.user?.profileImg {
+                                        cell.userImageView.kf.setImage(with: URL(string: imgUrl))
+                                    }
+                                    //대댓글 달 때 유저이름 저장
+                                    self.userNames.append(element.user?.nickname ?? "")
                                 }
                             }
                             //대댓글 Date
@@ -624,6 +648,8 @@ class CommunityDetailViewController: UIViewController {
                             cell.setDeleteComment()
                             self.commentParentId.append(-1)
                             print("삭제된 글 && 대댓글이 있는 경우 댓글 parentId 추가: \(self.commentParentId)")
+                            //대댓글 달 때 유저이름 저장
+                            self.userNames.append("X")
                         }
                     } else { //대댓글
                         if let isAdded = (self.isAddedChild["\(element.id)"]) {
@@ -637,6 +663,7 @@ class CommunityDetailViewController: UIViewController {
                                             if let isAnnonymity = element.childs?[i].anonymity {
                                                 if(isAnnonymity) {
                                                     cell.userName.text = "(익명)"
+                                                    self.userNames.append("(익명)")
                                                 } else if(!isAnnonymity) {
                                                     if let isWriter = element.childs?[i].isWriter { //글쓴이 분기
                                                         if isWriter { (cell.userName.text = (element.childs?[i].user?.nickname ?? "") + "(글쓴이)") }
@@ -644,6 +671,11 @@ class CommunityDetailViewController: UIViewController {
                                                     if let isMine = element.childs?[i].isMine {
                                                         if isMine { cell.userName.text = (element.childs?[i].user?.nickname ?? "") + "(본인)" }
                                                     }
+                                                    //Profile Img
+                                                    if let imgUrl = element.childs?[i].user?.profileImg {
+                                                        cell.userImageView.kf.setImage(with: URL(string: imgUrl))
+                                                    }
+                                                    self.userNames.append(element.childs?[i].user?.nickname ?? "")
                                                 }
                                             }
                                             //대댓글 Date
@@ -660,6 +692,8 @@ class CommunityDetailViewController: UIViewController {
                                         } else { //삭제된 대댓글
                                             self.commentParentId.append(-1)
                                             print("삭제된 대댓글 && 대댓글이 있는 경우 parentId 추가: \(self.commentParentId)")
+                                            //대댓글 달 때 유저이름 저장
+                                            self.userNames.append("X")
                                         }
                                     }
                                     return
@@ -678,6 +712,8 @@ class CommunityDetailViewController: UIViewController {
                         if let isAnnoymity = element.anonymity {
                             if(isAnnoymity) {
                                 cell.userName.text = "(익명)"
+                                //대댓글 달 때 유저이름 저장
+                                self.userNames.append("(익명)")
                             } else if(!isAnnoymity) {
                                 if let isWriter = element.isWriter {
                                     if isWriter { cell.userName.text = (element.user?.nickname ?? "") + "(글쓴이)" }
@@ -692,6 +728,8 @@ class CommunityDetailViewController: UIViewController {
                                 if let imgUrl = element.user?.profileImg {
                                     cell.userImageView.kf.setImage(with: URL(string: imgUrl))
                                 }
+                                //대댓글 달 때 유저이름 저장
+                                self.userNames.append(element.user?.nickname ?? "")
                             }
                         } else {
                             cell.userName.text = element.user?.nickname ?? "닉네임 불러오기 에러"
@@ -709,6 +747,8 @@ class CommunityDetailViewController: UIViewController {
                         cell.setDeleteComment()
                         self.commentParentId.append(-1)
                         print("삭제된 글 && 대댓글이 없는 경우 parentId 추가: \(self.commentParentId)")
+                        //대댓글 달 때 유저이름 저장
+                        self.userNames.append("X")
                     }
                 }
                 self.scrollView.updateContentSize()

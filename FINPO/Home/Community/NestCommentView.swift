@@ -30,9 +30,11 @@ class NestCommentView {
     }()
     
     private var viewModel: CommunityDetailViewModel?
+    private var pageId: Int?
     
-    func setProperty(_ nickName: String, _ viewModel: CommunityDetailViewModel) {
+    func setProperty(_ nickName: String, _ viewModel: CommunityDetailViewModel, pageId: Int) {
         self.viewModel = viewModel
+        self.pageId = pageId
         textLabel.text = "\(nickName)님에게 답글 남기는 중..."
         let gesture = UITapGestureRecognizer(target: self, action: #selector(dismissView))
         nestCancleBtn.addGestureRecognizer(gesture)
@@ -53,11 +55,15 @@ class NestCommentView {
             $0.trailing.equalToSuperview().inset(5)
             $0.width.height.equalTo(17)
         }
-//        UIView.animate(withDuration: 0.25, animations: () -> Void)
         
     }
     
     @objc func dismissView() {
+        //대댓글 취소버튼을 누르면 일반 댓글로 남겨야 함
+        guard let viewModel = viewModel, let pageId = pageId else {
+            return
+        }
+        viewModel.input.isNestedObserver.accept(.comment(id: pageId))
         UIView.animate(withDuration: 0.25) {
             self.nestView.removeFromSuperview()
         }
