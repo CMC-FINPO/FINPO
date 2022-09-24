@@ -86,6 +86,7 @@
 		DD61257F287C3D11002FBF4D /* AlarmAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD61257E287C3D11002FBF4D /* AlarmAPI.swift */; };
 		DD612581287C3D58002FBF4D /* AlarmModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD612580287C3D58002FBF4D /* AlarmModel.swift */; };
 		DD612583287C3FFF002FBF4D /* AlarmTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD612582287C3FFF002FBF4D /* AlarmTableViewCell.swift */; };
+		DD6C99AC28DEBFF600D40507 /* NestCommentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD6C99AB28DEBFF600D40507 /* NestCommentView.swift */; };
 		DD81D0AC28BDC707000780D6 /* PostCommentResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD81D0AB28BDC707000780D6 /* PostCommentResponseModel.swift */; };
 		DD90E99A284B434600B19B8C /* LoginDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD90E999284B434600B19B8C /* LoginDetailViewModel.swift */; };
 		DD90E99E284CEE8600B19B8C /* Terms.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD90E99D284CEE8600B19B8C /* Terms.swift */; };
@@ -222,6 +223,7 @@
 		DD61257E287C3D11002FBF4D /* AlarmAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmAPI.swift; sourceTree = "<group>"; };
 		DD612580287C3D58002FBF4D /* AlarmModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmModel.swift; sourceTree = "<group>"; };
 		DD612582287C3FFF002FBF4D /* AlarmTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmTableViewCell.swift; sourceTree = "<group>"; };
+		DD6C99AB28DEBFF600D40507 /* NestCommentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NestCommentView.swift; sourceTree = "<group>"; };
 		DD81D0AB28BDC707000780D6 /* PostCommentResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostCommentResponseModel.swift; sourceTree = "<group>"; };
 		DD90E999284B434600B19B8C /* LoginDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginDetailViewModel.swift; sourceTree = "<group>"; };
 		DD90E99D284CEE8600B19B8C /* Terms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Terms.swift; sourceTree = "<group>"; };
@@ -382,6 +384,7 @@
 				DD1E995428B4DF4400C80272 /* CommunityDetailViewController.swift */,
 				DD1E995628B5322B00C80272 /* CommunityDetailViewModel.swift */,
 				DD1E995A28B66A1D00C80272 /* CommunityCollectionViewCell.swift */,
+				DD6C99AB28DEBFF600D40507 /* NestCommentView.swift */,
 			);
 			path = Community;
 			sourceTree = "<group>";
@@ -816,6 +819,7 @@
 				DD5A18E5286FEB0300903616 /* ApplyInfoViewController.swift in Sources */,
 				DD61257A287C3942002FBF4D /* AlarmViewController.swift in Sources */,
 				DDBFEEB82859E162003E9662 /* MyAuthenticationCredential.swift in Sources */,
+				DD6C99AC28DEBFF600D40507 /* NestCommentView.swift in Sources */,
 				DD90E9B8284DDFA200B19B8C /* User.swift in Sources */,
 				DD1EC9712861B23000B58F10 /* SignOutAPI.swift in Sources */,
 				DD5A190C2876D85200903616 /* ParticipationTableViewCell.swift in Sources */,

@@ -453,7 +453,6 @@ class HomeDetailViewController: UIViewController {
 }
 
 class MyAlert {
-    
     struct Constants {
         static let backgroundAlphaTo: CGFloat = 0.6
     }

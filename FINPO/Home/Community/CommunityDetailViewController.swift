@@ -31,6 +31,8 @@ class CommunityDetailViewController: UIViewController {
     //익명댓글 체크 여부
     var isAnonyBtnClicked: Bool = false
 
+    //대댓글 작성 시 알럿뷰
+    let nestCommentView = NestCommentView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -119,6 +121,7 @@ class CommunityDetailViewController: UIViewController {
         flow.minimumInteritemSpacing = 10
         let cv = UICollectionView(frame: .zero, collectionViewLayout: flow)
         cv.showsVerticalScrollIndicator = false
+        cv.showsHorizontalScrollIndicator = false
         return cv
     }()
     
@@ -309,8 +312,9 @@ class CommunityDetailViewController: UIViewController {
 
         scrollView.addSubview(commentTableView)
         commentTableView.snp.makeConstraints {
-            $0.top.equalTo(boardStackView.snp.bottom)
+            $0.top.equalTo(boardStackView.snp.bottom).offset(30)
             $0.width.equalToSuperview()
+//            $0.bottom.equalToSuperview()
         }
         
         //댓글작성
@@ -406,11 +410,14 @@ class CommunityDetailViewController: UIViewController {
         //대댓글 작성
         commentTableView.rx.itemSelected
             .subscribe(onNext: { [weak self] indexPath in
-                if let parentId = self?.commentParentId[indexPath.row] {
+                if let parentId = self?.commentParentId[indexPath.row], let self = self  {
                     if parentId == -1 { //삭제된 글
                         return
                     } else {
-                        self?.viewModel.input.isNestedObserver.accept(.nested(parentId: parentId))
+                        self.viewModel.input.isNestedObserver.accept(.nested(parentId: parentId))
+                        self.nestCommentView.setProperty("asjkdlasjd", self.viewModel)
+                        let size = self.scrollView.frame.size.height + self.boardStackView.frame.size.height/2
+                        self.nestCommentView.showView(on: self, size)
                     }
                 }
             }).disposed(by: disposeBag)
@@ -433,6 +440,13 @@ class CommunityDetailViewController: UIViewController {
                     self.isAnonyBtnClicked ? (self.anonyBtn.setImage(UIImage(named: "anonyAbled")?.withRenderingMode(.alwaysOriginal), for: .normal)) : (self.anonyBtn.setImage(UIImage(named: "anonyUnabled")?.withRenderingMode(.alwaysOriginal), for: .normal))
                 }
             }.disposed(by: disposeBag)
+        
+        //TODO: 게시글 이미지 선택 시 풀스크린
+//        boardCollectionView.rx.itemSelected
+//            .subscribe(onNext: { [weak self] indexPath in
+//                let cell = self?.boardCollectionView.dequeueReusableCell(withReuseIdentifier: "CommunityCollectionViewCell", for: indexPath) as! CommunityCollectionViewCell
+//
+//            }).disposed(by: disposeBag)
         
     }
     
@@ -595,6 +609,14 @@ class CommunityDetailViewController: UIViewController {
                                     }
                                 }
                             }
+                            //대댓글 Date
+                            guard let isModified = element.isModified,
+                                  let modifiedAt = element.modifiedAt,
+                                  let createdAt  = element.createdAt
+                            else { return }
+                            let date = self.currentDate(isModified, modifiedAt, createdAt)
+                            cell.dateLabel.text = date
+                            
                             cell.hiddenProperty()
                             self.commentParentId.append(element.id)
                             print("대댓글이 있는 경우 댓글 ParentId 추가: \(self.commentParentId)")
@@ -624,6 +646,14 @@ class CommunityDetailViewController: UIViewController {
                                                     }
                                                 }
                                             }
+                                            //대댓글 Date
+                                            guard let isModified = element.childs?[i].isModified,
+                                                  let modifiedAt = element.childs?[i].modifiedAt,
+                                                  let createdAt  = element.childs?[i].createdAt
+                                            else { return }
+                                            let date = self.currentDate(isModified, modifiedAt, createdAt)
+                                            cell.dateLabel.text = date
+
                                             cell.childCommentProperty()
                                             self.commentParentId.append(element.childs?[i].parent?.id ?? -1)
                                             print("대댓글 ParentId 추가: \(self.commentParentId)")
@@ -637,22 +667,6 @@ class CommunityDetailViewController: UIViewController {
                             }
                         }
                     }
-                    //Date
-                    let format = DateFormatter()
-                    format.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-                    format.locale = Locale(identifier: "ko")
-                    format.timeZone = TimeZone(abbreviation: "KST")
-                    var tempDate: Date
-                    guard let isModified = element.isModified,
-                          let modifiedAt = element.modifiedAt,
-                          let createdAt  = element.createdAt
-                    else { return }
-                    isModified ? (tempDate = format.date(from: modifiedAt) ?? Date()) : (tempDate = format.date(from: createdAt) ?? Date())
-                    format.dateFormat = "yyyy년 MM월 dd일 a hh:mm"
-                    format.amSymbol = "오전"
-                    format.pmSymbol = "오후"
-                    let str = format.string(from: tempDate)
-                    isModified ? (cell.dateLabel.text = str + "(수정됨)") : (cell.dateLabel.text = str)
                 }
                 ///대댓글이 없는 경우
                 else {
@@ -685,21 +699,12 @@ class CommunityDetailViewController: UIViewController {
                         self.commentParentId.append(element.id)
                         print("대댓글이 없는경우 댓글 ParentId 추가: \(self.commentParentId)")
                         //Date
-                        let format = DateFormatter()
-                        format.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-                        format.locale = Locale(identifier: "ko")
-                        format.timeZone = TimeZone(abbreviation: "KST")
-                        var tempDate: Date
                         guard let isModified = element.isModified,
                               let modifiedAt = element.modifiedAt,
                               let createdAt  = element.createdAt
                         else { return }
-                        isModified ? (tempDate = format.date(from: modifiedAt) ?? Date()) : (tempDate = format.date(from: createdAt) ?? Date())
-                        format.dateFormat = "yyyy년 MM월 dd일 a hh:mm"
-                        format.amSymbol = "오전"
-                        format.pmSymbol = "오후"
-                        let str = format.string(from: tempDate)
-                        isModified ? (cell.dateLabel.text = str + "(수정됨)") : (cell.dateLabel.text = str)
+                        let date = self.currentDate(isModified, modifiedAt, createdAt)
+                        cell.dateLabel.text = date
                     } else { //삭제된 글인 경우
                         cell.setDeleteComment()
                         self.commentParentId.append(-1)
@@ -708,6 +713,21 @@ class CommunityDetailViewController: UIViewController {
                 }
                 self.scrollView.updateContentSize()
             }.disposed(by: disposeBag)
+    }
+    
+    func currentDate(_ isModified: Bool, _ modifiedAt: String, _ createdAt: String) -> String {
+        let format = DateFormatter()
+        format.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        format.locale = Locale(identifier: "ko")
+        format.timeZone = TimeZone(abbreviation: "KST")
+        var tempDate: Date
+        isModified ? (tempDate = format.date(from: modifiedAt) ?? Date()) : (tempDate = format.date(from: createdAt) ?? Date())
+        format.dateFormat = "yyyy년 MM월 dd일 a hh:mm"
+        format.amSymbol = "오전"
+        format.pmSymbol = "오후"
+        var str = format.string(from: tempDate)
+        isModified ? (str = str + "(수정됨)") : (str = str)
+        return str
     }
 }
 

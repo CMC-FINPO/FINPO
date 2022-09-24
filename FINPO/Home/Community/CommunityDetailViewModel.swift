@@ -171,7 +171,7 @@ class CommunityDetailViewModel {
                         "anonymity": isAnony
                     ]
                     ApiManager.postData(
-                        with: parameter as? Parameters,
+                        with: parameter,
                         from: BaseURL.url.appending("post/\(id)/comment"),
                         to: PostCommentResponseModel.self,
                         encoding: JSONEncoding.default)
@@ -185,7 +185,7 @@ class CommunityDetailViewModel {
                         "parent": ["id": parentId]
                     ]
                     ApiManager.postData(
-                        with: parameter as? Parameters,
+                        with: parameter,
                         from: BaseURL.url.appending("post/\(pageId)/comment"),
                         to: PostCommentResponseModel.self,
                         encoding: JSONEncoding.default)
