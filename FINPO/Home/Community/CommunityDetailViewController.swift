@@ -44,19 +44,19 @@ class CommunityDetailViewController: UIViewController {
         setInputBind()
         setOutputBind()
         
-        print("스크롤뷰 height: \(self.scrollView.bounds.height)")
-        print("컨텐츠뷰 height: \(self.contentView.bounds.height)")
-        print("댓글뷰 height: \(self.commentView.bounds.height)")
+        debugPrint("스크롤뷰 height: \(self.scrollView.bounds.height)")
+        debugPrint("컨텐츠뷰 height: \(self.contentView.bounds.height)")
+        debugPrint("댓글뷰 height: \(self.commentView.bounds.height)")
     }
     
     func initialize(id: Int) {
         self.pageId = id
-        print("커뮤니티 상세 받은 아이디값: \(String(describing: self.pageId))")
+        debugPrint("커뮤니티 상세 받은 아이디값: \(String(describing: self.pageId))")
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        print("저장된 유저명: \(self.userNames)")
+        debugPrint("저장된 유저명: \(self.userNames)")
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -402,7 +402,6 @@ class CommunityDetailViewController: UIViewController {
         commentTextView.rx.text
             .bind { [weak self] text in
                 if let text = text {
-                    print("텍스트뷰 이벤트 방출")
                     self?.viewModel.input.commentTextObserver.accept(text)
                 }
             }.disposed(by: disposeBag)
@@ -411,13 +410,14 @@ class CommunityDetailViewController: UIViewController {
         sendCommentBtn.rx.tap
             .bind { [weak self] _ in                
                 self?.viewModel.input.commentBtnObserver.accept(())
-                
             }.disposed(by: disposeBag)
         
         //대댓글 작성
         commentTableView.rx.itemSelected
             .subscribe(onNext: { [weak self] indexPath in
-                if let parentId = self?.commentParentId[indexPath.row], let self = self, let pageId = self.pageId  {
+                if let parentId = self?.commentParentId[indexPath.row],
+                    let self = self,
+                    let pageId = self.pageId {
                     if parentId == -1 { //삭제된 글
                         return
                     } else {
@@ -476,17 +476,8 @@ class CommunityDetailViewController: UIViewController {
                     self.userName.text = boardDetail.data.user.nickname ?? "(알 수 없음)"
                 }
                 ///Date
-                let format = DateFormatter()
-                format.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-                format.locale = Locale(identifier: "ko")
-                format.timeZone = TimeZone(abbreviation: "KST")
-                var tempDate: Date
-                boardDetail.data.isModified ? (tempDate = format.date(from: boardDetail.data.modifiedAt) ?? Date()) : (tempDate = format.date(from: boardDetail.data.createdAt) ?? Date())
-                format.dateFormat = "yyyy년 MM월 dd일 a hh:mm"
-                format.amSymbol = "오전"
-                format.pmSymbol = "오후"
-                let str = format.string(from: tempDate)
-                boardDetail.data.isModified ? (self.dateLabel.text = str + "(수정됨)") : (self.dateLabel.text = str)
+                let date = self.currentDate(boardDetail.data.isModified, boardDetail.data.modifiedAt, boardDetail.data.createdAt)
+                self.dateLabel.text = date
                 ///Content
                 self.contentLabel.text = boardDetail.data.content
                 
@@ -543,8 +534,9 @@ class CommunityDetailViewController: UIViewController {
                     return
                 }
             }
-            .bind(to: boardCollectionView.rx.items(cellIdentifier: "CommunityCollectionViewCell", cellType: CommunityCollectionViewCell.self)) {
+            .bind(to: boardCollectionView.rx.items(cellIdentifier: "CommunityCollectionViewCell", cellType: CommunityCollectionViewCell.self)) { [weak self]
                 (index: Int, element: BoardImgDetail, cell) in
+                guard let self = self else { return }
                 DispatchQueue.global().async {
                     //캐시에 있는지 확인 후 없다면 메모리 캐시에 저장
                     let imgUrl: String = String(element.img)
@@ -569,7 +561,8 @@ class CommunityDetailViewController: UIViewController {
             }.disposed(by: disposeBag)
             
         viewModel.output.loadCommentOutput
-            .scan(into: [CommentContentDetail]()) { comments, response in
+            .scan(into: [CommentContentDetail]()) { [weak self] comments, response in
+                guard let self = self else { return }
                 //댓글*대댓글 추가 시 리로드
                 comments.removeAll()
                 self.childCommentCnt.removeAll()
@@ -593,15 +586,14 @@ class CommunityDetailViewController: UIViewController {
                     }
                 }
             }
-            .bind(to: commentTableView.rx.items(cellIdentifier: "commentTableViewCell", cellType: BoardTableViewCell.self)) {
+            .bind(to: commentTableView.rx.items(cellIdentifier: "commentTableViewCell", cellType: BoardTableViewCell.self)) { [weak self]
                 (index: Int, element: CommentContentDetail, cell) in
+                guard let self = self else { return }
                 cell.selectionStyle = .none
                 ///대댓글이 있는 경우
                 if let child = element.childs {
                     //check child count
                     let total = self.childCommentCnt["\(element.id)", default: 0]
-//                    print("토탈개수: \(total)")
-//                    print("차일드 개수: \(child.count)")
                     if((total - (child.count)) > 0) { //댓글
                         self.childCommentCnt["\(element.id)", default: 0] -= 1
                         if(element.status) { //댓글 삭제 분기
@@ -612,6 +604,8 @@ class CommunityDetailViewController: UIViewController {
                                     cell.userName.text = "(익명)"
                                     //대댓글 달 때 유저이름 저장
                                     self.userNames.append("(익명)")
+                                    //more view 데이터 삽입
+                                    cell.propertyInjection(on: self.viewModel, commentId: element.id, viewController: self)
                                 } else if(!isAnnoymity) {
                                     if let isWriter = element.isWriter {
                                         if isWriter {
@@ -631,9 +625,11 @@ class CommunityDetailViewController: UIViewController {
                                     }
                                     //대댓글 달 때 유저이름 저장
                                     self.userNames.append(element.user?.nickname ?? "")
+                                    //more view 데이터 삽입
+                                    cell.propertyInjection(on: self.viewModel, commentId: element.id, viewController: self)
                                 }
                             }
-                            //대댓글 Date
+                            //댓글 Date
                             guard let isModified = element.isModified,
                                   let modifiedAt = element.modifiedAt,
                                   let createdAt  = element.createdAt
@@ -664,6 +660,9 @@ class CommunityDetailViewController: UIViewController {
                                                 if(isAnnonymity) {
                                                     cell.userName.text = "(익명)"
                                                     self.userNames.append("(익명)")
+                                                    //more view 데이터 삽입
+                                                    guard let childId = element.childs?[i].id else { return }
+                                                    cell.propertyInjection(on: self.viewModel, commentId: childId, viewController: self)
                                                 } else if(!isAnnonymity) {
                                                     if let isWriter = element.childs?[i].isWriter { //글쓴이 분기
                                                         if isWriter { (cell.userName.text = (element.childs?[i].user?.nickname ?? "") + "(글쓴이)") }
@@ -676,6 +675,9 @@ class CommunityDetailViewController: UIViewController {
                                                         cell.userImageView.kf.setImage(with: URL(string: imgUrl))
                                                     }
                                                     self.userNames.append(element.childs?[i].user?.nickname ?? "")
+                                                    //more view 데이터 삽입
+                                                    guard let childId = element.childs?[i].id else { return }
+                                                    cell.propertyInjection(on: self.viewModel, commentId: childId, viewController: self)
                                                 }
                                             }
                                             //대댓글 Date
@@ -779,7 +781,7 @@ extension CommunityDetailViewController: UITableViewDelegate {
         
         let label = UILabel()
         label.frame = CGRect.init(x: 5, y: 5, width: headerView.frame.width-10, height: headerView.frame.height-10)
-        label.text = "????에러 개수"
+        label.text = "정보를 불러오는 중입니다."
         label.font = UIFont(name: "AppleSDGothicNeo-Semibold", size: 16)
         label.textColor = .black
         

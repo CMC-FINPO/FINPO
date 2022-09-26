@@ -9,13 +9,16 @@ import Foundation
 import UIKit
 import SnapKit
 import RxSwift
-import SwiftUI
 
 class BoardTableViewCell: UITableViewCell {
 
     var cellBag = DisposeBag()
     
     let attributeVC = CommunityDetailViewController()
+    
+    private var viewModel: CommunityDetailViewModel?
+    private var commentId: Int?
+    private var viewController: UIViewController?
     
     public var commentImageView: UIImageView = {
         let imageView = UIImageView()
@@ -45,7 +48,7 @@ class BoardTableViewCell: UITableViewCell {
         let label = UILabel()
         label.textAlignment = .left
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
-        label.textColor = UIColor(hexString: "999999")
+        label.textColor = UIColor.G03
         label.text = "dummy time 2022/06/20"
         return label
     }()
@@ -87,7 +90,7 @@ class BoardTableViewCell: UITableViewCell {
         let label = UILabel()
         label.textAlignment = .center
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
-        label.textColor = UIColor(hexString: "999999")
+        label.textColor = UIColor.G03
         label.text = "댓글 1"
         return label
     }()
@@ -96,17 +99,35 @@ class BoardTableViewCell: UITableViewCell {
         let label = UILabel()
         label.textAlignment = .center
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
-        label.textColor = UIColor(hexString: "999999")
+        label.textColor = UIColor.G03
         label.text = "조회수 30"
         return label
     }()
     
+    public var moreButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "more"), for: .normal)
+        return button
+    }()
+    
+    @objc func showMoreView() {
+        if let viewController = viewController {
+            let moreView = CommentMoreView()
+            moreView.setProperty()
+            moreView.showView(on: viewController, to: self)
+        }
+    }
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
+        viewModel = nil
+        commentId = nil
+        viewController = nil
         contentView.backgroundColor = UIColor.white
         
-        [userImageView, userName, dateLabel, contentLabel, likeButton, bookMarkButton, likeCountLabel, commentCountLabel, viewsCountLabel].forEach {
+        moreButton.addTarget(self, action: #selector(showMoreView), for: .touchUpInside)
+        
+        [userImageView, userName, dateLabel, contentLabel, likeButton, bookMarkButton, likeCountLabel, commentCountLabel, viewsCountLabel, moreButton].forEach {
             contentView.addSubview($0)
         }
         contentView.addSubview(commentImageView)
@@ -160,6 +181,7 @@ class BoardTableViewCell: UITableViewCell {
             $0.bottom.equalTo(likeCountLabel.snp.bottom)
             $0.leading.equalTo(viewsCountLabel.snp.trailing).offset(2.5)
         }
+
     }
     
     required init?(coder: NSCoder) {
@@ -174,7 +196,6 @@ class BoardTableViewCell: UITableViewCell {
     public func hiddenProperty() {
         [self.likeButton, self.bookMarkButton, self.likeCountLabel, self.viewsCountLabel, self.commentCountLabel].forEach {
             $0.isHidden = true
-//            self.contentView.layoutIfNeeded()
         }
         self.contentView.layoutIfNeeded()
         
@@ -185,10 +206,17 @@ class BoardTableViewCell: UITableViewCell {
             $0.bottom.equalTo(contentView.snp.bottom).inset(15)
         }
         self.contentLabel.layoutIfNeeded()
+        
+        self.moreButton.snp.makeConstraints {
+            $0.top.equalTo(userImageView.snp.top)
+            $0.trailing.equalToSuperview().inset(15)
+            $0.width.height.equalTo(25)
+        }
+        self.moreButton.layoutIfNeeded()
     }
     
     public func setDeleteComment() {
-        [self.likeButton, self.bookMarkButton, self.likeCountLabel, self.viewsCountLabel, self.commentCountLabel, self.userImageView, self.userName, self.dateLabel].forEach {
+        [self.likeButton, self.bookMarkButton, self.likeCountLabel, self.viewsCountLabel, self.commentCountLabel, self.userImageView, self.userName, self.dateLabel, self.moreButton].forEach {
             $0.isHidden = true
             self.contentView.layoutIfNeeded()
         }
@@ -233,6 +261,13 @@ class BoardTableViewCell: UITableViewCell {
             $0.bottom.equalTo(contentView.snp.bottom).inset(15)
         }
         self.contentLabel.layoutIfNeeded()
+        
+        self.moreButton.snp.makeConstraints {
+            $0.top.equalTo(userImageView.snp.top)
+            $0.trailing.equalToSuperview().inset(15)
+            $0.width.height.equalTo(25)
+        }
+        self.moreButton.layoutIfNeeded()
     }
     
     public func addToDynamicContent() {
@@ -244,9 +279,14 @@ class BoardTableViewCell: UITableViewCell {
             $0.height.equalTo(80)
         }
         uiv.backgroundColor = .systemRed
-        uiv.backgroundColor = .blue
         
         self.contentView.layoutIfNeeded()
+    }
+    
+    public func propertyInjection(on viewModel: CommunityDetailViewModel, commentId: Int, viewController: UIViewController) {
+        self.viewModel = viewModel
+        self.commentId = commentId
+        self.viewController = viewController
     }
     
     override func prepareForReuse() {

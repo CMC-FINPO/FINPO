@@ -1,0 +1,75 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+platform :ios do
+  desc "Description of what the lane does"
+  lane :custom_lane do
+    # add actions here: https://docs.fastlane.tools/actions
+  end
+
+  
+  desc "build app and upload to App Store testflight"
+  lane :beta do
+    get_certificates
+    get_provisioning_profile
+    increment_build_number(
+        build_number: latest_testflight_build_number + 1
+    )
+    build_app(
+      configuration: "Debug"
+    )
+    upload_to_testflight
+    slack(
+      message: "Testflight 배포에 성공했습니다!",
+      slack_url: "https://hooks.slack.com/services/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"
+    )
+  end	
+
+   desc "build app and release to App Store."
+  lane :release do |options|
+    if options[:v]
+      get_certificates
+      get_provisioning_profile
+      increment_build_number(
+        build_number: latest_testflight_build_number + 1
+      )
+      build_app(
+        configuration: "Release"
+      )
+      upload_to_app_store(
+        app_version: options[:v],
+        submit_for_review: true,
+        force: true,
+        automatic_release: true,
+        skip_screenshots: true,
+        skip_metadata: false
+      )
+      slack(
+        message: "AppStore 배포에 성공했습니다!",
+        slack_url: "https://hooks.slack.com/services/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"
+      )
+    end
+  end
+
+    error do |lane, exception, options|
+    slack(
+      message: "Fastlane TestFlight 에러 발생 : #{exception}",
+      success: false,
+      slack_url: "https://hooks.slack.com/services/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",
+    )
+    end
+end

@@ -36,7 +36,7 @@ class NestCommentView {
         self.viewModel = viewModel
         self.pageId = pageId
         textLabel.text = "\(nickName)님에게 답글 남기는 중..."
-        let gesture = UITapGestureRecognizer(target: self, action: #selector(dismissView))
+        let gesture = UITapGestureRecognizer(target: self, action: #selector(dismissView(_:)))
         nestCancleBtn.addGestureRecognizer(gesture)
     }
     
@@ -58,7 +58,7 @@ class NestCommentView {
         
     }
     
-    @objc func dismissView() {
+    @objc func dismissView(_ sender: UITapGestureRecognizer? = nil) {
         //대댓글 취소버튼을 누르면 일반 댓글로 남겨야 함
         guard let viewModel = viewModel, let pageId = pageId else {
             return
