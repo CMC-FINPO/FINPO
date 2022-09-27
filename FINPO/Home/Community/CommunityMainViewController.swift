@@ -135,7 +135,8 @@ class CommunityMainViewController: UIViewController {
     }
     
     @objc private func moveToWritingVC() {
-        
+        let viewController = CommunityWritingViewController()
+        self.navigationController?.pushViewController(viewController, animated: true)
     }
     
     fileprivate func setInputBind() {

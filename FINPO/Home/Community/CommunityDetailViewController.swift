@@ -466,14 +466,14 @@ class CommunityDetailViewController: UIViewController {
             .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] boardDetail in
                 guard let self = self else { return }
-                if let profileImgStr = boardDetail.data.user.profileImg {
+                if let profileImgStr = boardDetail.data.user?.profileImg {
                     let imgUrl = URL(string: profileImgStr)
                     self.userImageView.kf.setImage(with: imgUrl)
                 }
                 if(boardDetail.data.anonymity) {
                     self.userName.text = "(익명)"
                 } else {
-                    self.userName.text = boardDetail.data.user.nickname ?? "(알 수 없음)"
+                    self.userName.text = boardDetail.data.user?.nickname ?? "(알 수 없음)"
                 }
                 ///Date
                 let date = self.currentDate(boardDetail.data.isModified, boardDetail.data.modifiedAt, boardDetail.data.createdAt)

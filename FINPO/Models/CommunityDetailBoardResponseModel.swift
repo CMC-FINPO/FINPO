@@ -19,7 +19,7 @@ struct BoardDataDetail: Codable {
     var likes: Int
     var hits: Int
     var countOfComment: Int
-    var user: CommunityUserDetail
+    var user: CommunityUserDetail?
     var isMine: Bool
     var isLiked: Bool
     var isBookmarked: Bool
