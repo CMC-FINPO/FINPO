@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import RxSwift
 import RxCocoa
+import PhotosUI
 
 class CommunityWritingViewController: UIViewController {
     
@@ -136,7 +137,7 @@ extension CommunityWritingViewController: UIImagePickerControllerDelegate, UINav
         }))
         actionSheet.addAction(UIAlertAction(title: "앨범에서 선택", style: .default, handler: { [weak self] _ in
             //TODO: 앨범 이동
-            self?.showImageAction(.photoLibrary)
+            self?.loadPHPicker()
         }))
         if UIDevice.current.userInterfaceIdiom == .pad {
             if let popoverController = actionSheet.popoverPresentationController {
@@ -156,5 +157,27 @@ extension CommunityWritingViewController: UIImagePickerControllerDelegate, UINav
         vc.delegate = self
         vc.allowsEditing = true
         present(vc, animated: true)
+    }
+    
+    func loadPHPicker() {
+        var configuration = PHPickerConfiguration()
+        configuration.selectionLimit = 5
+        configuration.filter = .any(of: [.images])
+        
+        let picker = PHPickerViewController(configuration: configuration)
+        picker.delegate = self
+        present(picker, animated: true)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        picker.dismiss(animated: true, completion: nil)
+        
+    }
+}
+
+extension CommunityWritingViewController: PHPickerViewControllerDelegate {
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true, completion: nil)
+        
     }
 }
