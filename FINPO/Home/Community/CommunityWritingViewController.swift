@@ -42,12 +42,13 @@ class CommunityWritingViewController: UIViewController {
     
     private var barButton = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 30))
     
-    private var imageCollectionView: UICollectionView = {
+    private lazy var imageCollectionView: UICollectionView = {
         let flow = UICollectionViewFlowLayout()
         flow.minimumInteritemSpacing = 10
         let cv = UICollectionView(frame: .init(), collectionViewLayout: flow)
         cv.showsVerticalScrollIndicator = false
         cv.showsHorizontalScrollIndicator = false
+        cv.register(CommunityCollectionViewCell.self, forCellWithReuseIdentifier: "CommunityCollectionViewCell")
         return cv
     }()
     
@@ -56,8 +57,9 @@ class CommunityWritingViewController: UIViewController {
         return view
     }()
     
-    private var albumButton: UIButton = {
+    private lazy var albumButton: UIButton = {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
+        button.addTarget(self, action: #selector(didTapSelectBoardImage), for: .touchUpInside)
         button.backgroundColor = .green
         return button
     }()
@@ -102,11 +104,17 @@ class CommunityWritingViewController: UIViewController {
     }
     
     private func setInputBind() {
-
+        
+        
+        
     }
     
     private func setOutputBind() {
         
+    }
+    
+    @objc private func didTapSelectBoardImage() {
+        self.presentPhotoActionSheet()
     }
 }
 
@@ -115,5 +123,38 @@ extension CommunityWritingViewController: UITextViewDelegate {
         guard textView.textColor == .secondaryLabel else { return }
         textView.text = nil
         textView.textColor = .label
+    }
+}
+
+extension CommunityWritingViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    private func presentPhotoActionSheet() {
+        let actionSheet = UIAlertController(title: "게시글 이미지 추가", message: nil, preferredStyle: .actionSheet)
+        actionSheet.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+        actionSheet.addAction(UIAlertAction(title: "사진 촬영", style: .default, handler: { [weak self] _ in
+            //TODO: 카메라 켜기
+            self?.showImageAction(.camera)
+        }))
+        actionSheet.addAction(UIAlertAction(title: "앨범에서 선택", style: .default, handler: { [weak self] _ in
+            //TODO: 앨범 이동
+            self?.showImageAction(.photoLibrary)
+        }))
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            if let popoverController = actionSheet.popoverPresentationController {
+                popoverController.sourceView = self.view
+                popoverController.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
+                popoverController.permittedArrowDirections = []
+                self.present(actionSheet, animated: true, completion: nil)
+            }
+        } else {
+            self.present(actionSheet, animated: true)
+        }
+    }
+    
+    func showImageAction(_ action: UIImagePickerController.SourceType) {
+        let vc = UIImagePickerController()
+        vc.sourceType = action
+        vc.delegate = self
+        vc.allowsEditing = true
+        present(vc, animated: true)
     }
 }
