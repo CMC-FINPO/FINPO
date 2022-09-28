@@ -22,6 +22,14 @@ struct ApiManager {
         return header
     }
     
+    static func createImagePostHeader(token: String) -> HTTPHeaders {
+        let header: HTTPHeaders = [
+            "Content-Type":"application/x-www-form-urlencoded;charset=UTF-8; boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm",
+            "Authorization":"Bearer ".appending(token)
+        ]
+        return header
+    }
+    
     static func getData<T: Decodable>(with param: Encodable? = nil, from url: String, to model: T.Type, encoding: ParameterEncoding) -> Observable<T> {
         return Observable.create { observer in
             let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
@@ -79,6 +87,34 @@ struct ApiManager {
                     }
                 })
             
+            return Disposables.create()
+        }
+    }
+    
+    static func postImage<T: Decodable>(with images: [UIImage], from url: String, to model: T.Type, encoding: ParameterEncoding) -> Observable<T> {
+        return Observable.create { observer in
+            print("이미지 비었니?\(images.isEmpty)")
+            var imageData: [Data] = [Data]()
+            for image in images {
+                imageData.append(image.jpegData(compressionQuality: 1)!)
+            }
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
+            let header = ApiManager.createImagePostHeader(token: accessToken)
+            DispatchQueue.global().async {
+                API.session.upload(multipartFormData: { multipart in
+                    for imgData in imageData {
+                        multipart.append(imgData, withName: "imgFiles", fileName: "imagefile.jpeg", mimeType: "image/jpeg")
+                    }
+                }, to: url, headers: header, interceptor: MyRequestInterceptor())
+                .responseDecodable(of: model.self) { response in
+                    switch response.value {
+                    case .some(let models):
+                        observer.onNext(models)
+                    case .none:
+                        observer.onError(NetworkError.imagePostError)
+                    }
+                }
+            }            
             return Disposables.create()
         }
     }
@@ -145,4 +181,8 @@ extension Encodable {
         }
         return (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)).flatMap { $0 as? [String: Any] }
     }
+}
+
+enum NetworkError: Error {
+    case imagePostError
 }

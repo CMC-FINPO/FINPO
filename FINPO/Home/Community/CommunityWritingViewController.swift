@@ -10,10 +10,15 @@ import UIKit
 import RxSwift
 import RxCocoa
 import PhotosUI
+import Kingfisher
 
 class CommunityWritingViewController: UIViewController {
     
+    let disposeBag = DisposeBag()
+    
     private var addWritingBoardButton = UIBarButtonItem()
+    
+    let viewModel = CommunityWritingViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,7 +50,8 @@ class CommunityWritingViewController: UIViewController {
     
     private lazy var imageCollectionView: UICollectionView = {
         let flow = UICollectionViewFlowLayout()
-        flow.minimumInteritemSpacing = 10
+        flow.minimumInteritemSpacing = 30
+        flow.minimumLineSpacing = 30
         let cv = UICollectionView(frame: .init(), collectionViewLayout: flow)
         cv.showsVerticalScrollIndicator = false
         cv.showsHorizontalScrollIndicator = false
@@ -111,7 +117,19 @@ class CommunityWritingViewController: UIViewController {
     }
     
     private func setOutputBind() {
-        
+        viewModel.output.loadImages
+            .scan(into: [String]()) { imgurl, model in
+                imgurl.removeAll()
+                for i in 0..<model.data.imgUrls.count {
+                    imgurl.append(model.data.imgUrls[i])
+                }
+            }
+            .asObservable()
+            .observe(on: MainScheduler.asyncInstance)
+            .bind(to: imageCollectionView.rx.items(cellIdentifier: "CommunityCollectionViewCell", cellType: CommunityCollectionViewCell.self)) {
+                (index: Int, imgUrl: String, cell) in
+                cell.imageView.kf.setImage(with: URL(string: imgUrl))
+            }.disposed(by: disposeBag)
     }
     
     @objc private func didTapSelectBoardImage() {
@@ -179,5 +197,36 @@ extension CommunityWritingViewController: PHPickerViewControllerDelegate {
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         picker.dismiss(animated: true, completion: nil)
         
+        var images: [UIImage] = [UIImage]()
+        var cnt = 0
+        let queue = DispatchQueue(label: "custom")
+        queue.sync {
+            for result in results {
+                result.itemProvider.loadObject(ofClass: UIImage.self) {
+                    object, error in
+                    if let error = error {
+                        print("\(error.localizedDescription)")
+                    } else {
+                        if let image = object as? UIImage {
+                            images.append(image)
+                            cnt += 1
+                            print("이미지 추가됨")
+                        }
+                    }
+                }
+            }
+        }
+        while true {
+            if cnt == results.count {
+                viewModel.input.selectedBoardImages.accept(images)
+                break
+            }
+        }
+        
     }
+
+}
+
+enum PhotosError: Error {
+    case getImageError
 }
