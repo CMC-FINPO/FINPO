@@ -89,6 +89,7 @@ class CommunityMainViewController: UIViewController {
         
         ///게시글 테이블뷰
         postTableView.register(BoardTableViewCell.self, forCellReuseIdentifier: "postTableViewCell")
+        postTableView.refreshControl = UIRefreshControl()
     }
     
     fileprivate func setLayout() {
@@ -140,10 +141,20 @@ class CommunityMainViewController: UIViewController {
     }
     
     fileprivate func setInputBind() {
-        rx.viewWillAppear.take(1).asDriver { _ in return .never()}
-            .drive(onNext: { [weak self] _ in
-                self?.viewModel.input.loadBoardObserver.accept(.latest)
-            }).disposed(by: disposeBag)
+        
+        let reload = postTableView.refreshControl?.rx
+            .controlEvent(.valueChanged)
+            .map { _ in () } ?? Observable.just(())
+        
+        let firstLoad = rx.viewWillAppear
+            .take(1)
+            .map { _ in () }
+        
+        Observable.merge([firstLoad, reload])
+            .bind {
+                self.viewModel.input.loadBoardObserver.accept(.latest)
+            }
+            .disposed(by: disposeBag)
         
         postTableView.rx.reachedBottom(from: -25)
             .map { a -> Bool in return true }

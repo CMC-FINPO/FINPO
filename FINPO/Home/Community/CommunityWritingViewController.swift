@@ -112,8 +112,25 @@ class CommunityWritingViewController: UIViewController {
     
     private func setInputBind() {
         
+        rx.viewWillAppear.asDriver { _ in return .never()}
+            .drive(onNext: { [weak self] _ in
+                //이미지를 넣지 않았을 때
+                self?.viewModel.input.imgUrlStorage.onNext([""])
+                self?.viewModel.input.isAnony.onNext(false)
+            }).disposed(by: disposeBag)
         
+        boardTextView.rx.text
+            .bind { [weak self] text in
+                if let text = text {
+                    self?.viewModel.input.textStorage.onNext(text)
+                }
+            }.disposed(by: disposeBag)
         
+        barButton.rx.tap
+            .bind { [weak self] _ in
+                self?.viewModel.input.sendButtonTapped.accept(())
+                self?.navigationController?.popViewController(animated: true)
+            }.disposed(by: disposeBag)
     }
     
     private func setOutputBind() {
@@ -150,11 +167,11 @@ extension CommunityWritingViewController: UIImagePickerControllerDelegate, UINav
         let actionSheet = UIAlertController(title: "게시글 이미지 추가", message: nil, preferredStyle: .actionSheet)
         actionSheet.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
         actionSheet.addAction(UIAlertAction(title: "사진 촬영", style: .default, handler: { [weak self] _ in
-            //TODO: 카메라 켜기
+            //MARK: 카메라 켜기
             self?.showImageAction(.camera)
         }))
         actionSheet.addAction(UIAlertAction(title: "앨범에서 선택", style: .default, handler: { [weak self] _ in
-            //TODO: 앨범 이동
+            //MARK: 앨범 이동
             self?.loadPHPicker()
         }))
         if UIDevice.current.userInterfaceIdiom == .pad {
