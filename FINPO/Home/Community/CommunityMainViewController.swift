@@ -98,7 +98,7 @@ class CommunityMainViewController: UIViewController {
             $0.top.equalTo(sortPolicyButton.snp.bottom).offset(15)
             $0.leading.trailing.equalToSuperview()
             $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
-        }
+        }                
         
         
     }

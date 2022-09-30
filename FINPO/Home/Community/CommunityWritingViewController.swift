@@ -11,6 +11,9 @@ import RxSwift
 import RxCocoa
 import PhotosUI
 import Kingfisher
+/*
+ 커뮤니티 게시글 작성 View
+ */
 
 class CommunityWritingViewController: UIViewController {
     
@@ -50,8 +53,8 @@ class CommunityWritingViewController: UIViewController {
     
     private lazy var imageCollectionView: UICollectionView = {
         let flow = LeftAlignedCollectionViewFlowLayout()
-        flow.minimumInteritemSpacing = 30
-        flow.minimumLineSpacing = 30
+        flow.minimumInteritemSpacing = 15
+        flow.minimumLineSpacing = 15
         let cv = UICollectionView(frame: .init(), collectionViewLayout: flow)
         cv.showsVerticalScrollIndicator = false
         cv.showsHorizontalScrollIndicator = false
@@ -70,6 +73,14 @@ class CommunityWritingViewController: UIViewController {
         button.setImage(UIImage(named: "AlbumImg"), for: .normal)
         button.addTarget(self, action: #selector(didTapSelectBoardImage), for: .touchUpInside)
         return button
+    }()
+    
+    private lazy var indicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        indicator.center = self.view.center
+        indicator.hidesWhenStopped = true
+        indicator.style = UIActivityIndicatorView.Style.medium
+       return indicator
     }()
     
     private func setAttribute() {
@@ -109,6 +120,8 @@ class CommunityWritingViewController: UIViewController {
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.height.equalTo(105)
         }
+        
+        view.addSubview(indicator)
     }
     
     private func setInputBind() {
@@ -134,6 +147,8 @@ class CommunityWritingViewController: UIViewController {
                 self?.navigationController?.popViewController(animated: true)
             }.disposed(by: disposeBag)
         
+        
+        
         //TODO: 선택된 이미지 확대
 //        imageCollectionView.rx.itemSelected
 //            .bind { [weak self] indexPath in
@@ -157,6 +172,16 @@ class CommunityWritingViewController: UIViewController {
                 cell.delegate = self
                 cell.viewModel = self.viewModel
                 cell.removeImage(imgUrl: imgUrl)
+            }.disposed(by: disposeBag)
+        
+        viewModel.output.activated?
+            .map { !$0 }
+            .bind { [weak self] finished in
+                if finished {
+                    self?.indicator.stopAnimating()
+                } else {
+                    self?.indicator.startAnimating()
+                }
             }.disposed(by: disposeBag)
     }
     

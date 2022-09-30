@@ -22,19 +22,29 @@ class CommunityWritingViewModel {
         let textStorage = PublishSubject<String>()
         let sendButtonTapped = PublishRelay<Void>()
         let isAnony = PublishSubject<Bool>()
+        
+        //indicator
+        let activating = BehaviorSubject<Bool>(value: false)
     }
     
     struct OUTPUT {
         var loadImages = PublishRelay<BoardImageResponseModel>()
+        
+        //indicator
+        var activated: Observable<Bool>?
     }
     
     init() {
+        output.activated = input.activating.distinctUntilChanged()
+        
         input.selectedBoardImages
+            .do { [weak self] _ in self?.input.activating.onNext(true) }
             .map { images in
                 ApiManager.postImage(with: images, from: BaseURL.url.appending("upload/post"), to: BoardImageResponseModel.self, encoding: URLEncoding.default)
             }
             .flatMap { $0 }
             .map { $0 }
+            .do { [weak self] _ in self?.input.activating.onNext(false)}
             .subscribe(onNext: { [weak self] imgUrls in
                 self?.output.loadImages.accept(imgUrls)
                 self?.input.imgUrlStorage.accept(imgUrls.data.imgUrls)
