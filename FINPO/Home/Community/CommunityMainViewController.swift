@@ -27,25 +27,6 @@ class CommunityMainViewController: UIViewController {
         setInputBind()
         setOutputBind()
     }
-    ///커뮤니티 준비중 내용
-//    private var inPreparationLabel: UILabel = {
-//        let label = UILabel()
-//        label.text = "커뮤니티는 준비중입니다."
-//        label.font = UIFont(name: "AppleSDGothicNeo-Bold", size: 32)
-//        label.textColor = .black
-//        return label
-//    }()
-//
-//    private var descriptionLabel: UILabel = {
-//        let label = UILabel()
-//        label.textAlignment = .center
-//        label.numberOfLines = 0
-//        label.text = "커뮤니티는 아직 준비중이랍니다..\n조금만 기다려주세요"
-//        label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 18)
-//        label.textColor = .black
-//        return label
-//    }()
-    
     private var sumOfPostLabel: UILabel = {
         let label = UILabel()
         label.textColor = UIColor(hexString: "000000")
@@ -65,7 +46,6 @@ class CommunityMainViewController: UIViewController {
         let tv = UITableView()
         tv.backgroundColor = .white
         tv.rowHeight = CGFloat(150)
-//        tv.bounces = false
         tv.separatorInset.left = 0
         return tv
     }()
@@ -98,19 +78,6 @@ class CommunityMainViewController: UIViewController {
     }
     
     fileprivate func setLayout() {
-        ///커뮤니티 준비중 내용
-//        view.addSubview(inPreparationLabel)
-//        inPreparationLabel.snp.makeConstraints {
-//            $0.centerX.equalToSuperview()
-//            $0.top.equalTo(view.snp.centerY).offset(100)
-//        }
-//
-//        view.addSubview(descriptionLabel)
-//        descriptionLabel.snp.makeConstraints {
-//            $0.top.equalTo(inPreparationLabel.snp.bottom).offset(21)
-//            $0.centerX.equalToSuperview()
-//        }
-                
         view.addSubview(sumOfPostLabel)
         sumOfPostLabel.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(25)
@@ -157,6 +124,8 @@ class CommunityMainViewController: UIViewController {
         
         Observable.merge([firstLoad, reload])
             .bind { [weak self] _ in
+                self?.viewModel.currentPage = 0
+                self?.isLastPage = false
                 self?.viewModel.input.loadBoardObserver.accept(.latest)
             }
             .disposed(by: disposeBag)
@@ -180,6 +149,7 @@ class CommunityMainViewController: UIViewController {
                     guard let self = self else { return }
                     //최신순 - 최신순 했을 때 page 0 중복 방지
                     self.viewModel.currentPage = 0
+                    self.isLastPage = false
                     self.viewModel.input.loadBoardObserver.accept(.latest)
                     DispatchQueue.main.async {
                         self.sortPolicyButton.setImage(UIImage(named: "chip=chip4"), for: .normal)
@@ -188,6 +158,7 @@ class CommunityMainViewController: UIViewController {
                 let popularAction = UIAlertAction(title: "인기순", style: .default) { [weak self] action in
                     guard let self = self else { return }
                     self.viewModel.currentPage = 0
+                    self.isLastPage = false
                     self.viewModel.input.loadBoardObserver.accept(.popular)
                     DispatchQueue.main.async {
                         self.sortPolicyButton.setImage(UIImage(named: "chip=chip13"), for: .normal)
