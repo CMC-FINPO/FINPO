@@ -8,6 +8,7 @@
 import Foundation
 import Alamofire
 import RxSwift
+import UIKit
 
 struct ApiManager {
 //    static func getData<T: Decodable>(with param: Encodable? = nil, from url: String, to model: NSDictionary?, completion: @escaping(_ data: T?, _ error: String?) -> ()) {
@@ -63,7 +64,7 @@ struct ApiManager {
                     case .some(let models):
                         observer.onNext(models)
                     case .none:
-                        observer.onCompleted()
+                        observer.onError(response.error!)
                     }
                 })
             

@@ -51,8 +51,8 @@ class CommunityWritingViewModel {
                 return self.toDic(imgUrls: b, text: c, isAnony: d)
             }
             .map { $0 }
-            .flatMap { a -> Observable in
-                return ApiManager.postData(with: a, from: BaseURL.url.appending("post"), to: CommunityDetailBoardResponseModel.self, encoding: JSONEncoding.default)
+            .flatMap { para -> Observable in
+                return ApiManager.postData(with: para, from: BaseURL.url.appending("post"), to: CommunityDetailBoardResponseModel.self, encoding: JSONEncoding.default)
             }
             .asObservable()
             .subscribe(onNext: { _ in
@@ -61,32 +61,24 @@ class CommunityWritingViewModel {
                 print("게시글 업로드 실패: \(error)")
             }
             ).disposed(by: disposeBag)
-           
-            
-//            .map { [weak self] (_, imgUrls, text, anony) -> Parameters in
-//                if let self = self {
-//                    return self.toDic(imgUrls: imgUrls, text: text, isAnony: anony)
-//                }
-//            )}
-//            .map { $0 }
-//            .map { para in
-//                ApiManager.postData(with: para, from: BaseURL.url.appending("post"), to: CommunityDetailBoardResponseModel.self, encoding: JSONEncoding.default)
-//            }
-//            .subscribe(onNext: { _ in
-//                print("서버 등록 완료")
-//            }).disposed(by: disposeBag)
     }
     
     func toDic(imgUrls: [String], text: String, isAnony: Bool = false) -> Parameters {
         var dics = [[String:Any]]()
-//        var dicsData = Data()
-        for i in 0..<imgUrls.count {
-            let param: Parameters = [
-                "img":imgUrls[i],
-                "order": i
+        if imgUrls[0] == "" {
+            let paramters: Parameters = [
+                "content": text,
+                "anonymity": isAnony
             ]
-            dics.append(param)
-//            dicsData = try! JSONSerialization.data(withJSONObject: dics, options: [])
+            return paramters
+        } else {
+            for i in 0..<imgUrls.count {
+                let param: Parameters = [
+                    "img":imgUrls[i],
+                    "order": i
+                ]
+                dics.append(param)
+            }
         }
         let parameters: Parameters = [
             "imgs": dics,

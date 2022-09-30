@@ -31,11 +31,18 @@ class CommunityViewModel {
         let undoBookmarkObserver = PublishRelay<Int>()
         //trigger
         let triggerObserver = PublishRelay<Void>()
+        
+        //indicator
+        let activating = BehaviorSubject<Bool>(value: false)
     }
         
     ///OUTPUT
     struct OUTPUT {
         var loadBoardOutput = PublishRelay<isLoadMoreAction>()
+        
+        var activated: Observable<Bool>?
+        
+        var errorValue = PublishRelay<Error>()
     }
     
     enum boardSorting {
@@ -84,8 +91,10 @@ class CommunityViewModel {
 
     
     init() {
+        output.activated = input.activating.distinctUntilChanged()
         
         input.loadBoardObserver
+            .do { [weak self] _ in self?.input.activating.onNext(true) }
             .map { action in
                 switch action {
                 case .latest:
@@ -105,7 +114,9 @@ class CommunityViewModel {
                         self.output.loadBoardOutput.accept(.first(data))
                     }).disposed(by: self.disposeBag)
                 }
-            }.subscribe(onNext: {
+            }
+            .do {[weak self] _ in self?.input.activating.onNext(false)}
+            .subscribe(onNext: {
                 print("게시판 로드")
             }).disposed(by: disposeBag)
         
@@ -114,7 +125,6 @@ class CommunityViewModel {
         input.loadMoreObserver
             .withLatestFrom(input.loadBoardObserver) { _, action in
                 self.currentPage += 1
-                
                 switch action {
                 case .latest:
                     ApiManager.getData(
@@ -145,7 +155,10 @@ class CommunityViewModel {
                 encoding: URLEncoding.default) }
             .subscribe(onNext: { [weak self] editedData in
                 self?.input.triggerObserver.accept(())
-            }).disposed(by: disposeBag)
+            }, onError: { [weak self] error in
+                self?.output.errorValue.accept(error)
+            }
+            ).disposed(by: disposeBag)
         
         input.unlikeObserver
             .flatMap { id in ApiManager.deleteData(

@@ -65,9 +65,14 @@ class CommunityMainViewController: UIViewController {
         let tv = UITableView()
         tv.backgroundColor = .white
         tv.rowHeight = CGFloat(150)
-        tv.bounces = false
+//        tv.bounces = false
         tv.separatorInset.left = 0
         return tv
+    }()
+    
+    private var activityIndicator: UIActivityIndicatorView = {
+        let view = UIActivityIndicatorView()
+        return view
     }()
     
     fileprivate func setAttribute() {
@@ -151,14 +156,15 @@ class CommunityMainViewController: UIViewController {
             .map { _ in () }
         
         Observable.merge([firstLoad, reload])
-            .bind {
-                self.viewModel.input.loadBoardObserver.accept(.latest)
+            .bind { [weak self] _ in
+                self?.viewModel.input.loadBoardObserver.accept(.latest)
             }
             .disposed(by: disposeBag)
         
         postTableView.rx.reachedBottom(from: -25)
             .map { a -> Bool in return true }
-            .subscribe(onNext: { _ in
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
                 if self.isLastPage {
                     return
                 } else {
@@ -318,6 +324,25 @@ class CommunityMainViewController: UIViewController {
                     }).disposed(by: cell.cellBag)
                 
             }.disposed(by: disposeBag)
+        
+        viewModel.output.errorValue.asSignal()
+            .emit(onNext: { [weak self] error in
+                let ac = UIAlertController(title: "에러", message: "\(error.localizedDescription)", preferredStyle: .alert)
+                ac.addAction(UIAlertAction(title: "확인", style: .cancel))
+                self?.present(ac, animated: true)
+            }).disposed(by: disposeBag)
+        
+        viewModel.output.activated?
+            .debug()
+            .map { !$0 }
+            .do(onNext: { [weak self] finished in
+                if finished {
+                    self?.postTableView.refreshControl?.endRefreshing()
+                }})
+            .bind(to: activityIndicator.rx.isHidden)
+            .disposed(by: disposeBag)
+                
+            
     }
     
     public func attributeText(originalText: String, range: String, color: String) -> NSMutableAttributedString {
