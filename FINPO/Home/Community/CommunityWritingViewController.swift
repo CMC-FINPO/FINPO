@@ -40,11 +40,16 @@ class CommunityWritingViewController: UIViewController {
         self.tabBarController?.tabBar.isHidden = false
     }
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
+    }
+    
     private lazy var boardTextView: UITextView = {
         let textView = UITextView()
         textView.text = "글자 수는 최대 1000자입니다."
         textView.textContainerInset = UIEdgeInsets(top: 10, left: 20, bottom: 10, right: 20)
         textView.textColor = .secondaryLabel
+        textView.returnKeyType = .done
         textView.delegate = self
         return textView
     }()
@@ -147,8 +152,6 @@ class CommunityWritingViewController: UIViewController {
                 self?.navigationController?.popViewController(animated: true)
             }.disposed(by: disposeBag)
         
-        
-        
         //TODO: 선택된 이미지 확대
 //        imageCollectionView.rx.itemSelected
 //            .bind { [weak self] indexPath in
@@ -201,6 +204,14 @@ extension CommunityWritingViewController: UITextViewDelegate {
         guard textView.textColor == .secondaryLabel else { return }
         textView.text = nil
         textView.textColor = .label
+    }
+    
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if text == "\n" {
+            textView.resignFirstResponder()
+            return false
+        }
+        return true
     }
 }
 
@@ -291,7 +302,6 @@ extension CommunityWritingViewController: UICollectionViewDelegateFlowLayout {
         return CGSize(width: 90, height: 90)
     }
 }
-
 enum PhotosError: Error {
     case getImageError
 }

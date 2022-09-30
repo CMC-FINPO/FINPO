@@ -56,8 +56,8 @@ class CommunityWritingViewModel {
                 input.textStorage.asObservable(),
                 input.isAnony.asObservable()))
         {($0, $1.0, $1.1, $1.2)}
-            .map { (a,b,c,d) -> Parameters in
-                return self.toDic(imgUrls: b, text: c, isAnony: d)
+            .map { (tapEvent, imgUrls, text, anony) -> Parameters in
+                return self.toDic(imgUrls: imgUrls, text: text, isAnony: anony)
             }
             .map { $0 }
             .flatMap { para -> Observable in
