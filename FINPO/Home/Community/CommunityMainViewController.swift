@@ -114,6 +114,11 @@ class CommunityMainViewController: UIViewController {
     
     fileprivate func setInputBind() {
         
+        rx.viewWillAppear.asDriver { _ in return .never()}
+            .drive(onNext: { [weak self] _ in
+                self?.viewModel.input.loadBoardObserver.accept(.latest)
+            }).disposed(by: disposeBag)
+        
         let reload = postTableView.refreshControl?.rx
             .controlEvent(.valueChanged)
             .map { _ in () } ?? Observable.just(())
@@ -126,7 +131,9 @@ class CommunityMainViewController: UIViewController {
             .bind { [weak self] _ in
                 self?.viewModel.currentPage = 0
                 self?.isLastPage = false
-                self?.viewModel.input.loadBoardObserver.accept(.latest)
+                //밑에거 없이 트리거만 작동하면 리프레쉬 되게
+//                self?.viewModel.input.loadBoardObserver.accept(.latest)
+                self?.viewModel.input.reloadObserver.accept(())
             }
             .disposed(by: disposeBag)
         
@@ -166,8 +173,8 @@ class CommunityMainViewController: UIViewController {
                 }
                 let cancelAction = UIAlertAction(title: "취소", style: .destructive)
                 
-                latestAction.setValue(UIColor(hexString: "5B43EF"), forKey: "titleTextColor")
-                popularAction.setValue(UIColor(hexString: "5B43EF"), forKey: "titleTextColor")
+                latestAction.setValue(UIColor.P01, forKey: "titleTextColor")
+                popularAction.setValue(UIColor.P01, forKey: "titleTextColor")
                 alertVC.addAction(latestAction)
                 alertVC.addAction(popularAction)
                 alertVC.addAction(cancelAction)
@@ -304,7 +311,6 @@ class CommunityMainViewController: UIViewController {
             }).disposed(by: disposeBag)
         
         viewModel.output.activated?
-            .debug()
             .map { !$0 }
             .do(onNext: { [weak self] finished in
                 if finished {

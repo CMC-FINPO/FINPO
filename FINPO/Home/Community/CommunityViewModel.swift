@@ -34,6 +34,9 @@ class CommunityViewModel {
         
         //indicator
         let activating = BehaviorSubject<Bool>(value: false)
+        
+        //reload
+        let reloadObserver = PublishRelay<Void>()
     }
         
     ///OUTPUT
@@ -93,9 +96,12 @@ class CommunityViewModel {
     init() {
         output.activated = input.activating.distinctUntilChanged()
         
-        input.loadBoardObserver
+        Observable.combineLatest(
+            input.loadBoardObserver.asObservable(),
+            input.reloadObserver.asObservable())
             .do { [weak self] _ in self?.input.activating.onNext(true) }
-            .map { action in
+            .map { [weak self] action, _ in
+                guard let self = self else { return }
                 switch action {
                 case .latest:
                     ApiManager.getData(
@@ -120,10 +126,39 @@ class CommunityViewModel {
                 print("게시판 로드")
             }).disposed(by: disposeBag)
         
+//        input.loadBoardObserver
+//            .do { [weak self] _ in self?.input.activating.onNext(true) }
+//            .map { [weak self] action in
+//                guard let self = self else { return }
+//                switch action {
+//                case .latest:
+//                    ApiManager.getData(
+//                        from:BaseURL.url.appending("\(boardSorting.latest.sortingURL)&page=\(self.currentPage)"),
+//                        to: CommunityboardResponseModel.self,
+//                        encoding: URLEncoding.default
+//                    ).subscribe(onNext: { data in
+//                        self.output.loadBoardOutput.accept(.first(data))
+//                    }).disposed(by: self.disposeBag)
+//                case .popular:
+//                    ApiManager.getData(
+//                        from: BaseURL.url.appending("\(boardSorting.popular.sortingURL)&page=\(self.currentPage)"),
+//                    to: CommunityboardResponseModel.self,
+//                    encoding: URLEncoding.default)
+//                    .subscribe(onNext: { data in
+//                        self.output.loadBoardOutput.accept(.first(data))
+//                    }).disposed(by: self.disposeBag)
+//                }
+//            }
+//            .do {[weak self] _ in self?.input.activating.onNext(false)}
+//            .subscribe(onNext: {
+//                print("게시판 로드")
+//            }).disposed(by: disposeBag)
+        
         
         ///추가 로드
         input.loadMoreObserver
-            .withLatestFrom(input.loadBoardObserver) { _, action in
+            .withLatestFrom(input.loadBoardObserver) { [weak self] _, action in
+                guard let self = self else { return }
                 self.currentPage += 1
                 switch action {
                 case .latest:
@@ -188,7 +223,8 @@ class CommunityViewModel {
             }).disposed(by: disposeBag)
         
         input.triggerObserver
-            .withLatestFrom(input.loadBoardObserver) { _, action in
+            .withLatestFrom(input.loadBoardObserver) { [weak self] _, action in
+                guard let self = self else { return }
                 switch action {
                 case .latest:
                     self.input.loadBoardObserver.accept(.latest)
