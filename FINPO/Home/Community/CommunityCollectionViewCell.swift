@@ -8,21 +8,30 @@
 import Foundation
 import UIKit
 import SnapKit
+import RxSwift
 
 ///커뮤니티 상세 게시글 사진용
 class CommunityCollectionViewCell: UICollectionViewCell {
     
+    var disposeBag = DisposeBag()
+    var delegate: UIViewController?
+    var viewModel: CommunityWritingViewModel?
+    
+    var detailsTap : Observable<Void>{
+        return self.checkImageBtn.rx.tap.asObservable()
+    }
+    
     public var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleToFill
+        imageView.isUserInteractionEnabled = true
         return imageView
     }()
     
-    private var checkImage: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(named: "Interest_check")
-        imageView.isHidden = true
-        return imageView
+    public var checkImageBtn: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "delete_gray"), for: .normal)
+        return button
     }()
     
     override init(frame: CGRect) {
@@ -36,10 +45,43 @@ class CommunityCollectionViewCell: UICollectionViewCell {
         }
         imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 5
+        
+        imageView.addSubview(checkImageBtn)
+        checkImageBtn.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(7)
+            $0.trailing.equalToSuperview().inset(7)
+            $0.height.width.equalTo(25)
+        }
+    }
+    
+    func removeImage(imgUrl: String) {
+        self.detailsTap
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                let ac = UIAlertController(title: "이 이미지를 삭제하시겠습니까?", message: nil, preferredStyle: .alert)
+                ac.addAction(UIAlertAction(title: "삭제", style: .destructive, handler: { action in
+                    self.removeFromSuperview()
+                    let urls = self.viewModel?.input.imgUrlStorage.value.filter{ $0 != imgUrl }
+                    if let urls = urls {
+                        self.viewModel?.input.imgUrlStorage.accept(urls)
+                        let refreshedBoardImg = BoardImageResponseModel(data: BoardImageDataDetail(imgUrls: urls))
+                        self.viewModel?.output.loadImages.accept(refreshedBoardImg)
+                    }
+                }))
+                ac.addAction(UIAlertAction(title: "취소", style: .cancel))
+                self.delegate?.present(ac, animated: true)
+            })
+            .disposed(by: self.disposeBag)
+        
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        disposeBag = DisposeBag()
     }
         
 }

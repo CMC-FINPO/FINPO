@@ -537,6 +537,7 @@ class CommunityDetailViewController: UIViewController {
             .bind(to: boardCollectionView.rx.items(cellIdentifier: "CommunityCollectionViewCell", cellType: CommunityCollectionViewCell.self)) { [weak self]
                 (index: Int, element: BoardImgDetail, cell) in
                 guard let self = self else { return }
+                cell.checkImageBtn.isHidden = true
                 DispatchQueue.global().async {
                     //캐시에 있는지 확인 후 없다면 메모리 캐시에 저장
                     let imgUrl: String = String(element.img)

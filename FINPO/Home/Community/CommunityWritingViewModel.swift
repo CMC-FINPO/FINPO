@@ -18,7 +18,7 @@ class CommunityWritingViewModel {
     
     struct INPUT {
         let selectedBoardImages = PublishRelay<[UIImage]>()
-        let imgUrlStorage = PublishSubject<[String]>()
+        let imgUrlStorage = BehaviorRelay<[String]>(value: [""])
         let textStorage = PublishSubject<String>()
         let sendButtonTapped = PublishRelay<Void>()
         let isAnony = PublishSubject<Bool>()
@@ -37,7 +37,7 @@ class CommunityWritingViewModel {
             .map { $0 }
             .subscribe(onNext: { [weak self] imgUrls in
                 self?.output.loadImages.accept(imgUrls)
-                self?.input.imgUrlStorage.onNext(imgUrls.data.imgUrls)
+                self?.input.imgUrlStorage.accept(imgUrls.data.imgUrls)
             }).disposed(by: disposeBag)
         
         _ = input.sendButtonTapped
@@ -46,7 +46,6 @@ class CommunityWritingViewModel {
                 input.textStorage.asObservable(),
                 input.isAnony.asObservable()))
         {($0, $1.0, $1.1, $1.2)}
-//            .debug()
             .map { (a,b,c,d) -> Parameters in
                 return self.toDic(imgUrls: b, text: c, isAnony: d)
             }
@@ -55,8 +54,8 @@ class CommunityWritingViewModel {
                 return ApiManager.postData(with: para, from: BaseURL.url.appending("post"), to: CommunityDetailBoardResponseModel.self, encoding: JSONEncoding.default)
             }
             .asObservable()
-            .subscribe(onNext: { _ in
-                print("aksjdlaks")
+            .subscribe(onNext: { a in
+                
             }, onError: { error in
                 print("게시글 업로드 실패: \(error)")
             }

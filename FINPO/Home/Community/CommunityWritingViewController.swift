@@ -49,13 +49,14 @@ class CommunityWritingViewController: UIViewController {
     private var barButton = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 30))
     
     private lazy var imageCollectionView: UICollectionView = {
-        let flow = UICollectionViewFlowLayout()
+        let flow = LeftAlignedCollectionViewFlowLayout()
         flow.minimumInteritemSpacing = 30
         flow.minimumLineSpacing = 30
         let cv = UICollectionView(frame: .init(), collectionViewLayout: flow)
         cv.showsVerticalScrollIndicator = false
         cv.showsHorizontalScrollIndicator = false
         cv.register(CommunityCollectionViewCell.self, forCellWithReuseIdentifier: "CommunityCollectionViewCell")
+        cv.delegate = self
         return cv
     }()
     
@@ -66,8 +67,8 @@ class CommunityWritingViewController: UIViewController {
     
     private lazy var albumButton: UIButton = {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
+        button.setImage(UIImage(named: "AlbumImg"), for: .normal)
         button.addTarget(self, action: #selector(didTapSelectBoardImage), for: .touchUpInside)
-        button.backgroundColor = .green
         return button
     }()
     
@@ -85,7 +86,7 @@ class CommunityWritingViewController: UIViewController {
         boardTextView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             $0.leading.trailing.equalToSuperview()
-            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(200)
         }
         
         view.addSubview(bottomView)
@@ -115,7 +116,7 @@ class CommunityWritingViewController: UIViewController {
         rx.viewWillAppear.asDriver { _ in return .never()}
             .drive(onNext: { [weak self] _ in
                 //이미지를 넣지 않았을 때
-                self?.viewModel.input.imgUrlStorage.onNext([""])
+                self?.viewModel.input.imgUrlStorage.accept([""])
                 self?.viewModel.input.isAnony.onNext(false)
             }).disposed(by: disposeBag)
         
@@ -127,10 +128,16 @@ class CommunityWritingViewController: UIViewController {
             }.disposed(by: disposeBag)
         
         barButton.rx.tap
+            .take(1)
             .bind { [weak self] _ in
                 self?.viewModel.input.sendButtonTapped.accept(())
                 self?.navigationController?.popViewController(animated: true)
             }.disposed(by: disposeBag)
+        
+        //TODO: 선택된 이미지 확대
+//        imageCollectionView.rx.itemSelected
+//            .bind { [weak self] indexPath in
+//            }.disposed(by: disposeBag)
     }
     
     private func setOutputBind() {
@@ -143,15 +150,25 @@ class CommunityWritingViewController: UIViewController {
             }
             .asObservable()
             .observe(on: MainScheduler.asyncInstance)
-            .bind(to: imageCollectionView.rx.items(cellIdentifier: "CommunityCollectionViewCell", cellType: CommunityCollectionViewCell.self)) {
+            .bind(to: imageCollectionView.rx.items(cellIdentifier: "CommunityCollectionViewCell", cellType: CommunityCollectionViewCell.self)) { [weak self]
                 (index: Int, imgUrl: String, cell) in
+                guard let self = self else { return }
                 cell.imageView.kf.setImage(with: URL(string: imgUrl))
+                cell.delegate = self
+                cell.viewModel = self.viewModel
+                cell.removeImage(imgUrl: imgUrl)
             }.disposed(by: disposeBag)
     }
     
     @objc private func didTapSelectBoardImage() {
         self.presentPhotoActionSheet()
     }
+    
+//    @objc func deletePreview(sender: UIButton){
+//       //cell 삭제 //delete cell at index of collectionview
+//        print("tapped")
+//        self.imageCollectionView.deleteItems(at: [IndexPath.init(row: sender.tag, section: 0)])
+//       }
 }
 
 extension CommunityWritingViewController: UITextViewDelegate {
@@ -242,6 +259,12 @@ extension CommunityWritingViewController: PHPickerViewControllerDelegate {
         
     }
 
+}
+
+extension CommunityWritingViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: 90, height: 90)
+    }
 }
 
 enum PhotosError: Error {
