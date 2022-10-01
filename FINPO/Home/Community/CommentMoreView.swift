@@ -8,43 +8,59 @@
 import Foundation
 import UIKit
 
-class CommentMoreView {
-    private var viewController: UIViewController?
+class CommentMoreView: NSObject {
     
-    private let moreView: UIView = {
-        let view = UIView()
+    let option = ["수정하기", "삭제하기", "신고하기", "차단하기"]
+    
+    public lazy var moreView: UITableView = {
+        let view = UITableView()
         view.backgroundColor = .green
+        view.separatorStyle = .none
+        view.bounces = false
+        view.layer.masksToBounds = true
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOpacity = 0.3
+        view.layer.cornerRadius = 5
+        view.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        view.dataSource = self
+        view.delegate = self
         return view
     }()
     
-    private var backgroundView: UIView = {
+    public var backgroundView: UIView = {
         let view = UIView()
         view.backgroundColor = .systemGray.withAlphaComponent(0.1)
         return view
     }()
     
-    func setProperty() {
-//        let gesture = UITapGestureRecognizer(target: self, action: #selector(dismissView(_:)))
-//        backgroundView.addGestureRecognizer(gesture)
-    }
-    
-    func showView(on viewController: UIViewController, to cell: UITableViewCell) {
-//        guard let targetView = viewController.view else { return }
+    func showView(to cell: UITableViewCell) {
         cell.contentView.addSubview(backgroundView)
         backgroundView.frame = cell.bounds
-        
-        backgroundView.addSubview(moreView)
-        moreView.frame = CGRect(x: 30, y: 30, width: 100, height: 30)
-        let gesture = UITapGestureRecognizer(target: self, action: #selector(dismissView(_:)))
-        backgroundView.addGestureRecognizer(gesture)
+    
+        cell.contentView.addSubview(moreView)
+        moreView.frame = CGRect(x: cell.bounds.maxX-100, y: 15, width: 80, height: 100)
+    }
+    
+}
+
+extension CommentMoreView: UITableViewDataSource, UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        cell.backgroundColor = .white
+        cell.selectionStyle = .none
+        cell.textLabel?.textAlignment = .center
+        cell.textLabel?.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
+        cell.textLabel?.text = option[indexPath.row]
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return option.count
     }
 
-    @objc func dismissView(_ sender: UITapGestureRecognizer? = nil) {
-        debugPrint("디스미스")
-        UIView.animate(withDuration: 0.25) {
-            self.moreView.removeFromSuperview()
-            self.backgroundView.removeFromSuperview()
-        }
-        
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 25
     }
+    
 }
