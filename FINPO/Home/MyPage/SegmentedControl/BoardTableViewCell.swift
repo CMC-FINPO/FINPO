@@ -15,6 +15,7 @@ class BoardTableViewCell: UITableViewCell {
     var cellBag = DisposeBag()
     
     let attributeVC = CommunityDetailViewController()
+    let moreView = CommentMoreView()
     
     private var viewModel: CommunityDetailViewModel?
     private var commentId: Int?
@@ -111,10 +112,15 @@ class BoardTableViewCell: UITableViewCell {
     }()
     
     @objc func showMoreView() {
-        if let viewController = viewController {
-            let moreView = CommentMoreView()
-            moreView.setProperty()
-            moreView.showView(on: viewController, to: self)
+        let gesture = UITapGestureRecognizer(target: self, action: #selector(dismissView(_:)))
+        moreView.backgroundView.addGestureRecognizer(gesture)
+        moreView.showView(to: self)
+    }
+    
+    @objc func dismissView(_ sender: UITapGestureRecognizer? = nil) {
+        UIView.animate(withDuration: 0.25) { [weak self] in
+            self?.moreView.moreView.removeFromSuperview()
+            self?.moreView.backgroundView.removeFromSuperview()
         }
     }
     
@@ -124,6 +130,7 @@ class BoardTableViewCell: UITableViewCell {
         commentId = nil
         viewController = nil
         contentView.backgroundColor = UIColor.white
+        contentView.isUserInteractionEnabled = true
         
         moreButton.addTarget(self, action: #selector(showMoreView), for: .touchUpInside)
         
@@ -137,7 +144,6 @@ class BoardTableViewCell: UITableViewCell {
             $0.top.equalTo(contentView.snp.top).inset(10)
             $0.height.width.equalTo(35)
         }
-//        userImageView.layer.cornerRadius = userImageView.bounds.width/2
         
         userName.snp.makeConstraints {
             $0.top.equalTo(userImageView.snp.top).offset(3)
