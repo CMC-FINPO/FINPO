@@ -6,3 +6,14 @@
 //
 
 import Foundation
+import RxSwift
+
+protocol CommunitySearchViewModelType {
+    
+}
+
+class CommunitySearchViewModel: CommunitySearchViewModelType {
+    let disposeBag = DisposeBag()
+    
+    
+}
