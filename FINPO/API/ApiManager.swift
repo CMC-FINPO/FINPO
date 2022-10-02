@@ -31,21 +31,35 @@ struct ApiManager {
         return header
     }
     
-    static func getData<T: Decodable>(with param: Encodable? = nil, from url: String, to model: T.Type, encoding: ParameterEncoding) -> Observable<T> {
+    static func getData<T: Decodable>(with param: Parameters? = nil, from url: String, to model: T.Type, encoding: ParameterEncoding) -> Observable<T> {
         return Observable.create { observer in
             let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
             let header = ApiManager.createHeader(token: accessToken)
+            if let param = param {
+                debugPrint("파라미터: \(param)")
+                API.session.request(url, method: .get, parameters: param, encoding: encoding, headers: header, interceptor: MyRequestInterceptor())
+                    .validate(statusCode: 200..<300)
+                    .responseDecodable(of: model.self, completionHandler: { response in
+                        switch response.value {
+                        case .some(let models):
+                            observer.onNext(models)
+                        case .none:
+                            observer.onCompleted()
+                        }
+                    })
+            } else {
+                AF.request(url, method: .get, parameters: nil, encoding: encoding, headers: header, interceptor: MyRequestInterceptor())
+                    .validate(statusCode: 200..<300)
+                    .responseDecodable(of: model.self, completionHandler: { response in
+                        switch response.value {
+                        case .some(let models):
+                            observer.onNext(models)
+                        case .none:
+                            observer.onCompleted()
+                        }
+                    })
+            }
             
-            API.session.request(url, method: .get, parameters: param?.dictionary, encoding: encoding, headers: header, interceptor: MyRequestInterceptor())
-                .validate(statusCode: 200..<300)
-                .responseDecodable(of: model.self, completionHandler: { response in
-                    switch response.value {
-                    case .some(let models):
-                        observer.onNext(models)
-                    case .none:
-                        observer.onCompleted()
-                    }
-                })
             
             return Disposables.create()
         }
