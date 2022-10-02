@@ -7,14 +7,24 @@
 
 import Foundation
 import RxSwift
+import Alamofire
 
 protocol SearchingFetchable {
-    func fetchSearchedBoard() -> Observable<Void>
+    func fetchSearchedBoard(page: Int, content: String) -> Observable<CommunityboardResponseModel>
 }
 
 class SearchingStore: SearchingFetchable {
-    func fetchSearchedBoard() -> Observable<Void> {
-        
+    var url = BaseURL.url.appending("post/search")
+//    "여기에 url 입력".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+//    url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+    func fetchSearchedBoard(page: Int, content: String) -> Observable<CommunityboardResponseModel> {
+        let param: Parameters = [
+            "sort": "id,desc",
+            "page": page,
+            "size": 10,
+            "content": content
+        ]
+        return ApiManager.getData(with: param, from: url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "", to: CommunityboardResponseModel.self, encoding: URLEncoding.default)
     }
 }
 
