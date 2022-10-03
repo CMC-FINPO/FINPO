@@ -10,7 +10,7 @@ import RxSwift
 
 protocol CommunitySearchViewModelType {
     var increasePage: AnyObserver<Void> { get }
-    var contentText: AnyObserver<(content: String, page: Int)> { get }
+    var contentText: AnyObserver<String> { get }
 //    var search: AnyObserver<CommunityboardResponseModel> { get }
     
     var fetchBoard: Observable<CommunityboardResponseModel> { get }
@@ -26,52 +26,57 @@ class CommunitySearchViewModel: CommunitySearchViewModelType {
     
     //INPUT
     var increasePage: AnyObserver<Void>
-    var contentText: AnyObserver<(content: String, page: Int)>
+    var contentText: AnyObserver<String>
 //    var search: AnyObserver<CommunityboardResponseModel>
     
     //OUTPUT
     var fetchBoard: Observable<CommunityboardResponseModel>
     
     init(domain: SearchingFetchable = SearchingStore()) {
-        let text = PublishSubject<(content: String, page: Int)>()
+        let text = PublishSubject<String>()
         let pageObserver = PublishSubject<Void>()
         let page = BehaviorSubject<Int>(value: 0)
-        let temp = PublishSubject<(content: String, page: Int)>()
+        let temp = PublishSubject<String>()
 
         var activating = BehaviorSubject<Bool>(value: false)
         
         
         // INPUT //
+        
         contentText = text.asObserver()
         text
-            .map { ($0.0, $0.1) }
-//            .do(onNext: { _ in page.onNext(0)})
+            .map { $0 }
+            .do(onNext: { _ in page.onNext(0)})
             .bind(onNext: { temp.onNext($0)} )
             .disposed(by: disposeBag)
-        
+                
         text
             .take(1)
-            .do(onNext: { _ in debugPrint("한 번만")})
-            .bind(onNext: { _ in page.onNext(0)})
+            .map { _ -> Int in return 0 }
+            .bind(to: page)
             .disposed(by: disposeBag)
-            
         
         increasePage = pageObserver.asObserver()
         pageObserver
             .flatMap { _ in page }
+            .debug()
             .map { $0 + 1 }.reduce(0, accumulator: +)
-            .subscribe(onNext: { page.onNext($0) })
+            .bind(to: page)
             .disposed(by: disposeBag)
       
         
         // OUTPUT //
-        
-        fetchBoard = Observable.combineLatest(
-            temp.asObservable(),
-            page.asObservable())
-            .flatMap { type, page -> Observable<CommunityboardResponseModel> in
-                domain.fetchSearchedBoard(page: page, content: type.content)
+
+        fetchBoard = page.asObservable()
+            .withLatestFrom(temp.asObservable(), resultSelector: { (page, text ) in (page, text)
+            })
+            .map { ($0.0, $0.1) }
+            .do(onNext: { debugPrint("페이지: \($0.0)")})
+            .flatMap { page, text -> Observable<CommunityboardResponseModel> in
+                domain.fetchSearchedBoard(page: page, content: text)
             }
+            
+              
     }
     
 }
