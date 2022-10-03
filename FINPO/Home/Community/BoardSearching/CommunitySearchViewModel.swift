@@ -42,7 +42,6 @@ class CommunitySearchViewModel: CommunitySearchViewModelType {
         let page = BehaviorSubject<Int>(value: 0)
         let temp = PublishSubject<String>()
         let pageId = PublishSubject<Int>()
-        let boardData = PublishSubject<CommunityboardResponseModel>()
 
         let activating = BehaviorSubject<Bool>(value: false)
         
@@ -80,7 +79,6 @@ class CommunitySearchViewModel: CommunitySearchViewModelType {
             .flatMap { page, text -> Observable<CommunityboardResponseModel> in
                 domain.fetchSearchedBoard(page: page, content: text)
             }
-            .do(onNext: { model in boardData.onNext(model)})
             .do(onNext: { _ in activating.onNext(false)})
             
         activated = activating.distinctUntilChanged()
