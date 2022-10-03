@@ -140,10 +140,10 @@ class CommunityDetailViewModel {
                     "sort": "id,asc"
                 ]
                 ApiManager.getData(
-                    with: parameter as? Encodable,
+                    with: parameter,
                     from: BaseURL.url.appending("post/\(id)/comment"),
                     to: CommunityCommentResponseModel.self,
-                    encoding: JSONEncoding.default
+                    encoding: URLEncoding.default
                 ).subscribe(onNext: { [weak self] commentData in
                     self?.output.loadCommentOutput.accept(commentData)
                 }).disposed(by: self.disposeBag)
