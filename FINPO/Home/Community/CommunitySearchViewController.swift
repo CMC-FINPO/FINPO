@@ -101,6 +101,12 @@ class CommunitySearchViewController: UIViewController {
         resultTableView.rx.reachedBottom(from: -25)
             .bind(to: viewModel.increasePage)
             .disposed(by: disposeBag)
+        
+        //게시글 상세이동
+        resultTableView.rx.itemSelected
+            .map { $0.row }
+            .bind(to: viewModel.DetailObserver)
+            .disposed(by: disposeBag)
     }
     
     private func setOutputBind() {
@@ -185,6 +191,14 @@ class CommunitySearchViewController: UIViewController {
                 finished ? (self?.activityIndicator.stopAnimating()) : (self?.activityIndicator.startAnimating())
             }.disposed(by: disposeBag)
                 
+        viewModel.moveToDetail
+            .map { $0.id }
+            .bind { [weak self] pageId in
+                let vc = CommunityDetailViewController()
+                vc.initialize(id: pageId)
+                vc.modalPresentationStyle = .fullScreen
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }.disposed(by: disposeBag)
     }
 }
 
