@@ -11,9 +11,9 @@ import RxSwift
 protocol CommunitySearchViewModelType {
     var increasePage: AnyObserver<Void> { get }
     var contentText: AnyObserver<String> { get }
-//    var search: AnyObserver<CommunityboardResponseModel> { get }
     
     var fetchBoard: Observable<CommunityboardResponseModel> { get }
+    var activated: Observable<Bool> { get }
 }
 
 enum LoadAction {
@@ -27,10 +27,10 @@ class CommunitySearchViewModel: CommunitySearchViewModelType {
     //INPUT
     var increasePage: AnyObserver<Void>
     var contentText: AnyObserver<String>
-//    var search: AnyObserver<CommunityboardResponseModel>
     
     //OUTPUT
     var fetchBoard: Observable<CommunityboardResponseModel>
+    var activated: Observable<Bool>
     
     init(domain: SearchingFetchable = SearchingStore()) {
         let text = PublishSubject<String>()
@@ -38,20 +38,17 @@ class CommunitySearchViewModel: CommunitySearchViewModelType {
         let page = BehaviorSubject<Int>(value: 0)
         let temp = PublishSubject<String>()
 
-        var activating = BehaviorSubject<Bool>(value: false)
-        
+        let activating = BehaviorSubject<Bool>(value: false)
         
         // INPUT //
         
         contentText = text.asObserver()
         text
             .map { $0 }
-            .do(onNext: { _ in page.onNext(0)})
             .bind(onNext: { temp.onNext($0)} )
             .disposed(by: disposeBag)
                 
         text
-            .take(1)
             .map { _ -> Int in return 0 }
             .bind(to: page)
             .disposed(by: disposeBag)
@@ -70,12 +67,16 @@ class CommunitySearchViewModel: CommunitySearchViewModelType {
         fetchBoard = page.asObservable()
             .withLatestFrom(temp.asObservable(), resultSelector: { (page, text ) in (page, text)
             })
+            .do(onNext: { _ in activating.onNext(true)})
             .map { ($0.0, $0.1) }
             .do(onNext: { debugPrint("페이지: \($0.0)")})
             .flatMap { page, text -> Observable<CommunityboardResponseModel> in
                 domain.fetchSearchedBoard(page: page, content: text)
             }
+            .do(onNext: { _ in activating.onNext(false)})
             
+        activated = activating.distinctUntilChanged()
+        
               
     }
     

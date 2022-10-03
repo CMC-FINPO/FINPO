@@ -57,6 +57,14 @@ class CommunitySearchViewController: UIViewController {
         return resultTableView
     }()
     
+    private lazy var activityIndicator: UIActivityIndicatorView = {
+        let view = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        view.center = self.view.center
+        view.hidesWhenStopped = true
+        view.style = UIActivityIndicatorView.Style.medium
+        return view
+    }()
+    
     private func setAttribute() {
         view.backgroundColor = UIColor.G09
         //textfield in NavigationItem
@@ -70,6 +78,8 @@ class CommunitySearchViewController: UIViewController {
             $0.leading.trailing.equalToSuperview()
             $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
+        
+        view.addSubview(activityIndicator)
     }
     
     private func setInputBind() {
@@ -84,15 +94,13 @@ class CommunitySearchViewController: UIViewController {
             .withLatestFrom(searchBar.rx.text) { $1 ?? "" }
             .filter { !$0.isEmpty }
             .distinctUntilChanged()
-            .subscribe(onNext: { [weak self] text in self?.viewModel.contentText.onNext((content: text, page: 0)) })
+            .subscribe(onNext: { [weak self] text in self?.viewModel.contentText.onNext(text) })
             .disposed(by: disposeBag)
         
         //테이블 더 불러오기
         resultTableView.rx.reachedBottom(from: -25)
             .bind(to: viewModel.increasePage)
             .disposed(by: disposeBag)
-        
-        //재검색시 page 0
     }
     
     private func setOutputBind() {
@@ -170,6 +178,13 @@ class CommunitySearchViewController: UIViewController {
 //                    }).disposed(by: cell.cellBag)
             }
             .disposed(by: disposeBag)
+        
+        viewModel.activated
+            .map { !$0 }
+            .bind { [weak self] finished in
+                finished ? (self?.activityIndicator.stopAnimating()) : (self?.activityIndicator.startAnimating())
+            }.disposed(by: disposeBag)
+                
     }
 }
 
