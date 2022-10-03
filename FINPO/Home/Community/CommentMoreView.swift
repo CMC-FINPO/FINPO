@@ -7,10 +7,41 @@
 
 import Foundation
 import UIKit
+import RxSwift
 
 class CommentMoreView: NSObject {
     
-    let option = ["수정하기", "삭제하기", "신고하기", "차단하기"]
+    let disposeBag = DisposeBag()
+    var viewController: UIViewController?
+    var delegateData: CommentContentDetail?
+    
+    let option    = ["수정하기", "삭제하기", "신고하기", "차단하기"]
+    let onData    : AnyObserver<CommentContentDetail>
+//    let outputData: Observable<CommentContentDetail>
+    
+    override init() {
+        let data       = PublishSubject<CommentContentDetail>()
+        let outputInfo = PublishSubject<CommentContentDetail>()
+        
+        onData     = data.asObserver()
+//        outputData = outputInfo.asObservable()
+        
+        data
+            .map { $0 }
+            .debug()
+            .bind { outputInfo.onNext($0) }
+            .disposed(by: disposeBag)
+
+        super.init()
+        
+        outputInfo
+            .debug()
+            .bind { data in
+                self.delegateData = data
+            }
+            .disposed(by: disposeBag)
+        
+    }
     
     public lazy var moreView: UITableView = {
         let view = UITableView()
@@ -33,12 +64,14 @@ class CommentMoreView: NSObject {
         return view
     }()
     
-    func showView(to cell: UITableViewCell) {
+    func showView(to cell: UITableViewCell, on vc: UIViewController?) {
         cell.contentView.addSubview(backgroundView)
         backgroundView.frame = cell.bounds
-    
+
         cell.contentView.addSubview(moreView)
-        moreView.frame = CGRect(x: cell.bounds.maxX-100, y: 15, width: 80, height: 100)
+        moreView.frame = CGRect(x: cell.bounds.maxX-100, y: 5, width: 80, height: 100)
+        
+        self.viewController = vc
     }
     
 }
@@ -61,6 +94,17 @@ extension CommentMoreView: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 25
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.row == 0 {
+            debugPrint("Tapped")
+            self.moreView.removeFromSuperview()
+            self.backgroundView.removeFromSuperview()
+            let vc = EditCommentViewController(data: delegateData!)
+            vc.modalPresentationStyle = .fullScreen
+            self.viewController?.navigationController?.pushViewController(vc, animated: true)
+        }
     }
     
 }
