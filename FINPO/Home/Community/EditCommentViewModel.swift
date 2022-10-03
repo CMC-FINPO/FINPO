@@ -6,3 +6,13 @@
 //
 
 import Foundation
+import RxSwift
+import RxCocoa
+
+protocol EditCommentViewModelType {
+    
+}
+
+class EditCommentViewModel: EditCommentViewModelType {
+//    init(domain: )
+}
