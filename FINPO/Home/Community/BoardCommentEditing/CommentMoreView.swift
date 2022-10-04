@@ -9,27 +9,39 @@ import Foundation
 import UIKit
 import RxSwift
 
+enum isNest {
+    case normal(CommentContentDetail)
+    case nest(CommentChildDetail)
+}
+
 class CommentMoreView: NSObject {
     
-    let disposeBag = DisposeBag()
+    let disposeBag    = DisposeBag()
     var viewController: UIViewController?
-    var delegateData: CommentContentDetail?
+    var delegateData  : isNest?
     
-    let option    = ["수정하기", "삭제하기", "신고하기", "차단하기"]
-    let onData    : AnyObserver<CommentContentDetail>
-//    let outputData: Observable<CommentContentDetail>
+    let option     = ["수정하기", "삭제하기", "신고하기", "차단하기"]
+    let onData     : AnyObserver<CommentContentDetail>
+    let nestOnData : AnyObserver<CommentChildDetail>
     
     override init() {
         let data       = PublishSubject<CommentContentDetail>()
         let outputInfo = PublishSubject<CommentContentDetail>()
+        let nestData   = PublishSubject<CommentChildDetail>()
+        let nestOutputInfo = PublishSubject<CommentChildDetail>()
         
         onData     = data.asObserver()
-//        outputData = outputInfo.asObservable()
+        nestOnData = nestData.asObserver()
         
         data
             .map { $0 }
             .debug()
             .bind { outputInfo.onNext($0) }
+            .disposed(by: disposeBag)
+        
+        nestData
+            .map { $0 }
+            .bind { nestOutputInfo.onNext($0) }
             .disposed(by: disposeBag)
 
         super.init()
@@ -37,9 +49,14 @@ class CommentMoreView: NSObject {
         outputInfo
             .debug()
             .bind { data in
-                self.delegateData = data
-            }
-            .disposed(by: disposeBag)
+                self.delegateData = .normal(data)
+            }.disposed(by: disposeBag)
+            
+        
+        nestOutputInfo
+            .bind { data in
+                self.delegateData = .nest(data)
+            }.disposed(by: disposeBag)
         
     }
     
