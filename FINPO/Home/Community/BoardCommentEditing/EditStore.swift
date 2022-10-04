@@ -9,17 +9,22 @@ import Foundation
 import RxSwift
 import Alamofire
 
+struct Response: Codable {
+    let success: Bool
+    let data: EditCommentResponseModel
+}
+
 protocol EditFetchable {
-    func editComment(commentId: Int, content: String) -> Observable<CommunityCommentResponseModel>
+    func editComment(commentId: Int, content: String) -> Observable<Response>
 }
 
 class EditStore: EditFetchable {
     var url = BaseURL.url.appending("comment/")
-    
-    func editComment(commentId: Int, content: String) -> Observable<CommunityCommentResponseModel> {
+
+    func editComment(commentId: Int, content: String) -> Observable<Response> {
         let param: Parameters = [
             "content": content
         ]
-        return ApiManager.postData(with: param, from: url.appending("\(commentId)"), to: CommunityCommentResponseModel.self, encoding: URLEncoding.default)
+        return ApiManager.putData(with: param, from: url.appending("\(commentId)"), to: Response.self, encoding: JSONEncoding.default)
     }
 }
