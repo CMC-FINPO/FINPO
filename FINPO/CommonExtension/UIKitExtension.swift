@@ -8,6 +8,8 @@
 import Foundation
 import UIKit
 import SnapKit
+import RxSwift
+import SwiftUI
 
 extension UITableView {
     func addBorderTop(size: CGFloat, color: UIColor) {
@@ -494,9 +496,49 @@ extension String {
 }
 
 extension UIViewController {
+    
     func showAlert(_ title: String, _ message: String) {
         let alertVC = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alertVC.addAction(UIAlertAction(title: "OK", style: .default))
         present(alertVC, animated: true, completion: nil)
     }
+    
+    func showAlertAndDismiss(_ title: String, _ message: String) {
+        let alertVC = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alertVC.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+//            DispatchQueue.main.async {
+//                self.dismiss(animated: true)
+//            }            
+        }))
+        present(alertVC, animated: true, completion: nil)
+    }
+    
+    func commentDeleteAlert(id: Int) {
+        let alertVC = UIAlertController(title: "글을 삭제하시겠습니까?", message: nil, preferredStyle: .alert)
+        alertVC.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
+            let domain = EditStore()
+            domain.deleteComment(id: id)
+        }))
+        alertVC.addAction((UIAlertAction(title: "취소", style: .destructive, handler: nil)))
+        present(alertVC, animated: true)
+    }
+    
+    func showReport(id: Int) {
+        let vc = ReportViewController(commentId: id)
+        vc.modalPresentationStyle = .overCurrentContext
+        present(vc, animated: false)
+    }
+    
+    func showBlockAlert(id: Int) {
+        let alertVC = UIAlertController(title: "해당 유저를 차단하시겠습니까?", message: nil, preferredStyle: .alert)
+        alertVC.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
+            let domain = EditStore()
+            domain.blockUser(commentId: id)
+        }))
+        alertVC.addAction((UIAlertAction(title: "취소", style: .destructive, handler: nil)))
+        present(alertVC, animated: true)
+    }
+    
+    
 }
+

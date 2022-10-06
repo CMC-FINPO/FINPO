@@ -82,13 +82,13 @@ class CommentMoreView: NSObject {
     }()
     
     func showView(to cell: UITableViewCell, on vc: UIViewController?) {
+        self.viewController = vc
         cell.contentView.addSubview(backgroundView)
         backgroundView.frame = cell.bounds
 
         cell.contentView.addSubview(moreView)
         moreView.frame = CGRect(x: cell.bounds.maxX-100, y: 5, width: 80, height: 100)
         
-        self.viewController = vc
     }
     
 }
@@ -114,14 +114,56 @@ extension CommentMoreView: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.moreView.removeFromSuperview()
+        self.backgroundView.removeFromSuperview()
+        //댓글 수정
         if indexPath.row == 0 {
-            debugPrint("Tapped")
-            self.moreView.removeFromSuperview()
-            self.backgroundView.removeFromSuperview()
             let vc = EditCommentViewController(data: delegateData!)
             vc.modalPresentationStyle = .fullScreen
             self.viewController?.navigationController?.pushViewController(vc, animated: true)
         }
+        //댓글 삭제
+        else if indexPath.row == 1 {
+            if let delegateData = delegateData {
+                switch delegateData {
+                case .normal(let normal):
+                    self.viewController?.commentDeleteAlert(id: normal.id)
+                case .nest(let nest):
+                    self.viewController?.commentDeleteAlert(id: nest.id ?? -1)
+                }
+            }
+        }
+        //댓글 신고
+        else if indexPath.row == 2 {
+            if let delegateData = delegateData {
+                switch delegateData {
+                case .normal(let normal):
+                    self.viewController?.showReport(id: normal.id)
+                case .nest(let nest):
+                    self.viewController?.showReport(id: nest.id ?? -1)
+                }
+            }
+        }
+        //댓글 작성 유저 차단
+        else if indexPath.row == 3 {
+            if let delegateData = delegateData {
+                switch delegateData {
+                case .normal(let normal):
+                    if let isMine = normal.isMine, isMine {
+                        self.viewController?.showAlert("자기 자신은 차단할 수 없습니다", "")
+                        return
+                    }
+                    self.viewController?.showBlockAlert(id: normal.id)
+                case .nest(let nest):
+                    if let isMine = nest.isMine, isMine {
+                        self.viewController?.showAlert("자기 자신은 차단할 수 없습니다", "")
+                        return
+                    }
+                    self.viewController?.showBlockAlert(id: nest.id ?? -1)
+                }
+            }
+        }
+        
     }
     
 }
