@@ -86,12 +86,50 @@ struct ApiManager {
         }
     }
     
-    static func deleteData<T: Decodable>(with param: Encodable? = nil, from url: String, to model: T.Type, encoding: ParameterEncoding) -> Observable<T> {
+    static func postDataWithoutRx<T: Decodable>(with param: Parameters? = nil, from url: String, to model: T.Type, encoding: ParameterEncoding) {
+
+        let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
+        let header = ApiManager.createHeader(token: accessToken)
+        
+        API.session.request(url, method: .post, parameters: param, encoding: encoding, headers: header, interceptor: MyRequestInterceptor())
+            .validate(statusCode: 200..<300)
+            .responseDecodable(of: model.self, completionHandler: { response in
+                switch response.value {
+                case .some(let models):
+                    print("삭제 성공: \(models)")
+                case .none:
+                    print("삭제 실패")
+                }
+            })
+    }
+    
+    static func putData<T: Decodable>(with param: Parameters? = nil, from url: String, to model: T.Type, encoding: ParameterEncoding) -> Observable<T> {
         return Observable.create { observer in
             let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
             let header = ApiManager.createHeader(token: accessToken)
             
-            API.session.request(url, method: .delete, parameters: param?.dictionary, encoding: encoding, headers: header, interceptor: MyRequestInterceptor())
+            let queue = DispatchQueue.global(qos: .utility)
+            API.session.request(url, method: .put, parameters: param, encoding: encoding, headers: header, interceptor: MyRequestInterceptor())
+                .validate(statusCode: 200..<300)
+                .responseDecodable(of: model.self, queue: queue, completionHandler: { response in
+                    switch response.value {
+                    case .some(let models):
+                        observer.onNext(models)
+                    case .none:
+                        observer.onError(response.error!)
+                    }
+                })
+            
+            return Disposables.create()
+        }
+    }
+    
+    static func deleteData<T: Decodable>(with param: Parameters? = nil, from url: String, to model: T.Type, encoding: ParameterEncoding) -> Observable<T> {
+        return Observable.create { observer in
+            let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
+            let header = ApiManager.createHeader(token: accessToken)
+            
+            API.session.request(url, method: .delete, parameters: param, encoding: encoding, headers: header, interceptor: MyRequestInterceptor())
                 .validate(statusCode: 200..<300)
                 .responseDecodable(of: model.self, completionHandler: { response in
                     switch response.value {
@@ -104,6 +142,23 @@ struct ApiManager {
             
             return Disposables.create()
         }
+    }
+    
+    static func deleteDataWithoutRx<T: Decodable>(with param: Parameters? = nil, from url: String, to model: T.Type, encoding: ParameterEncoding) {
+
+        let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
+        let header = ApiManager.createHeader(token: accessToken)
+        
+        API.session.request(url, method: .delete, parameters: param, encoding: encoding, headers: header, interceptor: MyRequestInterceptor())
+            .validate(statusCode: 200..<300)
+            .responseDecodable(of: model.self, completionHandler: { response in
+                switch response.value {
+                case .some(let models):
+                    print("삭제 성공: \(models)")
+                case .none:
+                    print("삭제 실패")
+                }
+            })
     }
     
     static func postImage<T: Decodable>(with images: [UIImage], from url: String, to model: T.Type, encoding: ParameterEncoding) -> Observable<T> {
