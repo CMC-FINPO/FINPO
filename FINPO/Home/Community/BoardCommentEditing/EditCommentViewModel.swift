@@ -10,13 +10,18 @@ import RxSwift
 import RxCocoa
 
 protocol EditCommentViewModelType {
+    //댓글 수정
     var commentDataObserver: AnyObserver<isNest> { get }
     var editedCommentTextObserver: AnyObserver<String> { get }
     var confirmButtonObserver: AnyObserver<Void> { get }
     
+    //댓글 신고
+    var commentReportObserver: AnyObserver<(commentId: Int, reportId: Int)> { get }
     
     var editButtonTapped: Observable<Bool> { get }
     var errorMessage: Observable<NSError> { get }
+    
+    var reportOutput: Observable<Bool> { get }
 }
 
 class EditCommentViewModel: EditCommentViewModelType {
@@ -27,9 +32,13 @@ class EditCommentViewModel: EditCommentViewModelType {
     var editedCommentTextObserver: AnyObserver<String>
     var confirmButtonObserver: AnyObserver<Void>
     
+    var commentReportObserver: AnyObserver<(commentId: Int, reportId: Int)>
+    
     //OUTPUT
     var editButtonTapped: Observable<Bool>
     var errorMessage: Observable<NSError>
+    
+    var reportOutput: Observable<Bool>
     
     init(domain: EditFetchable = EditStore()) {
         let data = PublishSubject<isNest>()
@@ -37,8 +46,12 @@ class EditCommentViewModel: EditCommentViewModelType {
         let confirm = PublishSubject<Void>()
         let id = PublishSubject<Int>()
         
+        let report = PublishSubject<(commentId: Int, reportId: Int)>()
+        
         let editRsl = PublishSubject<Bool>()
         let error = PublishSubject<Error>()
+        
+        let reportRsl = PublishSubject<Bool>()
         
         commentDataObserver = data.asObserver() //id 추출
         data
@@ -77,15 +90,16 @@ class EditCommentViewModel: EditCommentViewModelType {
         .disposed(by: disposeBag)
         
 
+        commentReportObserver = report.asObserver()
+        reportOutput = reportRsl.asObserver()
         
-//        editRsl
-//            .do(onNext: { if !$0 {
-//                let err = NSError(domain: "자신이 작성한 글이 아니므로 수정할 수 없습니다", code: -1, userInfo: nil)
-//                error.onNext(err)
-//            }})
-//                .map { $0 }
-                
-        
+        report
+            .flatMap { domain.reportComment(commentId: $0.commentId, reportId: $0.reportId) }
+            .map { $0 }
+            .bind { reportRsl.onNext($0.success) }
+            .disposed(by: disposeBag)
+            
+                        
         
     }
 }
