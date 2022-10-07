@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import SnapKit
 import RxSwift
+import RxCocoa
 
 class BoardTableViewCell: UITableViewCell {
 
@@ -20,6 +21,9 @@ class BoardTableViewCell: UITableViewCell {
     private var viewModel: CommunityDetailViewModel?
     private var commentId: Int?
     private var viewController: UIViewController?
+    
+    var commentData: AnyObserver<CommentContentDetail>
+    var nestCommentData: AnyObserver<CommentChildDetail>
     
     public var commentImageView: UIImageView = {
         let imageView = UIImageView()
@@ -114,7 +118,9 @@ class BoardTableViewCell: UITableViewCell {
     @objc func showMoreView() {
         let gesture = UITapGestureRecognizer(target: self, action: #selector(dismissView(_:)))
         moreView.backgroundView.addGestureRecognizer(gesture)
-        moreView.showView(to: self)
+        DispatchQueue.main.async {
+            self.moreView.showView(to: self, on: self.viewController ?? UIViewController(), option: .comment, pageId: nil, boardData: nil)
+        }
     }
     
     @objc func dismissView(_ sender: UITapGestureRecognizer? = nil) {
@@ -124,8 +130,34 @@ class BoardTableViewCell: UITableViewCell {
         }
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+    }
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        
+        let data = PublishSubject<CommentContentDetail>()
+        commentData = data.asObserver()
+        let nestData = PublishSubject<CommentChildDetail>()
+        nestCommentData = nestData.asObserver()
+        
+        print("셀 데이터: \(commentData)") //okay
+        
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        data
+            .map { $0 }
+            .debug()
+            .bind { [weak self] data in self?.moreView.onData.onNext(data) }
+            .disposed(by: cellBag)
+                
+        nestData
+            .map { $0 }
+            .debug()
+            .bind { [weak self] data in self?.moreView.nestOnData.onNext(data)}
+            .disposed(by: cellBag)
+        
         viewModel = nil
         commentId = nil
         viewController = nil
@@ -158,7 +190,7 @@ class BoardTableViewCell: UITableViewCell {
         contentLabel.snp.makeConstraints {
             $0.top.equalTo(userImageView.snp.bottom).offset(21)
             $0.leading.equalTo(userImageView.snp.leading)
-            $0.trailing.equalTo(contentView.snp.trailing)            
+            $0.trailing.equalTo(contentView.snp.trailing)
         }
         
         likeButton.snp.makeConstraints {
@@ -187,17 +219,17 @@ class BoardTableViewCell: UITableViewCell {
             $0.bottom.equalTo(likeCountLabel.snp.bottom)
             $0.leading.equalTo(viewsCountLabel.snp.trailing).offset(2.5)
         }
-
     }
     
     required init?(coder: NSCoder) {
+        let data = PublishSubject<CommentContentDetail>()
+        commentData = data.asObserver()
+        let nestData = PublishSubject<CommentChildDetail>()
+        nestCommentData = nestData.asObserver()
+        super.init(coder: coder)
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-    }
     
     public func hiddenProperty() {
         [self.likeButton, self.bookMarkButton, self.likeCountLabel, self.viewsCountLabel, self.commentCountLabel].forEach {
@@ -248,7 +280,7 @@ class BoardTableViewCell: UITableViewCell {
         
         self.commentImageView.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(20)
-            $0.top.equalToSuperview().offset(18)
+            $0.top.equalToSuperview().offset(10)
             $0.width.height.equalTo(25)
         }
         self.commentImageView.layoutIfNeeded()

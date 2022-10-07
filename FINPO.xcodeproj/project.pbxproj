@@ -32,6 +32,8 @@
 		DD2EA46F28487F770004D707 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD2EA46E28487F770004D707 /* Assets.xcassets */; };
 		DD2EA47228487F770004D707 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DD2EA47028487F770004D707 /* LaunchScreen.storyboard */; };
 		DD351A97288AC9DE0097A63F /* OnBoardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD351A96288AC9DE0097A63F /* OnBoardingViewController.swift */; };
+		DD44B06B28EEBBBB000D0DC4 /* BoardEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD44B06A28EEBBBB000D0DC4 /* BoardEditViewController.swift */; };
+		DD44B06D28EEBC92000D0DC4 /* BoardEditViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD44B06C28EEBC92000D0DC4 /* BoardEditViewModel.swift */; };
 		DD4D4930288478BB00E25AB6 /* DeleteParticipationAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4D492F288478BB00E25AB6 /* DeleteParticipationAPI.swift */; };
 		DD4D493528856C2A00E25AB6 /* CommunityMainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4D493428856C2A00E25AB6 /* CommunityMainViewController.swift */; };
 		DD50F7AA287DCA1200ADEB09 /* InterestCategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD50F7A9287DCA1200ADEB09 /* InterestCategoryViewController.swift */; };
@@ -101,6 +103,11 @@
 		DD90E9B4284DD0F300B19B8C /* LoginBasicInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD90E9B3284DD0F300B19B8C /* LoginBasicInfoViewController.swift */; };
 		DD90E9B8284DDFA200B19B8C /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD90E9B7284DDFA200B19B8C /* User.swift */; };
 		DD92046628D16DE60084F24B /* CacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD92046528D16DE60084F24B /* CacheManager.swift */; };
+		DD9F9BEB28EB00A8006AC588 /* EditCommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD9F9BEA28EB00A8006AC588 /* EditCommentViewController.swift */; };
+		DD9F9BED28EB00DE006AC588 /* EditCommentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD9F9BEC28EB00DE006AC588 /* EditCommentViewModel.swift */; };
+		DD9F9BEF28EB0143006AC588 /* EditStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD9F9BEE28EB0143006AC588 /* EditStore.swift */; };
+		DD9F9BF228EBF37B006AC588 /* EditCommentResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD9F9BF128EBF37B006AC588 /* EditCommentResponseModel.swift */; };
+		DD9F9BF428EC128B006AC588 /* ReportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD9F9BF328EC128B006AC588 /* ReportViewController.swift */; };
 		DDAC8EBF284884F80092CB25 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAC8EBE284884F80092CB25 /* LoginViewModel.swift */; };
 		DDAC8EC22848A36C0092CB25 /* LoginDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAC8EC12848A36C0092CB25 /* LoginDetailViewController.swift */; };
 		DDAF7C47289A98D300D1F1FD /* ParticipationCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAF7C46289A98D300D1F1FD /* ParticipationCollectionViewCell.swift */; };
@@ -127,6 +134,9 @@
 		DDE615CE2897A4890067040B /* KeyChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDE615CD2897A4890067040B /* KeyChain.swift */; };
 		DDE61609289A84AD0067040B /* HomeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDE61608289A84AD0067040B /* HomeCollectionViewCell.swift */; };
 		DDE6160B289A8DCD0067040B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = DDE6160A289A8DCD0067040B /* GoogleService-Info.plist */; };
+		DDE8057F28E98501000A2650 /* CommunitySearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDE8057E28E98501000A2650 /* CommunitySearchViewController.swift */; };
+		DDE8058128E98617000A2650 /* CommunitySearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDE8058028E98617000A2650 /* CommunitySearchViewModel.swift */; };
+		DDE8058328E99A5F000A2650 /* SearchingStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDE8058228E99A5F000A2650 /* SearchingStore.swift */; };
 		DDECAE952866C28B001C48D3 /* AddPurposeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDECAE942866C28B001C48D3 /* AddPurposeCollectionViewCell.swift */; };
 		DDECAE9728674BCF001C48D3 /* LoginSuccessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDECAE9628674BCF001C48D3 /* LoginSuccessViewController.swift */; };
 		DDECAE9A286AB0E3001C48D3 /* FilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDECAE99286AB0E3001C48D3 /* FilterViewController.swift */; };
@@ -174,6 +184,8 @@
 		DD2EA47128487F770004D707 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		DD2EA47328487F770004D707 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DD351A96288AC9DE0097A63F /* OnBoardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardingViewController.swift; sourceTree = "<group>"; };
+		DD44B06A28EEBBBB000D0DC4 /* BoardEditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardEditViewController.swift; sourceTree = "<group>"; };
+		DD44B06C28EEBC92000D0DC4 /* BoardEditViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardEditViewModel.swift; sourceTree = "<group>"; };
 		DD4D492F288478BB00E25AB6 /* DeleteParticipationAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteParticipationAPI.swift; sourceTree = "<group>"; };
 		DD4D493428856C2A00E25AB6 /* CommunityMainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityMainViewController.swift; sourceTree = "<group>"; };
 		DD50F7A9287DCA1200ADEB09 /* InterestCategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterestCategoryViewController.swift; sourceTree = "<group>"; };
@@ -242,6 +254,11 @@
 		DD90E9B3284DD0F300B19B8C /* LoginBasicInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginBasicInfoViewController.swift; sourceTree = "<group>"; };
 		DD90E9B7284DDFA200B19B8C /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		DD92046528D16DE60084F24B /* CacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheManager.swift; sourceTree = "<group>"; };
+		DD9F9BEA28EB00A8006AC588 /* EditCommentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCommentViewController.swift; sourceTree = "<group>"; };
+		DD9F9BEC28EB00DE006AC588 /* EditCommentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCommentViewModel.swift; sourceTree = "<group>"; };
+		DD9F9BEE28EB0143006AC588 /* EditStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditStore.swift; sourceTree = "<group>"; };
+		DD9F9BF128EBF37B006AC588 /* EditCommentResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCommentResponseModel.swift; sourceTree = "<group>"; };
+		DD9F9BF328EC128B006AC588 /* ReportViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportViewController.swift; sourceTree = "<group>"; };
 		DDAC8EBE284884F80092CB25 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		DDAC8EC12848A36C0092CB25 /* LoginDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginDetailViewController.swift; sourceTree = "<group>"; };
 		DDAF7C46289A98D300D1F1FD /* ParticipationCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticipationCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -267,6 +284,9 @@
 		DDE615CD2897A4890067040B /* KeyChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyChain.swift; sourceTree = "<group>"; };
 		DDE61608289A84AD0067040B /* HomeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeCollectionViewCell.swift; sourceTree = "<group>"; };
 		DDE6160A289A8DCD0067040B /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		DDE8057E28E98501000A2650 /* CommunitySearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunitySearchViewController.swift; sourceTree = "<group>"; };
+		DDE8058028E98617000A2650 /* CommunitySearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunitySearchViewModel.swift; sourceTree = "<group>"; };
+		DDE8058228E99A5F000A2650 /* SearchingStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchingStore.swift; sourceTree = "<group>"; };
 		DDECAE942866C28B001C48D3 /* AddPurposeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPurposeCollectionViewCell.swift; sourceTree = "<group>"; };
 		DDECAE9628674BCF001C48D3 /* LoginSuccessViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSuccessViewController.swift; sourceTree = "<group>"; };
 		DDECAE982867650C001C48D3 /* FINPO.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FINPO.entitlements; sourceTree = "<group>"; };
@@ -393,9 +413,13 @@
 				DD1E995628B5322B00C80272 /* CommunityDetailViewModel.swift */,
 				DD1E995A28B66A1D00C80272 /* CommunityCollectionViewCell.swift */,
 				DD6C99AB28DEBFF600D40507 /* NestCommentView.swift */,
-				DD6C99AD28E0024800D40507 /* CommentMoreView.swift */,
 				DD6C9A3528E31E7C00D40507 /* CommunityWritingViewController.swift */,
 				DD6C9A3728E3E7B900D40507 /* CommunityWritingViewModel.swift */,
+				DD9F9BF028EB32A8006AC588 /* BoardCommentEditing */,
+				DD9F9BE928EB0050006AC588 /* BoardSearching */,
+				DD9F9BF328EC128B006AC588 /* ReportViewController.swift */,
+				DD44B06A28EEBBBB000D0DC4 /* BoardEditViewController.swift */,
+				DD44B06C28EEBC92000D0DC4 /* BoardEditViewModel.swift */,
 			);
 			path = Community;
 			sourceTree = "<group>";
@@ -490,6 +514,7 @@
 				DD1E996028BB23CC00C80272 /* ComponentsManager.swift */,
 				DD81D0AB28BDC707000780D6 /* PostCommentResponseModel.swift */,
 				DD6C9A3928E3F92500D40507 /* BoardImageResponseModel.swift */,
+				DD9F9BF128EBF37B006AC588 /* EditCommentResponseModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -514,6 +539,27 @@
 				DD92046528D16DE60084F24B /* CacheManager.swift */,
 			);
 			path = Memories;
+			sourceTree = "<group>";
+		};
+		DD9F9BE928EB0050006AC588 /* BoardSearching */ = {
+			isa = PBXGroup;
+			children = (
+				DDE8057E28E98501000A2650 /* CommunitySearchViewController.swift */,
+				DDE8058028E98617000A2650 /* CommunitySearchViewModel.swift */,
+				DDE8058228E99A5F000A2650 /* SearchingStore.swift */,
+			);
+			path = BoardSearching;
+			sourceTree = "<group>";
+		};
+		DD9F9BF028EB32A8006AC588 /* BoardCommentEditing */ = {
+			isa = PBXGroup;
+			children = (
+				DD6C99AD28E0024800D40507 /* CommentMoreView.swift */,
+				DD9F9BEA28EB00A8006AC588 /* EditCommentViewController.swift */,
+				DD9F9BEC28EB00DE006AC588 /* EditCommentViewModel.swift */,
+				DD9F9BEE28EB0143006AC588 /* EditStore.swift */,
+			);
+			path = BoardCommentEditing;
 			sourceTree = "<group>";
 		};
 		DDAC8EC0284884FE0092CB25 /* Login */ = {
@@ -791,6 +837,7 @@
 				DD351A97288AC9DE0097A63F /* OnBoardingViewController.swift in Sources */,
 				DD1E995B28B66A1D00C80272 /* CommunityCollectionViewCell.swift in Sources */,
 				DD90E99A284B434600B19B8C /* LoginDetailViewModel.swift in Sources */,
+				DD9F9BF228EBF37B006AC588 /* EditCommentResponseModel.swift in Sources */,
 				DD61257F287C3D11002FBF4D /* AlarmAPI.swift in Sources */,
 				DD60A0BC288715B2004E9015 /* ServiceTypeTableViewCell.swift in Sources */,
 				DDE615CC2894054C0067040B /* CommunityViewModel.swift in Sources */,
@@ -809,6 +856,7 @@
 				DDB419BD2863612C005868ED /* APIEventLogger.swift in Sources */,
 				DD1E995F28B8DA5A00C80272 /* DynamicHeightTableView.swift in Sources */,
 				DD60C1D6287E98F6003B201E /* ForWhatAPI.swift in Sources */,
+				DDE8058128E98617000A2650 /* CommunitySearchViewModel.swift in Sources */,
 				DDFD6EE0284DFC3200A1706F /* UIKitExtension.swift in Sources */,
 				DD1BFFB62863013600ACAAE1 /* HomeViewController.swift in Sources */,
 				DD90E9B4284DD0F300B19B8C /* LoginBasicInfoViewController.swift in Sources */,
@@ -821,6 +869,7 @@
 				DD60A0C22887D216004E9015 /* OpenAPIModel.swift in Sources */,
 				DD60A0BE2887D122004E9015 /* OpenSourceViewController.swift in Sources */,
 				DD1E995128B368E900C80272 /* BoolResponseModel.swift in Sources */,
+				DD9F9BF428EC128B006AC588 /* ReportViewController.swift in Sources */,
 				DDBFEEBB2859E675003E9662 /* MyAuthenticator.swift in Sources */,
 				DDBFEEC6285B5134003E9662 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */,
 				DD60A0C42887D71B004E9015 /* OpenSourceTableViewCell.swift in Sources */,
@@ -848,8 +897,11 @@
 				DDE61609289A84AD0067040B /* HomeCollectionViewCell.swift in Sources */,
 				DD5A18EE2871D25F00903616 /* ServiceTypeCollectionViewCell.swift in Sources */,
 				DD60C1E428813278003B201E /* EditUserInfoViewModel.swift in Sources */,
+				DD9F9BED28EB00DE006AC588 /* EditCommentViewModel.swift in Sources */,
 				DDECAE9E286B2949001C48D3 /* CallMyRegionAPI.swift in Sources */,
 				DD61257D287C3CAE002FBF4D /* AlarmViewModel.swift in Sources */,
+				DD44B06B28EEBBBB000D0DC4 /* BoardEditViewController.swift in Sources */,
+				DDE8058328E99A5F000A2650 /* SearchingStore.swift in Sources */,
 				DD90E9A5284CF78700B19B8C /* Reactive.swift in Sources */,
 				DD1E996128BB23CC00C80272 /* ComponentsManager.swift in Sources */,
 				DD5A18D2286CAE3A00903616 /* BaseURL.swift in Sources */,
@@ -859,9 +911,11 @@
 				DD1BFFBF2863316200ACAAE1 /* SearchModel.swift in Sources */,
 				DDE615CE2897A4890067040B /* KeyChain.swift in Sources */,
 				DD1E995D28B681BC00C80272 /* CommunityCommentResponseModel.swift in Sources */,
+				DD9F9BEB28EB00A8006AC588 /* EditCommentViewController.swift in Sources */,
 				DD1E994F28B32A5C00C80272 /* ApiManager.swift in Sources */,
 				DD6125722879D953002FBF4D /* BookmarkViewModel.swift in Sources */,
 				DD6C9A3828E3E7B900D40507 /* CommunityWritingViewModel.swift in Sources */,
+				DD9F9BEF28EB0143006AC588 /* EditStore.swift in Sources */,
 				DD81D0AC28BDC707000780D6 /* PostCommentResponseModel.swift in Sources */,
 				DDBFEEC8285E25E8003E9662 /* AddPurposeViewController.swift in Sources */,
 				DD50F7AA287DCA1200ADEB09 /* InterestCategoryViewController.swift in Sources */,
@@ -873,10 +927,12 @@
 				DD6C9A3628E31E7C00D40507 /* CommunityWritingViewController.swift in Sources */,
 				DDECAE9C286AF317001C48D3 /* LastSignUpAPI.swift in Sources */,
 				DD2EA46628487F730004D707 /* AppDelegate.swift in Sources */,
+				DDE8057F28E98501000A2650 /* CommunitySearchViewController.swift in Sources */,
 				DDB419BF2863626E005868ED /* API.swift in Sources */,
 				DD5A18D8286D577300903616 /* CallCategoryAPI.swift in Sources */,
 				DD1BFFBD2863312200ACAAE1 /* SearchPolicyAPI.swift in Sources */,
 				DD612581287C3D58002FBF4D /* AlarmModel.swift in Sources */,
+				DD44B06D28EEBC92000D0DC4 /* BoardEditViewModel.swift in Sources */,
 				DD60C1DC287F2BD3003B201E /* CategoryAlarmViewModel.swift in Sources */,
 				DDFD6EF12856494600A1706F /* MyPageViewController.swift in Sources */,
 				DDBFEEAE285792F7003E9662 /* LikeMySelfViewController.swift in Sources */,

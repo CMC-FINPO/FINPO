@@ -35,6 +35,8 @@ class CommunityDetailViewController: UIViewController {
     let nestCommentView = NestCommentView()
     ///대댓글 작성 시 유저명 저장(익명 포함)
     var userNames = [String]()
+    //게시판 정보 체크용
+    var boardData: CommunityContentModel?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,20 +45,17 @@ class CommunityDetailViewController: UIViewController {
         setLayout()
         setInputBind()
         setOutputBind()
-        
-        debugPrint("스크롤뷰 height: \(self.scrollView.bounds.height)")
-        debugPrint("컨텐츠뷰 height: \(self.contentView.bounds.height)")
-        debugPrint("댓글뷰 height: \(self.commentView.bounds.height)")
     }
     
-    func initialize(id: Int) {
+    func initialize(id: Int, boardData: CommunityContentModel?) {
         self.pageId = id
-        debugPrint("커뮤니티 상세 받은 아이디값: \(String(describing: self.pageId))")
+        self.boardData = boardData
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         debugPrint("저장된 유저명: \(self.userNames)")
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -100,18 +99,29 @@ class CommunityDetailViewController: UIViewController {
         let view = UIScrollView(frame: .zero)
         view.showsVerticalScrollIndicator = false
         view.showsHorizontalScrollIndicator = false
+        view.isUserInteractionEnabled = true
         return view
     }()
     
     private var contentView: UIView = { //dynamicSizeContent
         let view = UIView()
-//        view.isUserInteractionEnabled = false
         return view
     }()
     
     private var boardStackView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
+        return view
+    }()
+    
+    private var boardMoreButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "more"), for: .normal)
+        return button
+    }()
+    
+    private var moreView: CommentMoreView = {
+        let view = CommentMoreView()
         return view
     }()
     
@@ -212,8 +222,10 @@ class CommunityDetailViewController: UIViewController {
         let tv = DynamicHeightTableView()
         tv.backgroundColor = .white
         tv.rowHeight = UITableView.automaticDimension
+        tv.estimatedRowHeight = CGFloat(225)
         tv.bounces = false
         tv.separatorInset.left = 0
+        tv.isUserInteractionEnabled = true
         return tv
     }()
     
@@ -258,6 +270,9 @@ class CommunityDetailViewController: UIViewController {
     
     fileprivate func setAttribute() {
         view.backgroundColor = .white
+        
+        //게시글 수정 버튼
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: boardMoreButton)
         
         boardCollectionView.register(CommunityCollectionViewCell.self, forCellWithReuseIdentifier: "CommunityCollectionViewCell")
         boardCollectionView.delegate = self
@@ -488,6 +503,19 @@ class CommunityDetailViewController: UIViewController {
 //
 //            }).disposed(by: disposeBag)
         
+        //게시글 더보기
+        boardMoreButton.rx.tap
+            .do(onNext: { [weak self] _ in
+                let gesture = UITapGestureRecognizer(target: self, action: #selector(self?.dismissView(_:)))
+                self?.moreView.backgroundView.addGestureRecognizer(gesture)
+            })
+            .map { [weak self] _ in
+                guard let self = self else { return }
+                self.moreView.showView(to: UITableViewCell(), on: self, option: .board, pageId: self.pageId ?? -1, boardData: self.boardData) }
+            .subscribe(onNext: {
+                
+            }).disposed(by: disposeBag)
+        
     }
     
     fileprivate func setOutputBind() {
@@ -565,7 +593,6 @@ class CommunityDetailViewController: UIViewController {
             }
             .bind(to: boardCollectionView.rx.items(cellIdentifier: "CommunityCollectionViewCell", cellType: CommunityCollectionViewCell.self)) { [weak self]
                 (index: Int, element: BoardImgDetail, cell) in
-                guard let self = self else { return }
                 cell.checkImageBtn.isHidden = true
                 DispatchQueue.global().async {
                     //캐시에 있는지 확인 후 없다면 메모리 캐시에 저장
@@ -604,7 +631,8 @@ class CommunityDetailViewController: UIViewController {
                     if let childs = response.data.content[i].childs {
                         comments.append(response.data.content[i])
                         self.childCommentCnt["\(response.data.content[i].id)", default: 0] += 1
-                        self.isAddedChild["\(response.data.content[i].id)", default: [Bool]()].append(false)
+//                        self.isAddedChild["\(response.data.content[i].id)", default: [Bool]()].append(false)
+                        self.isAddedChild["\(response.data.content[i].id)", default: [false]].append(false)
                         for _ in 0..<(childs.count) {
                             comments.append(response.data.content[i])
                             self.childCommentCnt["\(response.data.content[i].id)", default: 0] += 1
@@ -619,6 +647,9 @@ class CommunityDetailViewController: UIViewController {
             .bind(to: commentTableView.rx.items(cellIdentifier: "commentTableViewCell", cellType: BoardTableViewCell.self)) { [weak self]
                 (index: Int, element: CommentContentDetail, cell) in
                 guard let self = self else { return }
+                /// 댓글 수정 건: 댓글, 대댓글 구분해서 방출할 것
+//                cell.commentData.onNext(element)
+                cell.contentLabel.numberOfLines = 0
                 cell.selectionStyle = .none
                 ///대댓글이 있는 경우
                 if let child = element.childs {
@@ -666,9 +697,9 @@ class CommunityDetailViewController: UIViewController {
                             else { return }
                             let date = self.currentDate(isModified, modifiedAt, createdAt)
                             cell.dateLabel.text = date
-                            
                             cell.hiddenProperty()
                             self.commentParentId.append(element.id)
+                            cell.commentData.onNext(element) //댓글
                             print("대댓글이 있는 경우 댓글 ParentId 추가: \(self.commentParentId)")
                         } else { //삭제된 댓글
                             cell.setDeleteComment()
@@ -720,6 +751,7 @@ class CommunityDetailViewController: UIViewController {
 
                                             cell.childCommentProperty()
                                             self.commentParentId.append(element.childs?[i].parent?.id ?? -1)
+                                            cell.nestCommentData.onNext((element.childs?[i])!) //대댓글 정보
                                             print("대댓글 ParentId 추가: \(self.commentParentId)")
                                         } else { //삭제된 대댓글
                                             self.commentParentId.append(-1)
@@ -748,7 +780,9 @@ class CommunityDetailViewController: UIViewController {
                                 self.userNames.append("(익명)")
                             } else if(!isAnnoymity) {
                                 if let isWriter = element.isWriter {
-                                    if isWriter { cell.userName.text = (element.user?.nickname ?? "") + "(글쓴이)" }
+                                    if isWriter { cell.userName.text = (element.user?.nickname ?? "") + "(글쓴이)"
+                                        cell.hiddenProperty()
+                                    }
                                 }
                                 if let isMine = element.isMine {
                                     if isMine {
@@ -767,6 +801,7 @@ class CommunityDetailViewController: UIViewController {
                             cell.userName.text = element.user?.nickname ?? "닉네임 불러오기 에러"
                         }
                         self.commentParentId.append(element.id)
+                        cell.commentData.onNext(element) //댓글
                         print("대댓글이 없는경우 댓글 ParentId 추가: \(self.commentParentId)")
                         //Date
                         guard let isModified = element.isModified,
@@ -800,6 +835,13 @@ class CommunityDetailViewController: UIViewController {
         var str = format.string(from: tempDate)
         isModified ? (str = str + "(수정됨)") : (str = str)
         return str
+    }
+    
+    @objc func dismissView(_ sender: UITapGestureRecognizer? = nil) {
+        UIView.animate(withDuration: 0.25) { [weak self] in
+            self?.moreView.moreView.removeFromSuperview()
+            self?.moreView.backgroundView.removeFromSuperview()
+        }
     }
 }
 
@@ -855,7 +897,7 @@ extension UIScrollView {
         let unionCalculatedTotalRect = recursiveUnionInDepthFor(view: self)
         
         // 계산된 크기로 컨텐츠 사이즈 설정
-        self.contentSize = CGSize(width: self.frame.width, height: unionCalculatedTotalRect.height+75)
+        self.contentSize = CGSize(width: self.frame.width, height: unionCalculatedTotalRect.height+100)
     }
     
     private func recursiveUnionInDepthFor(view: UIView) -> CGRect {

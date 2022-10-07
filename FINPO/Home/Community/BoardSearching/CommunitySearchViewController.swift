@@ -192,10 +192,10 @@ class CommunitySearchViewController: UIViewController {
             }.disposed(by: disposeBag)
                 
         viewModel.moveToDetail
-            .map { $0.id }
-            .bind { [weak self] pageId in
+            .map { $0 }
+            .bind { [weak self] boardData in
                 let vc = CommunityDetailViewController()
-                vc.initialize(id: pageId)
+                vc.initialize(id: boardData.id , boardData: boardData)
                 vc.modalPresentationStyle = .fullScreen
                 self?.navigationController?.pushViewController(vc, animated: true)
             }.disposed(by: disposeBag)

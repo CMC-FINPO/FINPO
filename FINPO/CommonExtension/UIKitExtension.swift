@@ -506,9 +506,6 @@ extension UIViewController {
     func showAlertAndDismiss(_ title: String, _ message: String) {
         let alertVC = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alertVC.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
-//            DispatchQueue.main.async {
-//                self.dismiss(animated: true)
-//            }            
         }))
         present(alertVC, animated: true, completion: nil)
     }

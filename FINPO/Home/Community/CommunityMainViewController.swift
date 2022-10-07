@@ -16,8 +16,10 @@ class CommunityMainViewController: UIViewController {
     let disposeBag = DisposeBag()
     let viewModel = CommunityViewModel()
     
+
     var isLastPage: Bool = false
     var idList: [Int] = [Int]()
+    var checkIsMine: [CommunityContentModel] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -104,7 +106,9 @@ class CommunityMainViewController: UIViewController {
     }
     
     @objc private func moveToSearchVC() {
-        
+        let vc = CommunitySearchViewController()
+        vc.modalPresentationStyle = .fullScreen
+        self.navigationController?.pushViewController(vc, animated: true)
     }
     
     @objc private func moveToWritingVC() {
@@ -114,7 +118,7 @@ class CommunityMainViewController: UIViewController {
     
     fileprivate func setInputBind() {
         
-        rx.viewWillAppear.asDriver { _ in return .never()}
+        rx.viewWillAppear.take(1).asDriver { _ in return .never()}
             .drive(onNext: { [weak self] _ in
                 self?.viewModel.input.loadBoardObserver.accept(.latest)
             }).disposed(by: disposeBag)
@@ -184,9 +188,10 @@ class CommunityMainViewController: UIViewController {
             }).disposed(by: disposeBag)
         
         postTableView.rx.itemSelected
-            .subscribe(onNext: { indexPath in
+            .subscribe(onNext: { [weak self] indexPath in
                 let vc = CommunityDetailViewController()
-                vc.initialize(id: self.idList[indexPath.row])
+                guard let self = self else { return }
+                vc.initialize(id: self.idList[indexPath.row], boardData: self.checkIsMine[indexPath.row])
                 vc.modalPresentationStyle = .fullScreen
                 self.navigationController?.pushViewController(vc, animated: true)
             }).disposed(by: disposeBag)
@@ -210,17 +215,20 @@ class CommunityMainViewController: UIViewController {
             }).disposed(by: disposeBag)
         
         self.viewModel.output.loadBoardOutput
-            .scan(into: [CommunityContentModel]()) { boards, action in
+            .scan(into: [CommunityContentModel]()) { [weak self] boards, action in
+                guard let self = self else { return }
                 switch action {
                 case .first(let firstData):
                     boards.removeAll()
                     self.idList.removeAll()
+                    self.checkIsMine.removeAll()
                     if firstData.data.last {
                         self.isLastPage = true
                     }
                     for i in 0..<(firstData.data.content.count) {
                         boards.append(firstData.data.content[i])
                         self.idList.append(firstData.data.content[i].id)
+                        self.checkIsMine.append(firstData.data.content[i])
                     }
                 case .loadMore(let addedData):
                     if addedData.data.last {
@@ -229,6 +237,7 @@ class CommunityMainViewController: UIViewController {
                     for i in 0..<(addedData.data.content.count) {
                         boards.append(addedData.data.content[i])
                         self.idList.append(addedData.data.content[i].id)
+                        self.checkIsMine.append(addedData.data.content[i])
                     }
                 case .edited(let editedData):
                     boards.append(editedData)
@@ -312,6 +321,7 @@ class CommunityMainViewController: UIViewController {
         
         viewModel.output.activated?
             .map { !$0 }
+            .observe(on: MainScheduler.asyncInstance)
             .do(onNext: { [weak self] finished in
                 if finished {
                     self?.postTableView.refreshControl?.endRefreshing()

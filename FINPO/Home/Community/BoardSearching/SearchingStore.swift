@@ -15,8 +15,7 @@ protocol SearchingFetchable {
 
 class SearchingStore: SearchingFetchable {
     var url = BaseURL.url.appending("post/search")
-//    "여기에 url 입력".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-//    url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+    
     func fetchSearchedBoard(page: Int, content: String) -> Observable<CommunityboardResponseModel> {
         let param: Parameters = [
             "sort": "id,desc",
