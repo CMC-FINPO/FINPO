@@ -21,6 +21,11 @@ struct EditResponse: Codable {
     var data : Bool
 }
 
+struct UploadResponse: Codable {
+    let success: Bool
+    let data: CommunityDetailBoardResponseModel
+}
+
 protocol EditFetchable {
     func editComment(commentId: Int, content: String) -> Observable<Response>
     
@@ -29,6 +34,15 @@ protocol EditFetchable {
     func reportComment(commentId: Int, reportId: Int) -> Observable<EditResponse>
     
     func blockUser(commentId: Int)
+    
+    //게시글
+    func getBoardData(pageId: Int) -> Observable<CommunityDetailBoardResponseModel>
+    
+    //이미지 url
+    func getImageUrl(imgs: [UIImage]) -> Observable<BoardImageResponseModel>
+    
+    //업로드
+    func uploadBoard(pageId: Int, text: String, imgUrls: [String]) -> Observable<CommunityDetailBoardResponseModel>
 }
 
 class EditStore: EditFetchable {
@@ -59,4 +73,47 @@ class EditStore: EditFetchable {
         ApiManager.postDataWithoutRx(from: url.appending("\(commentId)/block"), to: EditResponse.self, encoding: URLEncoding.default)
     }
     
+    //게시글
+    func getBoardData(pageId: Int) -> Observable<CommunityDetailBoardResponseModel> {
+        let Boardurl = BaseURL.url.appending("post/")
+        return ApiManager.getData(from: Boardurl.appending("\(pageId)"), to: CommunityDetailBoardResponseModel.self, encoding: URLEncoding.default)
+    }
+    
+    //이미지 URL 가져오기
+    func getImageUrl(imgs: [UIImage]) -> Observable<BoardImageResponseModel> {
+        let boardUrl = BaseURL.url.appending("upload/post")
+        return ApiManager.postImage(with: imgs, from: boardUrl, to: BoardImageResponseModel.self, encoding: URLEncoding.default)
+    }
+    
+    //업로드
+    func uploadBoard(pageId: Int, text: String, imgUrls: [String]) -> Observable<CommunityDetailBoardResponseModel> {
+        let boardUrl = BaseURL.url.appending("post/\(pageId)")
+        let param = toDic(imgUrls: imgUrls, text: text)
+        return ApiManager.putData(with: param, from: boardUrl, to: CommunityDetailBoardResponseModel.self, encoding: JSONEncoding.default)
+    }
+    
+    func toDic(imgUrls: [String], text: String, isAnony: Bool = false) -> Parameters {
+        var dics = [[String:Any]]()
+        if imgUrls[0] == "" {
+            let paramters: Parameters = [
+                "content": text,
+                "anonymity": isAnony
+            ]
+            return paramters
+        } else {
+            for i in 0..<imgUrls.count {
+                let param: Parameters = [
+                    "img":imgUrls[i],
+                    "order": i
+                ]
+                dics.append(param)
+            }
+        }
+        let parameters: Parameters = [
+            "imgs": dics,
+            "anonymity": isAnony,
+            "content": text
+        ]
+        return parameters
+    }
 }
