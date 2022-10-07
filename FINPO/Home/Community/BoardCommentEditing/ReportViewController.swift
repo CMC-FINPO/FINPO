@@ -9,11 +9,16 @@ import Foundation
 import UIKit
 import RxSwift
 
+enum SortIsBoard {
+    case board(Int)
+    case comment(Int)
+}
+
 class ReportViewController: UIViewController {
     let disposeBag = DisposeBag()
     
     let viewModel: EditCommentViewModelType
-    let commentId: Int
+    let commentId: SortIsBoard
     
     var containerViewHeightConstraint: NSLayoutConstraint?
     var containerViewBottomConstraint: NSLayoutConstraint?
@@ -25,7 +30,7 @@ class ReportViewController: UIViewController {
     let dismissibleHeight: CGFloat = 100
     let maximumContainerHeight: CGFloat = UIScreen.main.bounds.height - 64
     
-    init(viewModel: EditCommentViewModelType = EditCommentViewModel(), commentId: Int) {
+    init(viewModel: EditCommentViewModelType = EditCommentViewModel(), commentId: SortIsBoard) {
         self.viewModel = viewModel
         self.commentId = commentId
         self.reportOb = Observable.of(reportData)
@@ -34,7 +39,7 @@ class ReportViewController: UIViewController {
     
     required init?(coder: NSCoder) {
         viewModel = EditCommentViewModel()
-        commentId = -1
+        commentId = SortIsBoard.board(-1)
         reportOb = Observable.of(reportData)
         super.init(coder: coder)
     }
@@ -158,7 +163,14 @@ class ReportViewController: UIViewController {
             .map { $0.row + 1 }
             .bind { [weak self] index in
                 guard let self = self else { return }
-                self.viewModel.commentReportObserver.onNext((commentId: self.commentId, reportId: index)) }
+                switch self.commentId {
+                case .board(let boardId):
+                    self.viewModel.commentReportObserver.onNext((commentId: .board(boardId), reportId: index))
+                case .comment(let commentId):
+                    self.viewModel.commentReportObserver.onNext((commentId: .comment(commentId), reportId: index))
+                }
+            }
+//                self.viewModel.commentReportObserver.onNext((commentId: self.commentId, reportId: index)) }
             .disposed(by: disposeBag)
     }
     
@@ -174,7 +186,7 @@ class ReportViewController: UIViewController {
         viewModel.reportOutput
             .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] finished in
-                self?.showAlert("신고 완료", "댓글 신고가 완료되었습니다")
+                self?.showAlert("신고 완료", "신고가 완료되었습니다")
                 self?.animateDismissView()
             }).disposed(by: disposeBag)
     }

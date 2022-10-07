@@ -172,6 +172,12 @@ extension CommentMoreView: UITableViewDataSource, UITableViewDelegate {
                     return
                 }
                 self.viewController?.deleteBoard(id: pageId ?? -1)
+            } else if indexPath.row == 2 {
+                if let isMine = self.boardData?.isMine, isMine {
+                    self.viewController?.showAlert("자신 자신은 신고할 수 없습니다.", "")
+                    return
+                }
+                self.viewController?.showReport(id: .board(pageId ?? -1))
             }
         case .comment:
             //댓글 수정
@@ -196,9 +202,9 @@ extension CommentMoreView: UITableViewDataSource, UITableViewDelegate {
                 if let delegateData = delegateData {
                     switch delegateData {
                     case .normal(let normal):
-                        self.viewController?.showReport(id: normal.id)
+                        self.viewController?.showReport(id: .comment(normal.id))
                     case .nest(let nest):
-                        self.viewController?.showReport(id: nest.id ?? -1)
+                        self.viewController?.showReport(id: .comment(nest.id ?? -1))
                     }
                 }
             }

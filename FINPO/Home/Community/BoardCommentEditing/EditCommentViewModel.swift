@@ -16,7 +16,7 @@ protocol EditCommentViewModelType {
     var confirmButtonObserver: AnyObserver<Void> { get }
     
     //댓글 신고
-    var commentReportObserver: AnyObserver<(commentId: Int, reportId: Int)> { get }
+    var commentReportObserver: AnyObserver<(commentId: SortIsBoard, reportId: Int)> { get }
     
     var editButtonTapped: Observable<Bool> { get }
     var errorMessage: Observable<NSError> { get }
@@ -32,7 +32,7 @@ class EditCommentViewModel: EditCommentViewModelType {
     var editedCommentTextObserver: AnyObserver<String>
     var confirmButtonObserver: AnyObserver<Void>
     
-    var commentReportObserver: AnyObserver<(commentId: Int, reportId: Int)>
+    var commentReportObserver: AnyObserver<(commentId: SortIsBoard, reportId: Int)>
     
     //OUTPUT
     var editButtonTapped: Observable<Bool>
@@ -46,7 +46,7 @@ class EditCommentViewModel: EditCommentViewModelType {
         let confirm = PublishSubject<Void>()
         let id = PublishSubject<Int>()
         
-        let report = PublishSubject<(commentId: Int, reportId: Int)>()
+        let report = PublishSubject<(commentId: SortIsBoard, reportId: Int)>()
         
         let editRsl = PublishSubject<Bool>()
         let error = PublishSubject<Error>()
@@ -94,12 +94,17 @@ class EditCommentViewModel: EditCommentViewModelType {
         reportOutput = reportRsl.asObserver()
         
         report
-            .flatMap { domain.reportComment(commentId: $0.commentId, reportId: $0.reportId) }
+            .flatMap { (sort, reportId) -> Observable<EditResponse> in
+                switch sort {
+                case .board(let boardId):
+                    return domain.reportBoard(pageId: boardId, reportId: reportId)
+                case .comment(let commentId):
+                    return domain.reportComment(commentId: commentId, reportId: reportId)
+                }
+            }
             .map { $0 }
             .bind { reportRsl.onNext($0.success) }
             .disposed(by: disposeBag)
-            
-                        
-        
+                
     }
 }

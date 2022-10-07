@@ -520,7 +520,7 @@ extension UIViewController {
         present(alertVC, animated: true)
     }
     
-    func showReport(id: Int) {
+    func showReport(id: SortIsBoard) {
         let vc = ReportViewController(commentId: id)
         vc.modalPresentationStyle = .overCurrentContext
         present(vc, animated: false)
