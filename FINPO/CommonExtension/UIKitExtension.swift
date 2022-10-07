@@ -536,6 +536,17 @@ extension UIViewController {
         present(alertVC, animated: true)
     }
     
+    func deleteBoard(id: Int) {
+        let alertVC = UIAlertController(title: "게시글을 삭제하시겠습니까?", message: nil, preferredStyle: .alert)
+        alertVC.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
+            let domain = EditStore()
+            domain.deleteBoard(pageId: id)
+            self.navigationController?.popViewController(animated: true)
+        }))
+        alertVC.addAction((UIAlertAction(title: "취소", style: .destructive, handler: nil)))
+        present(alertVC, animated: true)
+    }
+    
     
 }
 

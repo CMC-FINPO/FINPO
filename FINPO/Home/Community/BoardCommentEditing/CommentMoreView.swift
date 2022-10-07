@@ -166,6 +166,12 @@ extension CommentMoreView: UITableViewDataSource, UITableViewDelegate {
                 let vc = BoardEditViewController(pageId: pageId ?? -1)
                 vc.modalPresentationStyle = .fullScreen
                 self.viewController?.navigationController?.pushViewController(vc, animated: true)
+            } else if indexPath.row == 1 {
+                if let isMine = self.boardData?.isMine, !isMine {
+                    self.viewController?.showAlert("자신의 글만 삭제할 수 있습니다.", "글 삭제 실패")
+                    return
+                }
+                self.viewController?.deleteBoard(id: pageId ?? -1)
             }
         case .comment:
             //댓글 수정

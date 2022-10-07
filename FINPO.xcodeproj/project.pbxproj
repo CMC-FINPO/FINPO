@@ -417,7 +417,6 @@
 				DD6C9A3728E3E7B900D40507 /* CommunityWritingViewModel.swift */,
 				DD9F9BF028EB32A8006AC588 /* BoardCommentEditing */,
 				DD9F9BE928EB0050006AC588 /* BoardSearching */,
-				DD9F9BF328EC128B006AC588 /* ReportViewController.swift */,
 				DD44B06A28EEBBBB000D0DC4 /* BoardEditViewController.swift */,
 				DD44B06C28EEBC92000D0DC4 /* BoardEditViewModel.swift */,
 			);
@@ -558,6 +557,7 @@
 				DD9F9BEA28EB00A8006AC588 /* EditCommentViewController.swift */,
 				DD9F9BEC28EB00DE006AC588 /* EditCommentViewModel.swift */,
 				DD9F9BEE28EB0143006AC588 /* EditStore.swift */,
+				DD9F9BF328EC128B006AC588 /* ReportViewController.swift */,
 			);
 			path = BoardCommentEditing;
 			sourceTree = "<group>";

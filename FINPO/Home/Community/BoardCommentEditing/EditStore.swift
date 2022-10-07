@@ -43,6 +43,9 @@ protocol EditFetchable {
     
     //업로드
     func uploadBoard(pageId: Int, text: String, imgUrls: [String]) -> Observable<CommunityDetailBoardResponseModel>
+    
+    //댓글 삭제
+    func deleteBoard(pageId: Int)
 }
 
 class EditStore: EditFetchable {
@@ -55,10 +58,12 @@ class EditStore: EditFetchable {
         return ApiManager.putData(with: param, from: url.appending("\(commentId)"), to: Response.self, encoding: JSONEncoding.default)
     }
     
+    //댓글 삭제
     func deleteComment(id: Int)  {
         ApiManager.deleteDataWithoutRx(from: url.appending("\(id)"), to: EditResponse.self, encoding: URLEncoding.default)
     }
     
+    //댓글 신고
     func reportComment(commentId: Int, reportId: Int) -> Observable<EditResponse> {
         let reportIdParam: Parameters = [
             "id": reportId
@@ -90,6 +95,12 @@ class EditStore: EditFetchable {
         let boardUrl = BaseURL.url.appending("post/\(pageId)")
         let param = toDic(imgUrls: imgUrls, text: text)
         return ApiManager.putData(with: param, from: boardUrl, to: CommunityDetailBoardResponseModel.self, encoding: JSONEncoding.default)
+    }
+    
+    //게시글 삭제
+    func deleteBoard(pageId: Int) {
+        let boardUrl = BaseURL.url.appending("post/\(pageId)")
+        ApiManager.deleteDataWithoutRx(from: boardUrl, to: Response.self, encoding: URLEncoding.default)
     }
     
     func toDic(imgUrls: [String], text: String, isAnony: Bool = false) -> Parameters {
