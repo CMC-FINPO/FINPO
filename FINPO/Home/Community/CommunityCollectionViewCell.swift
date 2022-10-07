@@ -16,8 +16,9 @@ class CommunityCollectionViewCell: UICollectionViewCell {
     var disposeBag = DisposeBag()
     var delegate: UIViewController?
     var viewModel: CommunityWritingViewModel?
+    var editViewModel: BoardEditViewModelType?
     
-    var detailsTap : Observable<Void>{
+    var detailsTap : Observable<Void> {
         return self.checkImageBtn.rx.tap.asObservable()
     }
     
@@ -72,8 +73,33 @@ class CommunityCollectionViewCell: UICollectionViewCell {
                 self.delegate?.present(ac, animated: true)
             })
             .disposed(by: self.disposeBag)
-        
     }
+    
+    func editRemoveImage(imgUrl: String) {
+        self.detailsTap
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                let ac = UIAlertController(title: "이 이미지를 삭제하시겠습니까?", message: nil, preferredStyle: .alert)
+                ac.addAction(UIAlertAction(title: "삭제", style: .destructive, handler: { action in
+                    self.removeFromSuperview()
+                    let urls = self.editViewModel?.editedImg.value.filter { $0 != imgUrl }
+                    if let urls = urls {
+                        self.editViewModel?.editedImg.accept(urls)
+                    }
+                    var data = [BoardImgDetail]()
+                    if let urls = urls {
+                        for i in 0..<urls.count {
+                            data.append(BoardImgDetail(img: urls[i], order: i))
+                        }
+                    }
+                    self.editViewModel?.originData.accept(CommunityDetailBoardResponseModel(data: BoardDataDetail(status: false, id: -1, content: "", anonymity: false, likes: 0, hits: 0, countOfComment: 0, user: nil, isMine: false, isLiked: false, isBookmarked: false, isModified: false, createdAt: "", modifiedAt: "", imgs: data)))
+                           
+                }))
+                ac.addAction(UIAlertAction(title: "취소", style: .cancel))
+                self.delegate?.present(ac, animated: true)
+            }).disposed(by: disposeBag)
+    }
+    
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
