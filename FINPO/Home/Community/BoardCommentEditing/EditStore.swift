@@ -33,7 +33,7 @@ protocol EditFetchable {
     
     func reportComment(commentId: Int, reportId: Int) -> Observable<EditResponse>
     
-    func blockUser(commentId: Int)
+    func blockUser(commentId: SortIsBoard)
     
     //게시글
     func getBoardData(pageId: Int) -> Observable<CommunityDetailBoardResponseModel>
@@ -77,8 +77,16 @@ class EditStore: EditFetchable {
         return ApiManager.postData(with: param, from: url.appending("\(commentId)/report"), to: EditResponse.self, encoding: JSONEncoding.default)
     }
     
-    func blockUser(commentId: Int) {
-        ApiManager.postDataWithoutRx(from: url.appending("\(commentId)/block"), to: EditResponse.self, encoding: URLEncoding.default)
+    // 댓글, 게시글 유저 차단
+    func blockUser(commentId: SortIsBoard) {
+        switch commentId {
+        case .board(let pageId):
+            let boardUrl = BaseURL.url.appending("post/\(pageId)/block")
+            ApiManager.postDataWithoutRx(from: boardUrl, to: EditResponse.self, encoding: URLEncoding.default)
+        case .comment(let commentId):
+            ApiManager.postDataWithoutRx(from: url.appending("\(commentId)/block"), to: EditResponse.self, encoding: URLEncoding.default)
+        }
+        
     }
     
     //게시글

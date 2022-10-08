@@ -526,7 +526,7 @@ extension UIViewController {
         present(vc, animated: false)
     }
     
-    func showBlockAlert(id: Int) {
+    func showBlockAlert(id: SortIsBoard) {
         let alertVC = UIAlertController(title: "해당 유저를 차단하시겠습니까?", message: nil, preferredStyle: .alert)
         alertVC.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
             let domain = EditStore()

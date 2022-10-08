@@ -21,7 +21,7 @@ enum MoreList {
     var option: [String] {
         switch self {
         case .comment: return ["수정하기", "삭제하기", "신고하기", "차단하기"]
-        case .board: return ["글 수정하기", "글 삭제하기", "신고하기", "새로고침", "차단하기"]
+        case .board: return ["글 수정하기", "글 삭제하기", "신고하기", "차단하기"]
         }
     }
     
@@ -79,7 +79,6 @@ class CommentMoreView: NSObject {
     
     public lazy var moreView: UITableView = {
         let view = UITableView()
-        view.backgroundColor = .green
         view.separatorStyle = .none
         view.bounces = false
         view.layer.masksToBounds = true
@@ -118,7 +117,7 @@ class CommentMoreView: NSObject {
             backgroundView.frame = targetView.bounds
             
             targetView.addSubview(moreView)
-            moreView.frame = CGRect(x: targetView.bounds.maxX-100, y: targetView.bounds.minY+100, width: 80, height: 120)
+            moreView.frame = CGRect(x: targetView.bounds.maxX-100, y: targetView.bounds.minY+85, width: 80, height: 100)
         }
 
         
@@ -154,7 +153,7 @@ extension CommentMoreView: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.moreView.removeFromSuperview()
         self.backgroundView.removeFromSuperview()
-        
+        guard let option = option else { return }
         switch option {
         case .board:
             //게시글 수정
@@ -166,18 +165,30 @@ extension CommentMoreView: UITableViewDataSource, UITableViewDelegate {
                 let vc = BoardEditViewController(pageId: pageId ?? -1)
                 vc.modalPresentationStyle = .fullScreen
                 self.viewController?.navigationController?.pushViewController(vc, animated: true)
-            } else if indexPath.row == 1 {
+            }
+            // 게시글 삭제
+            else if indexPath.row == 1 {
                 if let isMine = self.boardData?.isMine, !isMine {
                     self.viewController?.showAlert("자신의 글만 삭제할 수 있습니다.", "글 삭제 실패")
                     return
                 }
                 self.viewController?.deleteBoard(id: pageId ?? -1)
-            } else if indexPath.row == 2 {
+            }
+            // 게시글 신고
+            else if indexPath.row == 2 {
                 if let isMine = self.boardData?.isMine, isMine {
                     self.viewController?.showAlert("자신 자신은 신고할 수 없습니다.", "")
                     return
                 }
                 self.viewController?.showReport(id: .board(pageId ?? -1))
+            }
+            // 게시글 유저 차단
+            else if indexPath.row == 3 {
+                if let isMine = self.boardData?.isMine, isMine {
+                    self.viewController?.showAlert("자기 자신은 차단할 수 없습니다.", "")
+                    return
+                }
+                self.viewController?.showBlockAlert(id: .board(pageId ?? -1))
             }
         case .comment:
             //댓글 수정
@@ -217,19 +228,16 @@ extension CommentMoreView: UITableViewDataSource, UITableViewDelegate {
                             self.viewController?.showAlert("자기 자신은 차단할 수 없습니다", "")
                             return
                         }
-                        self.viewController?.showBlockAlert(id: normal.id)
+                        self.viewController?.showBlockAlert(id: .comment(normal.id))
                     case .nest(let nest):
                         if let isMine = nest.isMine, isMine {
                             self.viewController?.showAlert("자기 자신은 차단할 수 없습니다", "")
                             return
                         }
-                        self.viewController?.showBlockAlert(id: nest.id ?? -1)
+                        self.viewController?.showBlockAlert(id: .comment(nest.id ?? -1))
                     }
                 }
             }
-            
-        case .none:
-            print("보드")
         }
         
         

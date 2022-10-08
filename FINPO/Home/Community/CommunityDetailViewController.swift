@@ -100,6 +100,7 @@ class CommunityDetailViewController: UIViewController {
         view.showsVerticalScrollIndicator = false
         view.showsHorizontalScrollIndicator = false
         view.isUserInteractionEnabled = true
+        view.refreshControl = UIRefreshControl()
         return view
     }()
     
@@ -402,17 +403,36 @@ class CommunityDetailViewController: UIViewController {
     }
     
     fileprivate func setInputBind() {
-        rx.viewWillAppear.take(1).asDriver { _ in return .never()}
-            .drive(onNext: { [weak self] _ in
-                guard let id = self?.pageId else { return }
-                self?.viewModel.input.loadDetailBoardObserver.accept(id)
-                self?.viewModel.input.loadCommentObserver.accept(id)
-                
+//        rx.viewWillAppear.take(1).asDriver { _ in return .never()}
+//            .drive(onNext: { [weak self] _ in
+//                guard let id = self?.pageId else { return }
+//                self?.viewModel.input.loadDetailBoardObserver.accept(id)
+//                self?.viewModel.input.loadCommentObserver.accept(id)
+//
+//                //댓글 달 때 미리 pageId 넣어두기
+//                self?.viewModel.input.isNestedObserver.accept(.comment(id: id))
+//                self?.viewModel.input.pageIdObserver.accept(id)
+//                self?.viewModel.input.isAnonyBtnClicked.accept(false)
+//            }).disposed(by: disposeBag)
+        
+        let firstLoad = rx.viewWillAppear
+            .map { _ in () }
+        
+        let reload = scrollView.refreshControl?.rx
+            .controlEvent(.valueChanged)
+            .map { _ in () } ?? Observable.just(())
+        
+        Observable.merge([firstLoad, reload])
+            .bind { [weak self] _ in
+                guard let self = self, let id = self.pageId else { return }
+                self.viewModel.input.loadDetailBoardObserver.accept(id)
+                self.viewModel.input.loadCommentObserver.accept(id)
+
                 //댓글 달 때 미리 pageId 넣어두기
-                self?.viewModel.input.isNestedObserver.accept(.comment(id: id))
-                self?.viewModel.input.pageIdObserver.accept(id)
-                self?.viewModel.input.isAnonyBtnClicked.accept(false)
-            }).disposed(by: disposeBag)
+                self.viewModel.input.isNestedObserver.accept(.comment(id: id))
+                self.viewModel.input.pageIdObserver.accept(id)
+                self.viewModel.input.isAnonyBtnClicked.accept(false)
+            }.disposed(by: disposeBag)
         
         likeButton.rx.tap
             .bind { [weak self] _ in
@@ -562,6 +582,7 @@ class CommunityDetailViewController: UIViewController {
         
         viewModel.output.loadDetailBoardOutput
             .scan(into: [BoardImgDetail]()) { [weak self] imgs, data in
+                imgs.removeAll()
                 guard let self = self else { return }
                 if let imagsCnt = data.data.imgs {
                     for i in 0..<(imagsCnt.count) {
@@ -644,6 +665,8 @@ class CommunityDetailViewController: UIViewController {
                     }
                 }
             }
+            .observe(on: MainScheduler.asyncInstance)
+            .do(onNext: { [weak self] _ in self?.scrollView.refreshControl?.endRefreshing() })
             .bind(to: commentTableView.rx.items(cellIdentifier: "commentTableViewCell", cellType: BoardTableViewCell.self)) { [weak self]
                 (index: Int, element: CommentContentDetail, cell) in
                 guard let self = self else { return }
