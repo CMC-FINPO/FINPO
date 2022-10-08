@@ -10,5 +10,9 @@ import Foundation
 struct LikeMenu {
     var boardId: Int
     var isLike: Bool
-    
+}
+
+struct BookmarkMenu {
+    var boardId: Int
+    var isBooked: Bool
 }

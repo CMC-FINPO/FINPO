@@ -182,58 +182,58 @@ class CommunityViewModel {
 //            ).disposed(by: disposeBag)
         
         
-        input.doBookmarkObserver
-            .flatMap { id in ApiManager.postData(
-                from: BaseURL.url.appending("\(bookmarkCheckAction.add(id: id).sortingURL)"),
-                to: CommunityLikeResponseModel.self,
-                encoding: URLEncoding.default) }
-            .subscribe(onNext: { [weak self] editedData in
-                self?.input.triggerObserver.accept(())
-            }).disposed(by: disposeBag)
+//        input.doBookmarkObserver
+//            .flatMap { id in ApiManager.postData(
+//                from: BaseURL.url.appending("\(bookmarkCheckAction.add(id: id).sortingURL)"),
+//                to: CommunityLikeResponseModel.self,
+//                encoding: URLEncoding.default) }
+//            .subscribe(onNext: { [weak self] editedData in
+//                self?.input.triggerObserver.accept(())
+//            }).disposed(by: disposeBag)
+//
+//        input.undoBookmarkObserver
+//            .flatMap { id in ApiManager.deleteData(
+//                from: BaseURL.url.appending("\(bookmarkCheckAction.delete(id: id).sortingURL)"),
+//                to: CommunityLikeResponseModel.self,
+//                encoding: URLEncoding.default) }
+//            .subscribe(onNext: { [weak self] editedData in
+//                self?.input.triggerObserver.accept(())
+//            }).disposed(by: disposeBag)
         
-        input.undoBookmarkObserver
-            .flatMap { id in ApiManager.deleteData(
-                from: BaseURL.url.appending("\(bookmarkCheckAction.delete(id: id).sortingURL)"),
-                to: CommunityLikeResponseModel.self,
-                encoding: URLEncoding.default) }
-            .subscribe(onNext: { [weak self] editedData in
-                self?.input.triggerObserver.accept(())
-            }).disposed(by: disposeBag)
-        
-        input.triggerObserver
-            .withLatestFrom(input.loadBoardObserver) { [weak self] _, action in
-                guard let self = self else { return }
-                switch action {
-                case .latest:
-                    self.input.loadBoardObserver.accept(.latest)
-                    if(self.currentPage > 0) {
-                        for i in 1..<(self.currentPage) where self.currentPage > 0 {
-                            ApiManager.getData(
-                                from: BaseURL.url.appending("\(boardSorting.latest.sortingURL)&page=\(i)"),
-                                to: CommunityboardResponseModel.self,
-                                encoding: URLEncoding.default
-                            ).subscribe(onNext: { data in
-                                self.output.loadBoardOutput.accept(.loadMore(data))
-                            }).disposed(by: self.disposeBag)
-                        }
-                    }
-                case .popular:
-                    self.input.loadBoardObserver.accept(.popular)
-                    if(self.currentPage > 0) {
-                        for i in 1..<(self.currentPage) {
-                            ApiManager.getData(
-                                from: BaseURL.url.appending("\(boardSorting.popular.sortingURL)&page=\(i)"),
-                            to: CommunityboardResponseModel.self,
-                            encoding: URLEncoding.default)
-                            .subscribe(onNext: { data in
-                                self.output.loadBoardOutput.accept(.loadMore(data))
-                            }).disposed(by: self.disposeBag)
-                        }
-                    }
-                }
-            }.subscribe(onNext: {
-                print("좋아요/북마크 갱신 후 재로드")
-            }).disposed(by: disposeBag)
+//        input.triggerObserver
+//            .withLatestFrom(input.loadBoardObserver) { [weak self] _, action in
+//                guard let self = self else { return }
+//                switch action {
+//                case .latest:
+//                    self.input.loadBoardObserver.accept(.latest)
+//                    if(self.currentPage > 0) {
+//                        for i in 1..<(self.currentPage) where self.currentPage > 0 {
+//                            ApiManager.getData(
+//                                from: BaseURL.url.appending("\(boardSorting.latest.sortingURL)&page=\(i)"),
+//                                to: CommunityboardResponseModel.self,
+//                                encoding: URLEncoding.default
+//                            ).subscribe(onNext: { data in
+//                                self.output.loadBoardOutput.accept(.loadMore(data))
+//                            }).disposed(by: self.disposeBag)
+//                        }
+//                    }
+//                case .popular:
+//                    self.input.loadBoardObserver.accept(.popular)
+//                    if(self.currentPage > 0) {
+//                        for i in 1..<(self.currentPage) {
+//                            ApiManager.getData(
+//                                from: BaseURL.url.appending("\(boardSorting.popular.sortingURL)&page=\(i)"),
+//                            to: CommunityboardResponseModel.self,
+//                            encoding: URLEncoding.default)
+//                            .subscribe(onNext: { data in
+//                                self.output.loadBoardOutput.accept(.loadMore(data))
+//                            }).disposed(by: self.disposeBag)
+//                        }
+//                    }
+//                }
+//            }.subscribe(onNext: {
+//                print("좋아요/북마크 갱신 후 재로드")
+//            }).disposed(by: disposeBag)
     }
 }
 

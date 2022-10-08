@@ -29,8 +29,12 @@ class BoardTableViewCell: UITableViewCell {
     let likeObserver: AnyObserver<LikeMenu>
     let likeBtnTapped: AnyObserver<Void>
     
+    let bookObserver: AnyObserver<BookmarkMenu>
+    let bookBtnTapped: AnyObserver<Void>
+    
     // OUTPUT
     let likeResult: PublishSubject<LikeMenu>
+    let bookResult: PublishSubject<BookmarkMenu>
     
     var cellBag = DisposeBag()
     
@@ -97,7 +101,7 @@ class BoardTableViewCell: UITableViewCell {
     public var bookMarkButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "scrap_inactive"), for: .normal)
-        button.setImage(UIImage(named: "scrap_active"), for: .selected)
+        button.setImage(UIImage(named: "scrap_inactive"), for: .selected)
         return button
     }()
     
@@ -164,14 +168,20 @@ class BoardTableViewCell: UITableViewCell {
         //좋아요, 북마크
         let liking = PublishSubject<LikeMenu>()
         let likingTapEvent = PublishSubject<Void>()
+        let booking = PublishSubject<BookmarkMenu>()
+        let bookingTapEvent = PublishSubject<Void>()
         
         let likingResult = PublishSubject<LikeMenu>()
+        let bookingResult = PublishSubject<BookmarkMenu>()
         
-        likeObserver = liking.asObserver()
+        likeObserver  = liking.asObserver()
         likeBtnTapped = likingTapEvent.asObserver()
+        bookObserver  = booking.asObserver()
+        bookBtnTapped = bookingTapEvent.asObserver()
+        
         
         likeResult = likingResult
-
+        bookResult = bookingResult
         
         debugPrint("셀 데이터: \(commentData)") //okay
         
@@ -217,7 +227,32 @@ class BoardTableViewCell: UITableViewCell {
                 if likeData.isLike { ApiManager.deleteDataWithoutRx(from: BaseURL.url.appending("post/\(likeData.boardId)/like"), to: CommunityLikeResponseModel.self, encoding: URLEncoding.default) }
                 else { ApiManager.postDataWithoutRx(from: BaseURL.url.appending("post/\(likeData.boardId)/like"), to: CommunityLikeResponseModel.self, encoding: URLEncoding.default) }
             }.disposed(by: cellBag)
-
+        
+        booking
+            .map { data -> Observable<CommunityLikeResponseModel> in
+                ApiManager.getData(from: BaseURL.url.appending("post/\(data.boardId)"), to: CommunityLikeResponseModel.self, encoding: URLEncoding.default)
+            }
+            .flatMap { $0 }
+            .map { BookmarkMenu(boardId: $0.data.id, isBooked: !$0.data.isBookmarked) }
+            .bind(to: bookingResult)
+            .disposed(by: cellBag)
+        
+        bookingResult
+            .map { !$0.isBooked }
+            .observe(on: MainScheduler.instance)
+            .bind { [weak self] isBooked in
+                if isBooked { self?.bookMarkButton.setImage(UIImage(named: "scrap_active"), for: .normal) }
+                else { self?.bookMarkButton.setImage(UIImage(named: "scrap_inactive"), for: .normal) }
+            }.disposed(by: cellBag)
+        
+        bookMarkButton.rx.tap.withLatestFrom(bookingResult.asObservable())
+            .map { BookmarkMenu(boardId: $0.boardId, isBooked: !$0.isBooked) }
+            .do(onNext: { [weak self] data in self?.bookResult.onNext(data) })
+            .bind { bookData in
+                if bookData.isBooked { ApiManager.deleteDataWithoutRx(from: BaseURL.url.appending("post/\(bookData.boardId)/bookmark"), to: CommunityLikeResponseModel.self, encoding: URLEncoding.default) }
+                else { ApiManager.postDataWithoutRx(from: "post/\(bookData.boardId)/bookmark", to: CommunityLikeResponseModel.self, encoding: URLEncoding.default) }
+            }.disposed(by: cellBag)
+            
         viewModel = nil
         commentId = nil
         viewController = nil
@@ -286,11 +321,15 @@ class BoardTableViewCell: UITableViewCell {
         commentData = data.asObserver()
         let nestData = PublishSubject<CommentChildDetail>()
         nestCommentData = nestData.asObserver()
-        //좋아요 북마크
+        //좋아요
         likeObserver  = PublishSubject<LikeMenu>().asObserver()
         likeBtnTapped = PublishSubject<Void>().asObserver()
+        //북마크
+        bookObserver = PublishSubject<BookmarkMenu>().asObserver()
+        bookBtnTapped = PublishSubject<Void>().asObserver()
         
         likeResult    = PublishSubject<LikeMenu>()
+        bookResult    = PublishSubject<BookmarkMenu>()
         super.init(coder: coder)
         fatalError("init(coder:) has not been implemented")
     }

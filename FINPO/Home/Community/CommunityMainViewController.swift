@@ -281,7 +281,7 @@ class CommunityMainViewController: UIViewController {
                 cell.commentCountLabel.text = "・ 조회수 \(element.hits)"
                 
                 cell.likeObserver.onNext(LikeMenu(boardId: element.id, isLike: !element.isLiked))
-               
+                cell.bookObserver.onNext(BookmarkMenu(boardId: element.id, isBooked: !element.isBookmarked))
             }.disposed(by: disposeBag)
         
         viewModel.output.errorValue.asSignal()
