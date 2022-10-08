@@ -42,10 +42,10 @@ class CommunityViewModel {
     ///OUTPUT
     struct OUTPUT {
         var loadBoardOutput = PublishRelay<isLoadMoreAction>()
-        
+        var likeResult = PublishRelay<Bool>()
         var activated: Observable<Bool>?
         
-        var errorValue = PublishRelay<Error>()
+        var errorValue = PublishRelay<LikeBookmarkError>()
     }
     
     enum boardSorting {
@@ -126,35 +126,6 @@ class CommunityViewModel {
                 print("게시판 로드")
             }).disposed(by: disposeBag)
         
-//        input.loadBoardObserver
-//            .do { [weak self] _ in self?.input.activating.onNext(true) }
-//            .map { [weak self] action in
-//                guard let self = self else { return }
-//                switch action {
-//                case .latest:
-//                    ApiManager.getData(
-//                        from:BaseURL.url.appending("\(boardSorting.latest.sortingURL)&page=\(self.currentPage)"),
-//                        to: CommunityboardResponseModel.self,
-//                        encoding: URLEncoding.default
-//                    ).subscribe(onNext: { data in
-//                        self.output.loadBoardOutput.accept(.first(data))
-//                    }).disposed(by: self.disposeBag)
-//                case .popular:
-//                    ApiManager.getData(
-//                        from: BaseURL.url.appending("\(boardSorting.popular.sortingURL)&page=\(self.currentPage)"),
-//                    to: CommunityboardResponseModel.self,
-//                    encoding: URLEncoding.default)
-//                    .subscribe(onNext: { data in
-//                        self.output.loadBoardOutput.accept(.first(data))
-//                    }).disposed(by: self.disposeBag)
-//                }
-//            }
-//            .do {[weak self] _ in self?.input.activating.onNext(false)}
-//            .subscribe(onNext: {
-//                print("게시판 로드")
-//            }).disposed(by: disposeBag)
-        
-        
         ///추가 로드
         input.loadMoreObserver
             .withLatestFrom(input.loadBoardObserver) { [weak self] _, action in
@@ -183,26 +154,33 @@ class CommunityViewModel {
             }).disposed(by: disposeBag)
         
         ///좋아요 추가
-        input.likeObserver
-            .flatMap { id in ApiManager.postData(
-                from: BaseURL.url.appending("\(likeCheckAction.isLike(id: id).sortingURL)"),
-                to: CommunityLikeResponseModel.self,
-                encoding: URLEncoding.default) }
-            .subscribe(onNext: { [weak self] editedData in
-                self?.input.triggerObserver.accept(())
-            }, onError: { [weak self] error in
-                self?.output.errorValue.accept(error)
-            }
-            ).disposed(by: disposeBag)
+//        input.likeObserver
+//            .flatMap { id in ApiManager.postData(
+//                from: BaseURL.url.appending("\(likeCheckAction.isLike(id: id).sortingURL)"),
+//                to: CommunityLikeResponseModel.self,
+//                encoding: URLEncoding.default) }
+//            .subscribe(onNext: { [weak self] editedData in
+//                self?.input.triggerObserver.accept(())
+//            }, onError: { [weak self] error in
+//                self?.output.errorValue.accept(.LikeError(error))
+//            }
+//            ).disposed(by: disposeBag)
+            
+            
         
-        input.unlikeObserver
-            .flatMap { id in ApiManager.deleteData(
-                from: BaseURL.url.appending("\(likeCheckAction.notLike(id: id).sortingURL)"),
-                to: CommunityLikeResponseModel.self,
-                encoding: URLEncoding.default) }
-            .subscribe(onNext: { [weak self] editedData in
-                self?.input.triggerObserver.accept(())
-            }).disposed(by: disposeBag)
+//        input.unlikeObserver
+//            .flatMap { id in ApiManager.deleteData(
+//                from: BaseURL.url.appending("\(likeCheckAction.notLike(id: id).sortingURL)"),
+//                to: CommunityLikeResponseModel.self,
+//                encoding: URLEncoding.default) }
+//            .subscribe(onNext: { [weak self] editedData in
+//                self?.input.triggerObserver.accept(())
+//            },
+//                onError: { [weak self] error in
+//                self?.output.errorValue.accept(.LikeError(error))
+//            }
+//            ).disposed(by: disposeBag)
+        
         
         input.doBookmarkObserver
             .flatMap { id in ApiManager.postData(
@@ -256,5 +234,15 @@ class CommunityViewModel {
             }.subscribe(onNext: {
                 print("좋아요/북마크 갱신 후 재로드")
             }).disposed(by: disposeBag)
+    }
+}
+
+enum LikeBookmarkError: Error {
+    case LikeError(Error)
+    var message: String {
+        switch self {
+        case .LikeError(_):
+            return "자기 자신의 글은 좋아요 할 수 없습니다."
+        }
     }
 }

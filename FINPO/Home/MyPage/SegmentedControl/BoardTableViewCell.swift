@@ -10,9 +10,28 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
+import Alamofire
 
 class BoardTableViewCell: UITableViewCell {
-
+    
+    enum likeCheckAction {
+        case isLike(id: Int)
+        case notLike(id: Int)
+        
+        var sortingURL: String {
+            switch self {
+            case .isLike(let id), .notLike(let id):
+                return "post/\(id)/like"
+            }
+        }
+    }
+    // INPUT
+    let likeObserver: AnyObserver<LikeMenu>
+    let likeBtnTapped: AnyObserver<Void>
+    
+    // OUTPUT
+    let likeResult: PublishSubject<LikeMenu>
+    
     var cellBag = DisposeBag()
     
     let attributeVC = CommunityDetailViewController()
@@ -142,7 +161,19 @@ class BoardTableViewCell: UITableViewCell {
         let nestData = PublishSubject<CommentChildDetail>()
         nestCommentData = nestData.asObserver()
         
-        print("셀 데이터: \(commentData)") //okay
+        //좋아요, 북마크
+        let liking = PublishSubject<LikeMenu>()
+        let likingTapEvent = PublishSubject<Void>()
+        
+        let likingResult = PublishSubject<LikeMenu>()
+        
+        likeObserver = liking.asObserver()
+        likeBtnTapped = likingTapEvent.asObserver()
+        
+        likeResult = likingResult
+
+        
+        debugPrint("셀 데이터: \(commentData)") //okay
         
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -158,6 +189,35 @@ class BoardTableViewCell: UITableViewCell {
             .bind { [weak self] data in self?.moreView.nestOnData.onNext(data)}
             .disposed(by: cellBag)
         
+        //좋아요, 북마크
+        
+        //트리거가 되면 상세조회로 가져오기
+        liking
+            .map { data -> Observable<CommunityDetailBoardResponseModel> in
+                ApiManager.getData(from: BaseURL.url.appending("post/\(data.boardId)"), to: CommunityDetailBoardResponseModel.self, encoding: URLEncoding.default)
+            }
+            .flatMap { $0 }
+            .map { LikeMenu(boardId: $0.data.id, isLike: !$0.data.isLiked) }
+            .bind(to: likingResult)
+            .disposed(by: cellBag)
+        
+        likingResult
+            .debug()
+            .map { !$0.isLike }
+            .observe(on: MainScheduler.instance)
+            .bind { [weak self] isLike in
+                if isLike { self?.likeButton.setImage(UIImage(named: "like_active"), for: .normal) }
+                else { self?.likeButton.setImage(UIImage(named: "like"), for: .normal)}
+            }.disposed(by: cellBag)
+        
+        likeButton.rx.tap.withLatestFrom(likingResult.asObservable())
+            .map { LikeMenu(boardId: $0.boardId, isLike: !$0.isLike) }
+            .do(onNext: { [weak self] data in self?.likeResult.onNext(data) })
+            .bind { likeData in
+                if likeData.isLike { ApiManager.deleteDataWithoutRx(from: BaseURL.url.appending("post/\(likeData.boardId)/like"), to: CommunityLikeResponseModel.self, encoding: URLEncoding.default) }
+                else { ApiManager.postDataWithoutRx(from: BaseURL.url.appending("post/\(likeData.boardId)/like"), to: CommunityLikeResponseModel.self, encoding: URLEncoding.default) }
+            }.disposed(by: cellBag)
+
         viewModel = nil
         commentId = nil
         viewController = nil
@@ -226,6 +286,11 @@ class BoardTableViewCell: UITableViewCell {
         commentData = data.asObserver()
         let nestData = PublishSubject<CommentChildDetail>()
         nestCommentData = nestData.asObserver()
+        //좋아요 북마크
+        likeObserver  = PublishSubject<LikeMenu>().asObserver()
+        likeBtnTapped = PublishSubject<Void>().asObserver()
+        
+        likeResult    = PublishSubject<LikeMenu>()
         super.init(coder: coder)
         fatalError("init(coder:) has not been implemented")
     }
@@ -325,11 +390,5 @@ class BoardTableViewCell: UITableViewCell {
         self.viewModel = viewModel
         self.commentId = commentId
         self.viewController = viewController
-    }
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        
-        self.cellBag = DisposeBag()
     }
 }

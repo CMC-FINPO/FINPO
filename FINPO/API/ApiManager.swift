@@ -96,9 +96,9 @@ struct ApiManager {
             .responseDecodable(of: model.self, completionHandler: { response in
                 switch response.value {
                 case .some(let models):
-                    print("삭제 성공: \(models)")
+                    print("업로드 성공: \(models)")
                 case .none:
-                    print("삭제 실패")
+                    print("업로드 실패")
                 }
             })
     }

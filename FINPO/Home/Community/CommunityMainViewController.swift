@@ -77,6 +77,7 @@ class CommunityMainViewController: UIViewController {
         ///게시글 테이블뷰
         postTableView.register(BoardTableViewCell.self, forCellReuseIdentifier: "postTableViewCell")
         postTableView.refreshControl = UIRefreshControl()
+        postTableView.delegate = self
     }
     
     fileprivate func setLayout() {
@@ -279,42 +280,14 @@ class CommunityMainViewController: UIViewController {
                 cell.viewsCountLabel.text = "・ 댓글 \(element.countOfComment)"
                 cell.commentCountLabel.text = "・ 조회수 \(element.hits)"
                 
-                if(element.isLiked) {
-                    cell.likeButton.setImage(UIImage(named: "like_active")?.withRenderingMode(.alwaysOriginal), for: .normal)
-                } else {
-                    cell.likeButton.setImage(UIImage(named: "like"), for: .normal)
-                }
-                
-                cell.likeButton.rx.tap
-                    .subscribe(onNext: { _ in
-                        if(element.isLiked) {
-                            self.viewModel.input.unlikeObserver.accept(element.id)
-                        }
-                        else {
-                            self.viewModel.input.likeObserver.accept(element.id)
-                        }
-                    }).disposed(by: cell.cellBag)
-                
-                if(element.isBookmarked) {
-                    cell.bookMarkButton.setImage(UIImage(named: "scrap_active"), for: .normal)
-                } else {
-                    cell.bookMarkButton.setImage(UIImage(named: "scrap_inactive"), for: .normal)
-                }
-                
-                cell.bookMarkButton.rx.tap
-                    .subscribe(onNext: { [weak self] _ in
-                        if(element.isBookmarked) {
-                            self?.viewModel.input.undoBookmarkObserver.accept(element.id)
-                        } else {
-                            self?.viewModel.input.doBookmarkObserver.accept(element.id)
-                        }
-                    }).disposed(by: cell.cellBag)
-                
+                cell.likeObserver.onNext(LikeMenu(boardId: element.id, isLike: !element.isLiked))
+               
             }.disposed(by: disposeBag)
         
         viewModel.output.errorValue.asSignal()
             .emit(onNext: { [weak self] error in
-                let ac = UIAlertController(title: "에러", message: "\(error.localizedDescription)", preferredStyle: .alert)
+                let errorMessage = error.message
+                let ac = UIAlertController(title: "에러", message: errorMessage, preferredStyle: .alert)
                 ac.addAction(UIAlertAction(title: "확인", style: .cancel))
                 self?.present(ac, animated: true)
             }).disposed(by: disposeBag)
@@ -337,5 +310,12 @@ class CommunityMainViewController: UIViewController {
         attributedText.addAttribute(.foregroundColor, value: UIColor(hexString: "\(color)"), range: (originalText as NSString).range(of: "\(range)"))
         return attributedText
     }
+    
+}
 
+extension CommunityMainViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "postTableViewCell", for: indexPath) as? BoardTableViewCell else { return }
+        cell.cellBag = DisposeBag()
+    }
 }
