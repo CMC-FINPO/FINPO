@@ -30,8 +30,8 @@ final class UnderlineSegmentedControl: UISegmentedControl {
         self.setBackgroundImage(image, for: .selected, barMetrics: .default)
         self.setBackgroundImage(image, for: .highlighted, barMetrics: .default)
         
-        let normalFont = UIFont(name: "AppleSDGothicNeo-Medium", size: 16)
-        let selectedFont = UIFont(name: "AppleSDGothicNeo-Semibold", size: 16)
+        let normalFont = UIFont(name: "AppleSDGothicNeo-Medium", size: 13)
+        let selectedFont = UIFont(name: "AppleSDGothicNeo-Semibold", size: 13)
         self.setTitleTextAttributes([NSAttributedString.Key.font: normalFont as Any], for: .normal)
         self.setTitleTextAttributes([NSAttributedString.Key.font: selectedFont as Any], for: .selected)
         self.setTitleTextAttributes([NSAttributedString.Key.font: selectedFont as Any], for: .highlighted)
@@ -40,13 +40,13 @@ final class UnderlineSegmentedControl: UISegmentedControl {
     }
     
     private lazy var underlineView: UIView = {
-        let width = self.bounds.size.width / CGFloat(self.numberOfSegments)
+        let width = self.bounds.size.width / CGFloat(self.numberOfSegments) - 10
         let height = 3.0
         let xPosition = CGFloat(self.selectedSegmentIndex * Int(width))
         let yPosition = self.bounds.size.height - 2.0
         let frame = CGRect(x: xPosition, y: yPosition, width: width, height: height)
         let view = UIView(frame: frame)
-        view.backgroundColor = UIColor(hexString: "5B43EF")
+        view.backgroundColor = UIColor.P01
         self.addSubview(view)
         return view
     }()

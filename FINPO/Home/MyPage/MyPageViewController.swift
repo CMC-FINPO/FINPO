@@ -140,6 +140,7 @@ class MyPageViewController: UIViewController {
     
     private let segmentedControl: UISegmentedControl = {
         let segmentedControl = UnderlineSegmentedControl(items: ["내가 쓴 글", "댓글 단 글", "좋아요 한 글"])
+        segmentedControl.apportionsSegmentWidthsByContent = true
         return segmentedControl
     }()
     
@@ -308,7 +309,8 @@ class MyPageViewController: UIViewController {
         view.addSubview(segmentedControl)
         segmentedControl.snp.makeConstraints {
             $0.top.equalTo(interestListLabel.snp.bottom).offset(23)
-            $0.leading.trailing.equalToSuperview()
+            $0.leading.equalToSuperview().inset(20)
+            $0.trailing.equalToSuperview().inset(80)
             $0.height.equalTo(50)
         }
         
