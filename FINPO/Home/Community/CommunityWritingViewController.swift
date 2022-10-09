@@ -198,6 +198,7 @@ class CommunityWritingViewController: UIViewController {
         
         viewModel.output.activated?
             .map { !$0 }
+            .observe(on: MainScheduler.asyncInstance)
             .bind { [weak self] finished in
                 if finished {
                     self?.indicator.stopAnimating()

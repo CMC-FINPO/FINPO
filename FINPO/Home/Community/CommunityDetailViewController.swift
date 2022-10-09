@@ -35,8 +35,11 @@ class CommunityDetailViewController: UIViewController {
     let nestCommentView = NestCommentView()
     ///대댓글 작성 시 유저명 저장(익명 포함)
     var userNames = [String]()
-    //게시판 정보 체크용
+    ///게시판 정보 체크용
     var boardData: CommunityContentModel?
+    
+    ///이미지 갤러리용
+    var imgs: [BoardImgDetail] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -403,18 +406,6 @@ class CommunityDetailViewController: UIViewController {
     }
     
     fileprivate func setInputBind() {
-//        rx.viewWillAppear.take(1).asDriver { _ in return .never()}
-//            .drive(onNext: { [weak self] _ in
-//                guard let id = self?.pageId else { return }
-//                self?.viewModel.input.loadDetailBoardObserver.accept(id)
-//                self?.viewModel.input.loadCommentObserver.accept(id)
-//
-//                //댓글 달 때 미리 pageId 넣어두기
-//                self?.viewModel.input.isNestedObserver.accept(.comment(id: id))
-//                self?.viewModel.input.pageIdObserver.accept(id)
-//                self?.viewModel.input.isAnonyBtnClicked.accept(false)
-//            }).disposed(by: disposeBag)
-        
         let firstLoad = rx.viewWillAppear
             .map { _ in () }
         
@@ -517,11 +508,15 @@ class CommunityDetailViewController: UIViewController {
             }.disposed(by: disposeBag)
         
         //TODO: 게시글 이미지 선택 시 풀스크린
-//        boardCollectionView.rx.itemSelected
-//            .subscribe(onNext: { [weak self] indexPath in
-//                let cell = self?.boardCollectionView.dequeueReusableCell(withReuseIdentifier: "CommunityCollectionViewCell", for: indexPath) as! CommunityCollectionViewCell
-//
-//            }).disposed(by: disposeBag)
+        boardCollectionView.rx.itemSelected
+            .asDriver()
+            .drive(onNext: { [weak self] indexPath in
+                guard let self = self else { return }
+                let vc = GalleryViewController()
+                vc.selectedIndex = indexPath.row
+                vc.imageArr = self.imgs
+                self.pushView(viewController: vc)
+            }).disposed(by: disposeBag)
         
         //게시글 더보기
         boardMoreButton.rx.tap
@@ -588,6 +583,8 @@ class CommunityDetailViewController: UIViewController {
                     for i in 0..<(imagsCnt.count) {
                         imgs.append(imagsCnt[i])
                     }
+                    //이미지 갤러리에 데이터 저장
+                    self.imgs = imgs
                     DispatchQueue.main.async {
                         self.likeButton.snp.remakeConstraints({
                             $0.top.equalTo(self.boardCollectionView.snp.bottom).offset(15)

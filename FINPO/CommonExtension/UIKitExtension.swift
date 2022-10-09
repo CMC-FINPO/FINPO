@@ -547,6 +547,22 @@ extension UIViewController {
         present(alertVC, animated: true)
     }
     
+    //이미지 갤러리용
+    func pushView(viewController: UIViewController) {
+        let transition = CATransition()
+        transition.duration = 0.3
+        transition.type = CATransitionType.fade
+        self.view.window!.layer.add(transition, forKey: kCATransition)
+        navigationController?.pushViewController(viewController, animated: true)
+    }
     
+    func dismissView() {
+        let transition = CATransition()
+        transition.duration = 0.3
+        transition.type = CATransitionType.reveal
+        transition.subtype = CATransitionSubtype.fromBottom
+        self.view.window!.layer.add(transition, forKey: kCATransition)
+        navigationController!.popViewController(animated: true)
+    }
 }
 

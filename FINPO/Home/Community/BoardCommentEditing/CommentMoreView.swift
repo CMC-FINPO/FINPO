@@ -85,6 +85,9 @@ class CommentMoreView: NSObject {
         view.layer.shadowColor = UIColor.black.cgColor
         view.layer.shadowOpacity = 0.3
         view.layer.cornerRadius = 5
+        view.layer.masksToBounds = true
+        view.showsVerticalScrollIndicator = false
+        view.showsHorizontalScrollIndicator = false
         view.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         view.dataSource = self
         view.delegate = self
@@ -117,7 +120,7 @@ class CommentMoreView: NSObject {
             backgroundView.frame = targetView.bounds
             
             targetView.addSubview(moreView)
-            moreView.frame = CGRect(x: targetView.bounds.maxX-100, y: targetView.bounds.minY+85, width: 80, height: 100)
+            moreView.frame = CGRect(x: targetView.bounds.maxX-115, y: targetView.bounds.minY+85, width: 100, height: 100)
         }
 
         
