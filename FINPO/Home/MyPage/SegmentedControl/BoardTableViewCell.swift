@@ -110,7 +110,7 @@ class BoardTableViewCell: UITableViewCell {
         label.textAlignment = .center
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
         label.textColor = UIColor(hexString: "999999")
-        label.text = "좋아요 3"
+        label.text = "좋아요"
         return label
     }()
     
@@ -119,7 +119,7 @@ class BoardTableViewCell: UITableViewCell {
         label.textAlignment = .center
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
         label.textColor = UIColor.G03
-        label.text = "댓글 1"
+        label.text = "댓글"
         return label
     }()
     
@@ -128,7 +128,7 @@ class BoardTableViewCell: UITableViewCell {
         label.textAlignment = .center
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 12)
         label.textColor = UIColor.G03
-        label.text = "조회수 30"
+        label.text = "조회수"
         return label
     }()
     
@@ -301,7 +301,7 @@ class BoardTableViewCell: UITableViewCell {
         }
         
         likeCountLabel.snp.makeConstraints {
-            $0.leading.equalTo(bookMarkButton.snp.trailing).offset(151)
+            $0.leading.equalTo(bookMarkButton.snp.trailing).offset(140)
             $0.bottom.equalTo(bookMarkButton.snp.bottom)
         }
         
