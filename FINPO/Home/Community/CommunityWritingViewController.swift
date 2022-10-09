@@ -80,6 +80,12 @@ class CommunityWritingViewController: UIViewController {
         return button
     }()
     
+    private var anonyBtn: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "anonyUnabled")?.withRenderingMode(.alwaysOriginal), for: .normal)
+        return button
+    }()
+    
     private lazy var indicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         indicator.center = self.view.center
@@ -119,6 +125,14 @@ class CommunityWritingViewController: UIViewController {
             $0.width.height.equalTo(25)
         }
         
+        bottomView.addSubview(anonyBtn)
+        anonyBtn.snp.makeConstraints {
+            $0.trailing.equalToSuperview().inset(20)
+            $0.bottom.equalToSuperview().inset(45)
+            $0.width.equalTo(45)
+            $0.height.equalTo(18)
+        }
+        
         view.addSubview(imageCollectionView)
         imageCollectionView.snp.makeConstraints {
             $0.bottom.equalTo(bottomView.snp.top)
@@ -151,6 +165,11 @@ class CommunityWritingViewController: UIViewController {
                 self?.viewModel.input.sendButtonTapped.accept(())
                 self?.navigationController?.popViewController(animated: true)
             }.disposed(by: disposeBag)
+        
+        anonyBtn.rx.tap
+            .bind(to: viewModel.input.anonyBtnTapped)
+            .disposed(by: disposeBag)
+            
         
         //TODO: 선택된 이미지 확대
 //        imageCollectionView.rx.itemSelected
@@ -186,6 +205,14 @@ class CommunityWritingViewController: UIViewController {
                     self?.indicator.startAnimating()
                 }
             }.disposed(by: disposeBag)
+        
+        viewModel.output.anonyBtnChanged
+            .asDriver(onErrorJustReturn: false)
+            .drive(onNext: { [weak self] isAnony in
+                if isAnony { self?.anonyBtn.setImage(UIImage(named: "anonyAbled")?.withRenderingMode(.alwaysOriginal), for: .normal)}
+                else { self?.anonyBtn.setImage(UIImage(named: "anonyUnabled")?.withRenderingMode(.alwaysOriginal), for: .normal)}
+            }).disposed(by: disposeBag)
+            
     }
     
     @objc private func didTapSelectBoardImage() {

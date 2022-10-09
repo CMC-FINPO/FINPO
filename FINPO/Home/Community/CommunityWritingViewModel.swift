@@ -13,7 +13,7 @@ import Alamofire
 class CommunityWritingViewModel {
     let disposeBag = DisposeBag()
     
-    let input = INPUT()
+    var input = INPUT()
     var output = OUTPUT()
     
     struct INPUT {
@@ -21,6 +21,7 @@ class CommunityWritingViewModel {
         let imgUrlStorage = BehaviorRelay<[String]>(value: [""])
         let textStorage = PublishSubject<String>()
         let sendButtonTapped = PublishRelay<Void>()
+        var anonyBtnTapped = PublishSubject<Void>()
         let isAnony = PublishSubject<Bool>()
         
         //indicator
@@ -29,13 +30,22 @@ class CommunityWritingViewModel {
     
     struct OUTPUT {
         var loadImages = PublishRelay<BoardImageResponseModel>()
-        
+        var anonyBtnChanged = PublishRelay<Bool>()
         //indicator
         var activated: Observable<Bool>?
     }
     
     init() {
         output.activated = input.activating.distinctUntilChanged()
+        
+        let anonyObserver = PublishSubject<Void>()
+        input.anonyBtnTapped = anonyObserver.asObserver()
+        anonyObserver.withLatestFrom(input.isAnony.asObservable())
+            .map { !$0 }
+            .do(onNext: { [weak self] in self?.output.anonyBtnChanged.accept($0)} )
+            .bind(to: input.isAnony)
+            .disposed(by: disposeBag)
+        
         
         input.selectedBoardImages
             .do { [weak self] _ in self?.input.activating.onNext(true) }
