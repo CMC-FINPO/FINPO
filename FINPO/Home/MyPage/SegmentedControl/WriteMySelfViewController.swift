@@ -38,6 +38,7 @@ final class WriteMySelfViewController: UIViewController {
         let tv = UITableView()
         tv.rowHeight = CGFloat(150)
         tv.bounces = true
+        tv.refreshControl = UIRefreshControl()
         tv.showsVerticalScrollIndicator = false
         tv.showsHorizontalScrollIndicator = false
         tv.register(BoardTableViewCell.self, forCellReuseIdentifier: "cell")
@@ -77,6 +78,10 @@ final class WriteMySelfViewController: UIViewController {
         Observable.merge([firstLoad, reload])
             .bind(to: viewModel.fetchMyWriting)
             .disposed(by: disposeBag)
+        
+        boardTableView.rx.reachedBottom(from: -25)
+            .bind(to: viewModel.loadMore)
+            .disposed(by: disposeBag)
             
     }
     
@@ -84,11 +89,19 @@ final class WriteMySelfViewController: UIViewController {
         
         viewModel.mywritingResult
             .scan(into: [CommunityContentModel]()) { data, from in
-                data.removeAll()
-                for i in 0..<from.data.content.count {
-                    data.append(from.data.content[i])
+                switch from {
+                case .first(let firstModel):
+                    data.removeAll()
+                    for i in 0..<firstModel.data.content.count {
+                        data.append(firstModel.data.content[i])
+                    }
+                case .loadMore(let moreModel):
+                    for i in 0..<moreModel.data.content.count {
+                        data.append(moreModel.data.content[i])
+                    }
                 }
             }
+            .do(onNext: { [weak self] _ in self?.boardTableView.refreshControl?.endRefreshing()} )
             .observe(on: MainScheduler.asyncInstance)
             .bind(to: boardTableView.rx.items(cellIdentifier: "cell", cellType: BoardTableViewCell.self)) {
                 (index, element, cell) in
