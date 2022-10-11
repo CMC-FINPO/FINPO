@@ -248,9 +248,10 @@ class BoardTableViewCell: UITableViewCell {
         bookMarkButton.rx.tap.withLatestFrom(bookingResult.asObservable())
             .map { BookmarkMenu(boardId: $0.boardId, isBooked: !$0.isBooked) }
             .do(onNext: { [weak self] data in self?.bookResult.onNext(data) })
+            .debug()
             .bind { bookData in
                 if bookData.isBooked { ApiManager.deleteDataWithoutRx(from: BaseURL.url.appending("post/\(bookData.boardId)/bookmark"), to: CommunityLikeResponseModel.self, encoding: URLEncoding.default) }
-                else { ApiManager.postDataWithoutRx(from: "post/\(bookData.boardId)/bookmark", to: CommunityLikeResponseModel.self, encoding: URLEncoding.default) }
+                else { ApiManager.postDataWithoutRx(from: BaseURL.url.appending("post/\(bookData.boardId)/bookmark"), to: CommunityLikeResponseModel.self, encoding: URLEncoding.default) }
             }.disposed(by: cellBag)
             
         viewModel = nil

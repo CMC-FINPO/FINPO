@@ -131,6 +131,9 @@ final class WriteMySelfViewController: UIViewController {
                 cell.likeCountLabel.text = "좋아요 \(element.likes)"
                 cell.viewsCountLabel.text = "・ 댓글 \(element.countOfComment)"
                 cell.commentCountLabel.text = "・ 조회수 \(element.hits)"
+                
+                cell.likeObserver.onNext(LikeMenu(boardId: element.id, isLike: !element.isLiked))
+                cell.bookObserver.onNext(BookmarkMenu(boardId: element.id, isBooked: !element.isBookmarked))
             }.disposed(by: disposeBag)
         
         viewModel.activated
