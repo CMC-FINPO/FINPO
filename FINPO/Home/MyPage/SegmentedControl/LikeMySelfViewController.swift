@@ -74,6 +74,11 @@ final class LikeMySelfViewController: UIViewController {
             .map { _ -> Int in 0 }
             .bind { [weak self] in self?.viewModel.setZero.onNext($0) }
             .disposed(by: disposeBag)
+        
+        boardTableView.rx.modelSelected(CommunityContentModel.self)
+            .observe(on: MainScheduler.instance)
+            .bind { pageData in NotificationCenter.default.post(name: NSNotification.Name("moveToDetail"), object: pageData) }
+            .disposed(by: disposeBag)
     }
     
     private func setOutputBind() {

@@ -27,7 +27,7 @@ class MyPageViewController: UIViewController {
     
     //커뮤니티
     var dataViewControllers: [UIViewController] {
-        [self.writeMySelfVC, self.commentMySelfVC, self.likeMySelfVC]
+        [self.writeMySelfVC,  self.commentMySelfVC, self.likeMySelfVC]
     }
     
     var currentPage: Int = 0 {
@@ -50,6 +50,23 @@ class MyPageViewController: UIViewController {
         setLayout()
         setInputBind()
         setOutputBind()
+        setObserver()
+    }
+    
+    private func setObserver() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.didTappedBoardDetail(_:)),
+            name: NSNotification.Name("moveToDetail"),
+            object: nil)
+    }
+    
+    @objc func didTappedBoardDetail(_ notification: Notification) {
+        let getValue = notification.object as! CommunityContentModel
+        let vc = CommunityDetailViewController()
+        vc.modalPresentationStyle = .fullScreen
+        vc.initialize(id: getValue.id, boardData: getValue)
+        self.navigationController?.pushViewController(vc, animated: true)
     }
     
     private var profileImageView: UIImageView = {
@@ -195,9 +212,9 @@ class MyPageViewController: UIViewController {
         profileImageView.addGestureRecognizer(gesture)
         
         self.segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor(hexString: "000000")], for: .normal)
-        self.segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor(hexString: "000000"), .font: UIFont(name: "AppleSDGothicNeo-Semibold", size: 16)],for: .normal)
-        self.segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor(hexString: "5B43EF"), .font: UIFont(name: "AppleSDGothicNeo-Semibold", size: 16)],for: .selected)
-        self.segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor(hexString: "5B43EF"), .font: UIFont(name: "AppleSDGothicNeo-Semibold", size: 16)],for: .highlighted)
+        self.segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor(hexString: "000000"), .font: UIFont(name: "AppleSDGothicNeo-Semibold", size: 16) as Any],for: .normal)
+        self.segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor(hexString: "5B43EF"), .font: UIFont(name: "AppleSDGothicNeo-Semibold", size: 16) as Any],for: .selected)
+        self.segmentedControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor(hexString: "5B43EF"), .font: UIFont(name: "AppleSDGothicNeo-Semibold", size: 16) as Any],for: .highlighted)
         
         self.segmentedControl.addTarget(self, action: #selector(self.changeValue(control:)), for: .valueChanged)
         self.segmentedControl.selectedSegmentIndex = 0
@@ -482,13 +499,13 @@ extension MyPageViewController: UIImagePickerControllerDelegate, UINavigationCon
 
 extension MyPageViewController: UIPageViewControllerDataSource {
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        guard let index = self.dataViewControllers.firstIndex(of: viewController),
+        guard let index = self.dataViewControllers.firstIndex(of: viewController as! UINavigationController),
               index - 1 >= 0 else { return nil }
         return self.dataViewControllers[index - 1]
     }
     
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        guard let index = self.dataViewControllers.firstIndex(of: viewController),
+        guard let index = self.dataViewControllers.firstIndex(of: viewController as! UINavigationController),
               index + 1 < self.dataViewControllers.count else { return nil }
         return self.dataViewControllers[index + 1]
     }
@@ -500,7 +517,7 @@ extension MyPageViewController: UIPageViewControllerDataSource {
 extension MyPageViewController: UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
         guard let viewController = pageViewController.viewControllers?[0],
-              let index = self.dataViewControllers.firstIndex(of: viewController) else { return }
+              let index = self.dataViewControllers.firstIndex(of: viewController as! UINavigationController) else { return }
         self.currentPage = index
         self.segmentedControl.selectedSegmentIndex = index
     }
