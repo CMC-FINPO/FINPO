@@ -10,22 +10,20 @@ import RxSwift
 
 protocol MyPageFetchable {
     func fetchMyWriting(_ page: Int) -> Observable<CommunityboardResponseModel>
-//    func fetchMyLiking() -> Observable<CommunityboardResponseModel>
-//    func fetchMyCommenting() -> Observable<CommunityboardResponseModel>
+    func fetchMyCommenting(_ page: Int) -> Observable<CommunityboardResponseModel>
+    func fetchMyLiking(_ page: Int) -> Observable<CommunityboardResponseModel>
 }
 
 class MypageStore: MyPageFetchable {
     func fetchMyWriting(_ page: Int) -> Observable<CommunityboardResponseModel> {
         return MypageAPIService.fetchMywritingRx(page)       
     }
-    
-//    func fetchMyLiking() -> Observable<CommunityboardResponseModel> {
-//
-//    }
-//
-//    func fetchMyCommenting() -> Observable<CommunityboardResponseModel> {
-//
-//    }
-    
 
+    func fetchMyCommenting(_ page: Int) -> Observable<CommunityboardResponseModel> {
+        return MypageAPIService.fetchMyCommentingRx(page)
+    }
+    
+    func fetchMyLiking(_ page: Int) -> Observable<CommunityboardResponseModel> {
+        return MypageAPIService.fetchMyLikingRx(page)
+    }
 }

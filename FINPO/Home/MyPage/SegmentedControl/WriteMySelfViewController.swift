@@ -27,13 +27,6 @@ final class WriteMySelfViewController: UIViewController {
         super.init(coder: coder)
     }
     
-    let dummyItems = Observable.just([
-        " Usage of text input box ",
-        " Usage of switch button ",
-        " Usage of progress bar ",
-        " Usage of text labels ",
-        ])
-    
     private lazy var boardTableView: UITableView = {
         let tv = UITableView()
         tv.rowHeight = CGFloat(150)
@@ -82,12 +75,16 @@ final class WriteMySelfViewController: UIViewController {
         boardTableView.rx.reachedBottom(from: -25)
             .bind(to: viewModel.loadMore)
             .disposed(by: disposeBag)
-            
+        
+        rx.viewDidDisappear
+            .map { _ -> Int in 0 }
+            .bind { [weak self] in self?.viewModel.setZero.onNext($0) }
+            .disposed(by: disposeBag)
     }
     
     fileprivate func setOutputBind() {
         
-        viewModel.mywritingResult
+        viewModel.mywritingResult 
             .scan(into: [CommunityContentModel]()) { data, from in
                 switch from {
                 case .first(let firstModel):
@@ -101,7 +98,6 @@ final class WriteMySelfViewController: UIViewController {
                     }
                 }
             }
-            .do(onNext: { [weak self] _ in self?.boardTableView.refreshControl?.endRefreshing()} )
             .observe(on: MainScheduler.asyncInstance)
             .bind(to: boardTableView.rx.items(cellIdentifier: "cell", cellType: BoardTableViewCell.self)) {
                 (index, element, cell) in
@@ -135,6 +131,12 @@ final class WriteMySelfViewController: UIViewController {
                 cell.likeCountLabel.text = "좋아요 \(element.likes)"
                 cell.viewsCountLabel.text = "・ 댓글 \(element.countOfComment)"
                 cell.commentCountLabel.text = "・ 조회수 \(element.hits)"
+            }.disposed(by: disposeBag)
+        
+        viewModel.activated
+            .map { !$0 }
+            .bind { [weak self] finished in
+                if finished {self?.boardTableView.refreshControl?.endRefreshing()}
             }.disposed(by: disposeBag)
     }
     

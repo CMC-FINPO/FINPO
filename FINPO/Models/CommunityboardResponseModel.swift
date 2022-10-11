@@ -15,6 +15,7 @@ struct CommunityDataModel: Codable {
     var content: [CommunityContentModel]
     var totalElements: Int
     var last: Bool //현재가 마지막 페이지인가
+    var first: Bool
 }
 
 struct CommunityContentModel: Codable {
