@@ -84,7 +84,7 @@ final class WriteMySelfViewController: UIViewController {
         boardTableView.rx.modelSelected(CommunityContentModel.self)
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { pageData in
-                NotificationCenter.default.post(name: NSNotification.Name("moveToDetail"), object: pageData)
+                NotificationCenter.default.post(name: .moveToBoardDetail, object: pageData)
             }).disposed(by: disposeBag)
     }
     

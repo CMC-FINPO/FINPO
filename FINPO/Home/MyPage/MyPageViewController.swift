@@ -57,7 +57,7 @@ class MyPageViewController: UIViewController {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(self.didTappedBoardDetail(_:)),
-            name: NSNotification.Name("moveToDetail"),
+            name: .moveToBoardDetail,
             object: nil)
     }
     

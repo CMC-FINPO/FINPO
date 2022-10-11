@@ -49,7 +49,6 @@ class SegmentedViewModel: SegmentedViewModelType {
         let page = BehaviorSubject<Int>(value: 0)
         let loadMoreObserver = PublishSubject<Void>()
         let zeroPageObserver = PublishSubject<Int>()
-        let tempBoardPage = PublishSubject<[Int]>()
         
         let mywriting = PublishSubject<LoadMoreAction>()
         let mycommenting = PublishSubject<LoadMoreAction>()
@@ -69,7 +68,6 @@ class SegmentedViewModel: SegmentedViewModelType {
             .do(onNext: { _ in activating.onNext(true)})
             .map { domain.fetchMyWriting($0) }
             .flatMap { $0 }
-            .do(onNext: { data in tempBoardPage.onNext(data.data.content.map { $0.id })})
             .map { LoadMoreAction.first($0) }
             .do(onNext: { _ in activating.onNext(false)})
             .bind(to: mywriting)

@@ -79,7 +79,7 @@ final class CommentMySelfViewController: UIViewController  {
         
         boardTableView.rx.modelSelected(CommunityContentModel.self)
             .observe(on: MainScheduler.instance)
-            .bind { pageData in NotificationCenter.default.post(name: NSNotification.Name("moveToDetail"), object: pageData) }
+            .bind { pageData in NotificationCenter.default.post(name: .moveToBoardDetail, object: pageData) }
             .disposed(by: disposeBag)
     }
     

@@ -566,3 +566,6 @@ extension UIViewController {
     }
 }
 
+extension Notification.Name {
+    static let moveToBoardDetail = Notification.Name("moveToDetail")
+}
