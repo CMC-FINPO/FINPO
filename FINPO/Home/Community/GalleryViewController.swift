@@ -53,7 +53,7 @@ class GalleryViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        navigationController?.navigationBar.tintColor = .white
         setAttribute()
         setGesture()
         setLayout()
@@ -67,8 +67,9 @@ class GalleryViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        navigationController?.navigationBar.tintColor = .black
         self.imageArr.removeAll()
-        self.selectedIndex = 0
+        self.selectedIndex = 0        
     }
     
     private func setAttribute() {

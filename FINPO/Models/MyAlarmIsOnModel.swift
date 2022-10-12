@@ -15,6 +15,7 @@ struct MyAlarmIsOnModel: Codable {
 struct MyAlarmDataDetail: Codable {
     var subscribe: Bool //전체알림 구독 설정 여부
     var adSubscribe: Bool?
+    var communitySubscribe: Bool?
     var interestCategories: [MyAlarmInterestCategory]
     var interestRegions: [MyAlarmInterestRegion]
 }

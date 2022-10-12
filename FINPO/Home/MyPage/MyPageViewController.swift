@@ -191,6 +191,7 @@ class MyPageViewController: UIViewController {
     
     fileprivate func setAttribute() {
         view.backgroundColor = .white
+        navigationController?.navigationBar.tintColor = .black
         navigationItem.title = ""
         let alarmButton = UIBarButtonItem(
             image: UIImage(named: "alarm")?.withRenderingMode(.alwaysOriginal),

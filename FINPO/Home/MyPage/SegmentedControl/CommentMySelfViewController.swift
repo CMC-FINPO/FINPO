@@ -129,7 +129,7 @@ final class CommentMySelfViewController: UIViewController  {
                 
                 ///좋아요, 댓글, 북마크 수
                 cell.likeCountLabel.text = "좋아요 \(element.likes)"
-                cell.viewsCountLabel.text = "・ 댓글 \(element.countOfComment)"
+                cell.viewsCountLabel.text = "・ 댓글 \(element.countOfComment!)"
                 cell.commentCountLabel.text = "・ 조회수 \(element.hits)"
                 
                 cell.likeObserver.onNext(LikeMenu(boardId: element.id, isLike: !element.isLiked))

@@ -153,13 +153,13 @@ class AlarmViewController: UIViewController {
                 self?.viewModel.input.getMyAlarmList.accept(())
             }).disposed(by: disposeBag)
         
-        self.refreshButton.rx.tap
+        refreshButton.rx.tap
             .asDriver()
             .drive(onNext: { [weak self] _ in
                 self?.viewModel.input.getMyAlarmList.accept(())
             }).disposed(by: disposeBag)
         
-        self.treshButton.rx.tap
+        treshButton.rx.tap
             .asDriver()
             .drive(onNext: { [weak self] _ in
                 self?.navigationItem.rightBarButtonItems = nil
@@ -167,13 +167,23 @@ class AlarmViewController: UIViewController {
                 self?.viewModel.input.getMyDeleteAlarmList.accept(())
             }).disposed(by: disposeBag)
         
-        self.completeButton.rx.tap
+        completeButton.rx.tap
             .asDriver()
             .drive(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 self.navigationItem.rightBarButtonItems = nil
                 self.navigationItem.rightBarButtonItems = [self.treshBarButton, self.refreshBarButton]
                 self.viewModel.input.getMyAlarmList.accept(())
+            }).disposed(by: disposeBag)
+        
+        alarmTableView.rx.modelSelected(AlarmContentDetail.self)
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] data in
+                if let commentWillShow = data.comment, let boardId = data.comment?.post.id {
+                    let vc = CommunityDetailViewController()
+                    vc.initialize(id: boardId, boardData: nil)
+                    self?.navigationController?.pushViewController(vc, animated: true)
+                }
             }).disposed(by: disposeBag)
     }
     
@@ -214,13 +224,24 @@ class AlarmViewController: UIViewController {
                     cell.alarmButton.setImage(UIImage(named: "alarm_active"), for: .normal)
                 }
                 ///정책명 라벨
-                cell.alarmInfoLabel.text = element.policy.title
+                if let policyTitle = element.policy?.title {
+                    cell.alarmInfoLabel.text = policyTitle
+                }
+                if let commentTitle = element.comment?.content {
+                    cell.alarmInfoLabel.text = commentTitle
+                }
                 ///Date
                 let format = DateFormatter()
                 format.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
                 format.locale = Locale(identifier: "ko")
                 format.timeZone = TimeZone(abbreviation: "KST")
-                guard let tempDate = format.date(from: element.policy.modifiedAt!) else { return }
+                var tempDate: Date = Date()
+                if let modified = element.policy?.modifiedAt {
+                    tempDate = format.date(from: modified)!
+                }
+                if let modified = element.comment?.modifiedAt {
+                    tempDate = format.date(from: modified)!
+                }
                 format.dateFormat = "yyyy년 MM월 dd일 a hh:mm"
                 format.amSymbol = "오전"
                 format.pmSymbol = "오후"

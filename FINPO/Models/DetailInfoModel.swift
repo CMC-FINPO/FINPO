@@ -28,7 +28,7 @@ struct PolicyDetailInformation: Codable {
     var modifiedAt: String?
     var category: CategoryDetail? // parent: ParentDetail
     var region: RegionDetail? // parent: RegionParentDetail
-    var hits: Int
+    var hits: Int?
     var countOfInterest: Int?
     var isInterest: Bool?
 }

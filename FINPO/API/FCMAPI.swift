@@ -247,7 +247,7 @@ struct FCMAPI {
     static func adSubscribe(valid: Bool) {
         let url = BaseURL.url.appending("notification/me")
         
-//        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
+        //        let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
         ///UserDefaults -> keychain
         let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
         
@@ -281,6 +281,30 @@ struct FCMAPI {
                     print("광고 변경 실패: \(err)")
                 }
             }
-        
+    }
+    
+    static func commentSubscribe(valid: Bool) {
+        let url = BaseURL.url.appending("notification/me")
+        let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
+        let header = ApiManager.createHeader(token: accessToken)
+        let param: Parameters = [
+            "communitySubscribe": valid
+        ]
+        API.session.request(url, method: .put, parameters: param, encoding: JSONEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+            .response { response in
+                switch response.result {
+                case .success(let data):
+                    if let data = data {
+                        do {
+                            let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                            let result = json?["data"] as? [String: Any] ?? [:]
+                            let commentSubs = result["communitySubscribe"] as? Bool ?? false
+                            print("댓글알림 결과: \(commentSubs)")
+                        }
+                    }
+                case .failure(let err):
+                    debugPrint("커뮤니티 댓글 알림 변경 실패: \(err)")
+                }
+            }
     }
 }

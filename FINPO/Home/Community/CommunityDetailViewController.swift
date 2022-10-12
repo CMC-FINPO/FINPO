@@ -277,6 +277,7 @@ class CommunityDetailViewController: UIViewController {
         
         //게시글 수정 버튼
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: boardMoreButton)
+        navigationController?.navigationBar.topItem?.backButtonTitle = ""
         
         boardCollectionView.register(CommunityCollectionViewCell.self, forCellWithReuseIdentifier: "CommunityCollectionViewCell")
         boardCollectionView.delegate = self
@@ -465,7 +466,13 @@ class CommunityDetailViewController: UIViewController {
         sendCommentBtn.rx.tap
             .bind { [weak self] _ in                
                 self?.viewModel.input.commentBtnObserver.accept(())
+                self?.nestCommentView.nestView.removeFromSuperview()
             }.disposed(by: disposeBag)
+        
+        sendCommentBtn.rx.tap
+            .map { _ -> String in return "" }
+            .bind(to: commentTextView.rx.text)
+            .disposed(by: disposeBag)
         
         //대댓글 작성
         commentTableView.rx.itemSelected
@@ -609,7 +616,7 @@ class CommunityDetailViewController: UIViewController {
                     return
                 }
             }
-            .bind(to: boardCollectionView.rx.items(cellIdentifier: "CommunityCollectionViewCell", cellType: CommunityCollectionViewCell.self)) { [weak self]
+            .bind(to: boardCollectionView.rx.items(cellIdentifier: "CommunityCollectionViewCell", cellType: CommunityCollectionViewCell.self)) {
                 (index: Int, element: BoardImgDetail, cell) in
                 cell.checkImageBtn.isHidden = true
                 DispatchQueue.global().async {

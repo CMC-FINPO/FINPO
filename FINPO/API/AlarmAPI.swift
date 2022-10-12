@@ -12,7 +12,7 @@ import RxSwift
 struct AlarmAPI {
     static func getMyAlarmList() -> Observable<AlarmModel> {
         return Observable.create { observer in            
-            let url = BaseURL.url.appending("notification/history/me?page=0&size=5&sort=id,desc")
+            let url = BaseURL.url.appending("notification/history/me?page=0&size=10&sort=id,desc")
             
 //            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
             ///UserDefaults -> keychain
@@ -23,7 +23,7 @@ struct AlarmAPI {
                 "Authorization": "Bearer ".appending(accessToken)
             ]
             
-            AF.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
+            API.session.request(url, method: .get, parameters: nil, encoding: URLEncoding.default, headers: header, interceptor: MyRequestInterceptor())
                 .validate(statusCode: 200..<300)
                 .responseJSON { response in
                     switch response.result {

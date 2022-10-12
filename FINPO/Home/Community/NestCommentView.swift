@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 
 class NestCommentView {
-    private let nestView: UIView = {
+    let nestView: UIView = {
         let view = UIView()
         view.backgroundColor = .G08
         return view

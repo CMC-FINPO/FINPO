@@ -59,7 +59,7 @@ class CommunityMainViewController: UIViewController {
     
     fileprivate func setAttribute() {
         view.backgroundColor = .white
-        
+        navigationController?.navigationBar.tintColor = .black
         ///네비게이션 버튼
         navigationItem.title = ""
         let writingButton = UIBarButtonItem(image: UIImage(named: "write")?.withRenderingMode(.alwaysOriginal)
@@ -277,7 +277,7 @@ class CommunityMainViewController: UIViewController {
                 
                 ///좋아요, 댓글, 북마크 수
                 cell.likeCountLabel.text = "좋아요 \(element.likes)"
-                cell.viewsCountLabel.text = "・ 댓글 \(element.countOfComment)"
+                cell.viewsCountLabel.text = "・ 댓글 \(element.countOfComment!)"
                 cell.commentCountLabel.text = "・ 조회수 \(element.hits)"
                 
                 cell.likeObserver.onNext(LikeMenu(boardId: element.id, isLike: !element.isLiked))

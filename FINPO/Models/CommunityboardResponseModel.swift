@@ -25,7 +25,7 @@ struct CommunityContentModel: Codable {
     var anonymity: Bool //글작성자 익명여부
     var likes: Int //글 좋아요수
     var hits: Int //글 조회수
-    var countOfComment: Int //댓글수
+    var countOfComment: Int? //댓글수
     var isMine: Bool //내가 작성한 글인가
     var isLiked: Bool //좋아요 한 글인가
     var isBookmarked: Bool //북마크 한 글인가

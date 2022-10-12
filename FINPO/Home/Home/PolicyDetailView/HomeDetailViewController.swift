@@ -297,7 +297,7 @@ class HomeDetailViewController: UIViewController {
                 self.policyNameLabel.text = data.data.title ?? "공고명 없음"
                 self.policySubscriptionLabel.text = data.data.content ?? "표시할 내용이 없습니다."
                 self.scrapCountLabel.text = "스크랩수 \(data.data.countOfInterest ?? 0)"
-                self.viewCountLabel.text = "조회수 \(data.data.hits)"
+                self.viewCountLabel.text = "조회수 \(data.data.hits!)"
                 if data.data.isInterest ?? false {
                     self.button.setImage(UIImage(named: "bookmark_top_active")?.withRenderingMode(.alwaysOriginal), for: .normal)
                     self.didTapped = true

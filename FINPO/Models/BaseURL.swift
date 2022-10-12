@@ -16,4 +16,6 @@ struct BaseURL {
     static var agreement: String = "https://sites.google.com/view/finpo-terms/"
     //개인정보 처리 방침
     static var personalInfo: String = "https://sites.google.com/view/finpo-privacy/"
+    //커뮤니티 이용 약관
+    static var communityInfo: String = "https://sites.google.com/view/finpo-community-rule/"
 }

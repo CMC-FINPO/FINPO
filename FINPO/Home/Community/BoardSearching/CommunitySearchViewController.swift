@@ -69,6 +69,8 @@ class CommunitySearchViewController: UIViewController {
         view.backgroundColor = UIColor.G09
         //textfield in NavigationItem
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: searchBar)
+        navigationController?.navigationBar.tintColor = .black
+        navigationController?.navigationBar.topItem?.backButtonTitle = ""        
     }
     
     private func setLayout() {
@@ -149,7 +151,7 @@ class CommunitySearchViewController: UIViewController {
                 
                 ///좋아요, 댓글, 북마크 수
                 cell.likeCountLabel.text = "좋아요 \(element.likes)"
-                cell.viewsCountLabel.text = "・ 댓글 \(element.countOfComment)"
+                cell.viewsCountLabel.text = "・ 댓글 \(element.countOfComment!)"
                 cell.commentCountLabel.text = "・ 조회수 \(element.hits)"
                 
                 if(element.isLiked) {

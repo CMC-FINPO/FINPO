@@ -34,6 +34,8 @@ struct PostDetail: Codable {
     var hits: Int
     var user: CommentUserDetail
     var isWriter: Bool?
+    var isLiked: Bool?
+    var isBookmarked: Bool?
     var isMine: Bool?
     var isModified: Bool?
     var createdAt: String?

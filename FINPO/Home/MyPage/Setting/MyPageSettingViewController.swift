@@ -20,7 +20,7 @@ class MyPageSettingViewController: UIViewController {
     let disposeBag = DisposeBag()
     let viewModel = CategoryAlarmViewModel()
     
-    var listData = ["내 정보 수정", "광고성 정보 수신", "관심 분야 알림 설정", "지역 알림 설정", "이용 약관", "문의하기", "개인정보 처리 방침", "로그아웃", "회원 탈퇴"]
+    var listData = ["내 정보 수정", "광고성 정보 수신", "댓글 알림", "관심 분야 알림 설정", "지역 알림 설정", "커뮤니티 이용 수칙", "신고 이유", "이용 약관", "문의하기", "개인정보 처리 방침", "로그아웃", "회원 탈퇴"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -81,7 +81,6 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
         let cell = settingTableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! SettingTableViewCell
         cell.settingNameLabel.text = listData[indexPath.row]
         if(indexPath.row == 1) {
-//            cell.controlSwitch.transform = CGAffineTransform(scaleX: 1.1, y: 1)
             cell.controlSwitch.isHidden = false
             viewModel.output.sendResultCategory
                 .subscribe(onNext: { interestModels in
@@ -89,11 +88,11 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
                     cell.controlSwitch.isOn = isSubscribed
                     
                     if(isSubscribed) {
-                        cell.controlSwitch.thumbTintColor = UIColor(hexString: "5B43EF")
-                        cell.controlSwitch.onTintColor = UIColor(hexString: "F0F0F0")
+                        cell.controlSwitch.thumbTintColor = UIColor.P01
+                        cell.controlSwitch.onTintColor = UIColor.G08
                     } else {
-                        cell.controlSwitch.thumbTintColor = UIColor(hexString: "C4C4C5")
-                        cell.controlSwitch.onTintColor = UIColor(hexString: "F0F0F0")
+                        cell.controlSwitch.thumbTintColor = UIColor.G05
+                        cell.controlSwitch.onTintColor = UIColor.G08
                     }
                 }).disposed(by: self.disposeBag)
             cell.controlSwitch.rx.isOn.changed
@@ -101,16 +100,46 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
                 .drive(onNext: { boolean in
                     boolean ? FCMAPI.adSubscribe(valid: boolean) : FCMAPI.adSubscribe(valid: boolean)
                     if(boolean) {
-                        cell.controlSwitch.thumbTintColor = UIColor(hexString: "5B43EF")
-                        cell.controlSwitch.onTintColor = UIColor(hexString: "F0F0F0")
+                        cell.controlSwitch.thumbTintColor = UIColor.P01
+                        cell.controlSwitch.onTintColor = UIColor.G08
                     } else {
-                        cell.controlSwitch.thumbTintColor = UIColor(hexString: "C4C4C5")
-                        cell.controlSwitch.onTintColor = UIColor(hexString: "F0F0F0")
+                        cell.controlSwitch.thumbTintColor = UIColor.G05
+                        cell.controlSwitch.onTintColor = UIColor.G08
                     }
                 }).disposed(by: cell.disposeBag)
         }
-        if(indexPath.row == 8) {
-            cell.settingNameLabel.textColor = UIColor(hexString: "999999")
+        //댓글 알림
+        if(indexPath.row == 2) {
+            cell.controlSwitch.isHidden = false
+            viewModel.output.sendResultCategory
+                .bind { commentModel in
+                    if let isAllowed = commentModel.data.communitySubscribe, isAllowed {
+                        cell.controlSwitch.isOn = isAllowed
+                        cell.controlSwitch.thumbTintColor = UIColor.P01
+                        cell.controlSwitch.onTintColor = UIColor.G08
+                    } else {
+                        cell.controlSwitch.isOn = false
+                        cell.controlSwitch.thumbTintColor = UIColor.G05
+                        cell.controlSwitch.onTintColor = UIColor.G08
+                    }
+                }.disposed(by: cell.disposeBag)
+            
+            cell.controlSwitch.rx.isOn.changed
+                .asDriver()
+                .drive(onNext: { willChange in
+                    FCMAPI.commentSubscribe(valid: willChange)
+                    if(willChange) {
+                        cell.controlSwitch.thumbTintColor = UIColor.P01
+                        cell.controlSwitch.onTintColor = UIColor.G08
+                    } else {
+                        cell.controlSwitch.thumbTintColor = UIColor.G05
+                        cell.controlSwitch.onTintColor = UIColor.G08
+                    }
+                }).disposed(by: cell.disposeBag)
+                
+        }
+        if(indexPath.row == 11) {
+            cell.settingNameLabel.textColor = UIColor.G03
         }
         cell.selectionStyle = .none
         return cell
@@ -130,28 +159,41 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
         }
                 
         ///관심분야(카테고리) 알림 설정
-        if(indexPath.row == 2) {
+        if(indexPath.row == 3) {
             let vc = CategoryAlarmViewController()
             vc.modalPresentationStyle = .fullScreen
             self.navigationController?.pushViewController(vc, animated: true)
         }
         
-        if(indexPath.row == 3) {
+        if(indexPath.row == 4) {
             let vc = RegionAlarmViewController()
             vc.modalPresentationStyle = .fullScreen
             self.navigationController?.pushViewController(vc, animated: true)
         }
         
-        ///이용약관
-        if(indexPath.row == 4) {
+        ///커뮤니티 이용 약관
+        if(indexPath.row == 5) {
+            let link = BaseURL.communityInfo
+            if let url = URL(string: link) {
+                UIApplication.shared.open(url, options: [:])
+            }
+        }
+        
+        //이용약관
+        if(indexPath.row == 6) {
             let link = BaseURL.agreement
             if let url = URL(string: link) {
                 UIApplication.shared.open(url, options: [:])
             }
         }
         
+        //신고 이유
+        if(indexPath.row == 7) {
+            
+        }
+         
         ///문의하기
-        if(indexPath.row == 5) {
+        if(indexPath.row == 8) {
             let link = BaseURL.ask
             if let url = URL(string: link) {
                 UIApplication.shared.open(url, options: [:])
@@ -159,19 +201,14 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
         }
         
         ///개인정보 처리 방침
-        if(indexPath.row == 6) {
+        if(indexPath.row == 9) {
             let link = BaseURL.personalInfo
             if let url = URL(string: link) {
                 UIApplication.shared.open(url, options: [:])
             }
         }
         
-        ///오픈 소스 라이브러리
-//        if(indexPath.row == 7) {
-//            
-//        }
-        
-        if(indexPath.row == 7) {
+        if(indexPath.row == 10) {
             let ac = UIAlertController(title: "로그아웃", message: "로그아웃 하시겠습니까?", preferredStyle: .actionSheet)
             ac.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
                 if(socialType == "kakao") {
@@ -223,7 +260,7 @@ extension MyPageSettingViewController: UITableViewDelegate, UITableViewDataSourc
         }
     
         //회원탈퇴
-        if (indexPath.row == 8) {
+        if (indexPath.row == 11) {
             let ac = UIAlertController(title: "회원 탈퇴", message: "저장된 정보가 모두 사라집니다", preferredStyle: .alert)
             ac.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
                 if(socialType == "kakao") {

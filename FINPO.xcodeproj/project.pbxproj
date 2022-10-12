@@ -135,6 +135,7 @@
 		DDC82B3828F307180029CDF4 /* SegmentedViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDC82B3728F307180029CDF4 /* SegmentedViewModel.swift */; };
 		DDC82B3A28F309BD0029CDF4 /* MypageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDC82B3928F309BD0029CDF4 /* MypageStore.swift */; };
 		DDC9115F28F314CE0039AF11 /* MypageAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDC9115E28F314CE0039AF11 /* MypageAPIService.swift */; };
+		DDC9116828F6F9590039AF11 /* FINPOTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDC9116728F6F9590039AF11 /* FINPOTests.swift */; };
 		DDE615CC2894054C0067040B /* CommunityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDE615CB2894054C0067040B /* CommunityViewModel.swift */; };
 		DDE615CE2897A4890067040B /* KeyChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDE615CD2897A4890067040B /* KeyChain.swift */; };
 		DDE61609289A84AD0067040B /* HomeCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDE61608289A84AD0067040B /* HomeCollectionViewCell.swift */; };
@@ -159,6 +160,16 @@
 		DDFD6EF12856494600A1706F /* MyPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDFD6EF02856494600A1706F /* MyPageViewController.swift */; };
 		DDFD6EF62856555700A1706F /* MyPageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDFD6EF52856555700A1706F /* MyPageViewModel.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DDC9116928F6F9590039AF11 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DD2EA45A28487F730004D707 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DD2EA46128487F730004D707;
+			remoteInfo = FINPO;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		270C28813D04C9316FCC87A8 /* Pods-FINPO.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FINPO.release.xcconfig"; path = "Target Support Files/Pods-FINPO/Pods-FINPO.release.xcconfig"; sourceTree = "<group>"; };
@@ -290,6 +301,8 @@
 		DDC82B3728F307180029CDF4 /* SegmentedViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedViewModel.swift; sourceTree = "<group>"; };
 		DDC82B3928F309BD0029CDF4 /* MypageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MypageStore.swift; sourceTree = "<group>"; };
 		DDC9115E28F314CE0039AF11 /* MypageAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MypageAPIService.swift; sourceTree = "<group>"; };
+		DDC9116528F6F9590039AF11 /* FINPOTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FINPOTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		DDC9116728F6F9590039AF11 /* FINPOTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FINPOTests.swift; sourceTree = "<group>"; };
 		DDE615CB2894054C0067040B /* CommunityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityViewModel.swift; sourceTree = "<group>"; };
 		DDE615CD2897A4890067040B /* KeyChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyChain.swift; sourceTree = "<group>"; };
 		DDE61608289A84AD0067040B /* HomeCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -326,6 +339,13 @@
 				DDBFEEA628571689003E9662 /* Kingfisher in Frameworks */,
 				A84962D89FDB101D3AF40A45 /* Pods_FINPO.framework in Frameworks */,
 				2EBA4152D5BE816777DE1C0D /* Pods_FINPO.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DDC9116228F6F9590039AF11 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -378,6 +398,7 @@
 			children = (
 				DD60A0C52887DD89004E9015 /* Settings.bundle */,
 				DD2EA46428487F730004D707 /* FINPO */,
+				DDC9116628F6F9590039AF11 /* FINPOTests */,
 				DD2EA46328487F730004D707 /* Products */,
 				5013C2BEC30C08049C4D7B18 /* Pods */,
 				AEB9F9A826FC9085FD61748F /* Frameworks */,
@@ -388,6 +409,7 @@
 			isa = PBXGroup;
 			children = (
 				DD2EA46228487F730004D707 /* FINPO.app */,
+				DDC9116528F6F9590039AF11 /* FINPOTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -700,6 +722,14 @@
 			path = Repository;
 			sourceTree = "<group>";
 		};
+		DDC9116628F6F9590039AF11 /* FINPOTests */ = {
+			isa = PBXGroup;
+			children = (
+				DDC9116728F6F9590039AF11 /* FINPOTests.swift */,
+			);
+			path = FINPOTests;
+			sourceTree = "<group>";
+		};
 		DDFD6EEF2856489200A1706F /* Home */ = {
 			isa = PBXGroup;
 			children = (
@@ -754,6 +784,24 @@
 			productReference = DD2EA46228487F730004D707 /* FINPO.app */;
 			productType = "com.apple.product-type.application";
 		};
+		DDC9116428F6F9590039AF11 /* FINPOTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DDC9116D28F6F95A0039AF11 /* Build configuration list for PBXNativeTarget "FINPOTests" */;
+			buildPhases = (
+				DDC9116128F6F9590039AF11 /* Sources */,
+				DDC9116228F6F9590039AF11 /* Frameworks */,
+				DDC9116328F6F9590039AF11 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DDC9116A28F6F9590039AF11 /* PBXTargetDependency */,
+			);
+			name = FINPOTests;
+			productName = FINPOTests;
+			productReference = DDC9116528F6F9590039AF11 /* FINPOTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -761,11 +809,15 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1330;
+				LastSwiftUpdateCheck = 1340;
 				LastUpgradeCheck = 1330;
 				TargetAttributes = {
 					DD2EA46128487F730004D707 = {
 						CreatedOnToolsVersion = 13.3.1;
+					};
+					DDC9116428F6F9590039AF11 = {
+						CreatedOnToolsVersion = 13.4.1;
+						TestTargetID = DD2EA46128487F730004D707;
 					};
 				};
 			};
@@ -787,6 +839,7 @@
 			projectRoot = "";
 			targets = (
 				DD2EA46128487F730004D707 /* FINPO */,
+				DDC9116428F6F9590039AF11 /* FINPOTests */,
 			);
 		};
 /* End PBXProject section */
@@ -802,6 +855,13 @@
 				DD60A0C62887DD89004E9015 /* Settings.bundle in Resources */,
 				DDBFEEB628586A4F003E9662 /* launchScreen_logo.png in Resources */,
 				DDE6160B289A8DCD0067040B /* GoogleService-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DDC9116328F6F9590039AF11 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -998,7 +1058,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		DDC9116128F6F9590039AF11 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DDC9116828F6F9590039AF11 /* FINPOTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		DDC9116A28F6F9590039AF11 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DD2EA46128487F730004D707 /* FINPO */;
+			targetProxy = DDC9116928F6F9590039AF11 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		DD2EA47028487F770004D707 /* LaunchScreen.storyboard */ = {
@@ -1194,6 +1270,44 @@
 			};
 			name = Release;
 		};
+		DDC9116B28F6F95A0039AF11 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6P7X76PR5Q;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = LeePaper.FINPOTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FINPO.app/FINPO";
+			};
+			name = Debug;
+		};
+		DDC9116C28F6F95A0039AF11 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6P7X76PR5Q;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = LeePaper.FINPOTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FINPO.app/FINPO";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1211,6 +1325,15 @@
 			buildConfigurations = (
 				DD2EA47728487F770004D707 /* Debug */,
 				DD2EA47828487F770004D707 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DDC9116D28F6F95A0039AF11 /* Build configuration list for PBXNativeTarget "FINPOTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DDC9116B28F6F95A0039AF11 /* Debug */,
+				DDC9116C28F6F95A0039AF11 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
