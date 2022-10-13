@@ -48,3 +48,9 @@ struct CommunityUserDetail: Codable {
 struct CommunityLikeResponseModel: Codable {
     var data: CommunityContentModel
 }
+
+extension CommunityboardResponseModel: Equatable {
+    static func == (lhs: CommunityboardResponseModel, rhs: CommunityboardResponseModel) -> Bool {
+        return lhs.data.first == rhs.data.first
+    }
+}
