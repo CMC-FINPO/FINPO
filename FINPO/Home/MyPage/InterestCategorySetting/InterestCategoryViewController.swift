@@ -10,11 +10,18 @@ import UIKit
 import RxSwift
 import RxCocoa
 import SnapKit
+import RxDataSources
 
 class InterestCategoryViewController: UIViewController {
     
     let disposeBag = DisposeBag()
     let viewModel = HomeViewModel()
+    
+    //RxDataSources refactoring
+    typealias Section = SectionModel<MyInterestSectionType, MyInterestMenuType>
+    private var dataSource: RxCollectionViewSectionedReloadDataSource<CategoryDataSection>!
+    let categoryViewModel = InterestCategoryViewModel()
+
     
     var checkIsInterest = [Bool]() //일자리
     var check1 = [Bool]()
@@ -51,6 +58,7 @@ class InterestCategoryViewController: UIViewController {
         setAttribute()
         setLayout()
         setInputBind()
+        dataSource = configureDataSource()
         setOutputBind()
     }
     
@@ -361,19 +369,34 @@ class InterestCategoryViewController: UIViewController {
         
     }
     
+    private func configureDataSource() -> RxCollectionViewSectionedReloadDataSource<CategoryDataSection> {
+        lazy var categoryDataSection = RxCollectionViewSectionedReloadDataSource<CategoryDataSection> { dataSource, collectionView, indexPath, item in
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "jobInterestCollectionView", for: indexPath) as! FilterCollectionViewCell
+            cell.configureCell(data: item)
+            return cell
+        }
+        return categoryDataSection
+    }
+    
     fileprivate func setInputBind() {
+//        rx.viewWillAppear.asDriver { _ in return .never()}
+//            .drive(onNext: { [weak self] _ in
+//                guard let self = self else { return }
+//                ///카테고리 전체 텍스트 트리거
+//                self.viewModel.input.lowCategoryObserver.accept(())
+//                ///관심카테고리 트리거
+//                self.viewModel.input.interestCategoryObserver.accept(())
+//                ///이용 목적 트리거
+//                self.viewModel.input.forWhatObserver.accept(())
+//                ///내 이용목적 조회
+//                self.viewModel.input.myForWhatObserver.accept(())
+//
+//            }).disposed(by: disposeBag)
+        
         rx.viewWillAppear.asDriver { _ in return .never()}
-            .drive(onNext: { [weak self] _ in
-                guard let self = self else { return }
-                ///카테고리 전체 텍스트 트리거
-                self.viewModel.input.lowCategoryObserver.accept(())
-                ///관심카테고리 트리거
-                self.viewModel.input.interestCategoryObserver.accept(())
-                ///이용 목적 트리거
-                self.viewModel.input.forWhatObserver.accept(())
-                ///내 이용목적 조회
-                self.viewModel.input.myForWhatObserver.accept(())
-            }).disposed(by: disposeBag)
+            .map { _ in }
+            .drive(categoryViewModel.firstLoad)
+            .disposed(by: disposeBag)
         
         ///일자리 컬렉션뷰 선택
         jobCategoryCollectionView.rx.itemSelected
@@ -474,185 +497,191 @@ class InterestCategoryViewController: UIViewController {
     }
     
     fileprivate func setOutputBind() {
-        viewModel.output.interestCategoryOutput
-            .scan(into: [ChildDetail]()) { details, action in
-                switch action {
-                case .right(let interest):
-                    self.checkIsInterest.append(true)
-                    self.viewModel.input.confirmButtonValid.accept(true)
-                    details.append(interest)
-                    self.jobCVSelectedId.append(interest.id)
-                    self.jobCVSelectedId.sort()
-                    //선택 id 저장 (처음에 right일 경우)
-                    self.jobDidSelectedId.append(interest.id)
-                case .notYet(let normal):
-                    self.checkIsInterest.append(false)
-                    details.append(normal)
-                    self.jobCVSelectedId.append(normal.id)
-                    self.jobCVSelectedId.sort()
-                case .clear(_):
-                    for i in 0..<(self.checkIsInterest.count) { self.checkIsInterest[i] = false }
-                }
-            }
-            .asObservable()
-            .observe(on: MainScheduler.instance)
-            .bind(to: self.jobCategoryCollectionView.rx.items(cellIdentifier: "jobInterestCollectionView", cellType: FilterCollectionViewCell.self)) {
-                (index: Int, element: ChildDetail, cell) in
-                if(self.checkIsInterest[index]) {
-                    cell.tagLabel.text = element.name
-                    cell.contentView.backgroundColor = UIColor(hexString: "5B43EF")
-                    cell.tagLabel.textColor = .white
-                } else {
-                    cell.tagLabel.text = element.name
-                    cell.contentView.backgroundColor = UIColor(hexString: "F0F0F0")
-                    cell.tagLabel.textColor = .black
-                }
-            }.disposed(by: disposeBag)
+//        viewModel.output.interestCategoryOutput
+//            .scan(into: [ChildDetail]()) { details, action in
+//                switch action {
+//                case .right(let interest):
+//                    self.checkIsInterest.append(true)
+//                    self.viewModel.input.confirmButtonValid.accept(true)
+//                    details.append(interest)
+//                    self.jobCVSelectedId.append(interest.id)
+//                    self.jobCVSelectedId.sort()
+//                    //선택 id 저장 (처음에 right일 경우)
+//                    self.jobDidSelectedId.append(interest.id)
+//                case .notYet(let normal):
+//                    self.checkIsInterest.append(false)
+//                    details.append(normal)
+//                    self.jobCVSelectedId.append(normal.id)
+//                    self.jobCVSelectedId.sort()
+//                case .clear(_):
+//                    for i in 0..<(self.checkIsInterest.count) { self.checkIsInterest[i] = false }
+//                }
+//            }
+//            .asObservable()
+//            .observe(on: MainScheduler.instance)
+//            .bind(to: self.jobCategoryCollectionView.rx.items(cellIdentifier: "jobInterestCollectionView", cellType: FilterCollectionViewCell.self)) {
+//                (index: Int, element: ChildDetail, cell) in
+//                if(self.checkIsInterest[index]) {
+//                    cell.tagLabel.text = element.name
+//                    cell.contentView.backgroundColor = UIColor(hexString: "5B43EF")
+//                    cell.tagLabel.textColor = .white
+//                } else {
+//                    cell.tagLabel.text = element.name
+//                    cell.contentView.backgroundColor = UIColor(hexString: "F0F0F0")
+//                    cell.tagLabel.textColor = .black
+//                }
+//            }.disposed(by: disposeBag)
+//
+//        ///생활안정
+//        viewModel.output.interestLivingOutput
+//            .scan(into: [ChildDetail]()) { details, action in
+//                switch action {
+//                case .right(let interest):
+//                    self.check3.append(true)
+//                    self.viewModel.input.confirmButtonValid.accept(true)
+//                    details.append(interest)
+//                    self.livingCVSelectedId.append(interest.id)
+//                    self.livingCVSelectedId.sort()
+//                    //선택 id 저장 (처음에 right일 경우)
+//                    self.livingDidSelectedId.append(interest.id)
+//                case .notYet(let normal):
+//                    self.check3.append(false)
+//                    details.append(normal)
+//                    self.livingCVSelectedId.append(normal.id)
+//                    self.livingCVSelectedId.sort()
+//                case .clear(_):
+//                    for i in 0..<(self.check3.count) { self.check3[i] = false }
+//                }
+//            }
+//            .asObservable()
+//            .observe(on: MainScheduler.instance)
+//            .bind(to: self.livingCategoryCollectionView.rx.items(cellIdentifier: "livingCollectionView", cellType: FilterCollectionViewCell.self)) {
+//                (index: Int, element: ChildDetail, cell) in
+//                if(self.check3[index]) {
+//                    cell.tagLabel.text = element.name
+//                    cell.contentView.backgroundColor = UIColor(hexString: "5B43EF")
+//                    cell.tagLabel.textColor = .white
+//                } else {
+//                    cell.tagLabel.text = element.name
+//                    cell.contentView.backgroundColor = UIColor(hexString: "F0F0F0")
+//                    cell.tagLabel.textColor = .black
+//                }
+//            }.disposed(by: disposeBag)
+//
+//        viewModel.output.interestEducationCategoryOutput
+//            .scan(into: [ChildDetail]()) { details, action in
+//                switch action {
+//                case .right(let interest):
+//                    self.check1.append(true)
+//                    details.append(interest)
+//                    self.viewModel.input.confirmButtonValid.accept(true)
+//                    self.eduCVSelectedId.append(interest.id)
+//                    self.eduCVSelectedId.sort()
+//                    //선택 id 저장 (처음에 right일 경우)
+//                    self.eduDidSelectedId.append(interest.id)
+//                case .notYet(let normal):
+//                    self.check1.append(false)
+//                    details.append(normal)
+//                    self.eduCVSelectedId.append(normal.id)
+//                    self.eduCVSelectedId.sort()
+//                case .clear(_):
+//                    for i in 0..<(self.check1.count) { self.check1[i] = false }
+//                }
+//            }
+//            .asObservable()
+//            .observe(on: MainScheduler.instance)
+//            .bind(to: self.educationCategoryCollectionView.rx.items(cellIdentifier: "educationCategoryCollectionView", cellType: FilterCollectionViewCell.self)) {
+//                (index: Int, element: ChildDetail, cell) in
+//                if(self.check1[index]) {
+//                    cell.tagLabel.text = element.name
+//                    cell.contentView.backgroundColor = UIColor(hexString: "5B43EF")
+//                    cell.tagLabel.textColor = .white
+//                } else {
+//                    cell.tagLabel.text = element.name
+//                    cell.contentView.backgroundColor = UIColor(hexString: "F0F0F0")
+//                    cell.tagLabel.textColor = .black
+//                }
+//            }.disposed(by: disposeBag)
+//
+//        viewModel.output.participationCategoryOutput
+//            .scan(into: [ChildDetail]()) { details, action in
+//                switch action {
+//                case .right(let interest):
+//                    self.check2.append(true)
+//                    details.append(interest)
+//                    self.viewModel.input.confirmButtonValid.accept(true)
+//                    self.particiCVSelectedId.append(interest.id)
+//                    self.particiCVSelectedId.sort()
+//                    //선택 id 저장 (처음에 right일 경우)
+//                    self.particiDidSelectedId.append(interest.id)
+//                case .notYet(let normal):
+//                    self.check2.append(false)
+//                    details.append(normal)
+//                    self.particiCVSelectedId.append(normal.id)
+//                    self.particiCVSelectedId.sort()
+//                case .clear(_):
+//                    for i in 0..<(self.check2.count) { self.check2[i] = false }
+//                }
+//            }
+//            .asObservable()
+//            .observe(on: MainScheduler.instance)
+//            .bind(to: self.participationCategoryCollectionView.rx.items(cellIdentifier: "participationCollectionView", cellType: FilterCollectionViewCell.self)) {
+//                (index: Int, element: ChildDetail, cell) in
+//                if(self.check2[index]) {
+//                    cell.tagLabel.text = element.name
+//                    cell.contentView.backgroundColor = UIColor(hexString: "5B43EF")
+//                    cell.tagLabel.textColor = .white
+//                } else {
+//                    cell.tagLabel.text = element.name
+//                    cell.contentView.backgroundColor = UIColor(hexString: "F0F0F0")
+//                    cell.tagLabel.textColor = .black
+//                }
+//            }.disposed(by: disposeBag)
+//
+//
+//        ///이용목적
+//        viewModel.output.returnForWhat
+//            .scan(into: [UserPurpose]()) { purposes, action in
+//                switch action {
+//                case .right(let right):
+//                    self.forWhatCheck.append(true)
+//                    purposes.append(right)
+//                    //전체 id 저장
+//                    self.forWhatCVSelectedId.append(right.id)
+//                    self.forWhatCVSelectedId.sort()
+//                    //선택 id 저장 (처음에 right일 경우)
+//                    self.forWhatDidSelectedId.append(right.id)
+//                    //버튼
+//                    self.viewModel.input.confirmButtonValid.accept(true)
+//                case .nope(let normal):
+//                    self.forWhatCheck.append(false)
+//                    purposes.append(normal)
+//                    self.forWhatCVSelectedId.append(normal.id)
+//                    self.forWhatCVSelectedId.sort()
+//                case .clear(_):
+//                    for i in 0..<(self.forWhatCheck.count) { self.forWhatCheck[i] = false }
+//                }
+//            }
+//            .asObservable()
+//            .observe(on: MainScheduler.instance)
+//            .bind(to: self.forWhatCollectionView.rx.items(cellIdentifier: "forWhatCollectionView", cellType: FilterCollectionViewCell.self)) {
+//                (index: Int, element: UserPurpose, cell) in
+//                if(self.forWhatCheck[index]) {
+//                    cell.tagLabel.text = element.name
+//                    cell.contentView.backgroundColor = UIColor(hexString: "5B43EF")
+//                    cell.tagLabel.textColor = .white
+//                } else {
+//                    cell.tagLabel.text = element.name
+//                    cell.contentView.backgroundColor = UIColor(hexString: "F0F0F0")
+//                    cell.tagLabel.textColor = .black
+//                }
+//            }.disposed(by: disposeBag)
         
-        ///생활안정
-        viewModel.output.interestLivingOutput
-            .scan(into: [ChildDetail]()) { details, action in
-                switch action {
-                case .right(let interest):
-                    self.check3.append(true)
-                    self.viewModel.input.confirmButtonValid.accept(true)
-                    details.append(interest)
-                    self.livingCVSelectedId.append(interest.id)
-                    self.livingCVSelectedId.sort()
-                    //선택 id 저장 (처음에 right일 경우)
-                    self.livingDidSelectedId.append(interest.id)
-                case .notYet(let normal):
-                    self.check3.append(false)
-                    details.append(normal)
-                    self.livingCVSelectedId.append(normal.id)
-                    self.livingCVSelectedId.sort()
-                case .clear(_):
-                    for i in 0..<(self.check3.count) { self.check3[i] = false }
-                }
-            }
-            .asObservable()
-            .observe(on: MainScheduler.instance)
-            .bind(to: self.livingCategoryCollectionView.rx.items(cellIdentifier: "livingCollectionView", cellType: FilterCollectionViewCell.self)) {
-                (index: Int, element: ChildDetail, cell) in
-                if(self.check3[index]) {
-                    cell.tagLabel.text = element.name
-                    cell.contentView.backgroundColor = UIColor(hexString: "5B43EF")
-                    cell.tagLabel.textColor = .white
-                } else {
-                    cell.tagLabel.text = element.name
-                    cell.contentView.backgroundColor = UIColor(hexString: "F0F0F0")
-                    cell.tagLabel.textColor = .black
-                }
-            }.disposed(by: disposeBag)
-        
-        viewModel.output.interestEducationCategoryOutput
-            .scan(into: [ChildDetail]()) { details, action in
-                switch action {
-                case .right(let interest):
-                    self.check1.append(true)
-                    details.append(interest)
-                    self.viewModel.input.confirmButtonValid.accept(true)
-                    self.eduCVSelectedId.append(interest.id)
-                    self.eduCVSelectedId.sort()
-                    //선택 id 저장 (처음에 right일 경우)
-                    self.eduDidSelectedId.append(interest.id)
-                case .notYet(let normal):
-                    self.check1.append(false)
-                    details.append(normal)
-                    self.eduCVSelectedId.append(normal.id)
-                    self.eduCVSelectedId.sort()
-                case .clear(_):
-                    for i in 0..<(self.check1.count) { self.check1[i] = false }
-                }
-            }
-            .asObservable()
-            .observe(on: MainScheduler.instance)
-            .bind(to: self.educationCategoryCollectionView.rx.items(cellIdentifier: "educationCategoryCollectionView", cellType: FilterCollectionViewCell.self)) {
-                (index: Int, element: ChildDetail, cell) in
-                if(self.check1[index]) {
-                    cell.tagLabel.text = element.name
-                    cell.contentView.backgroundColor = UIColor(hexString: "5B43EF")
-                    cell.tagLabel.textColor = .white
-                } else {
-                    cell.tagLabel.text = element.name
-                    cell.contentView.backgroundColor = UIColor(hexString: "F0F0F0")
-                    cell.tagLabel.textColor = .black
-                }
-            }.disposed(by: disposeBag)
-        
-        viewModel.output.participationCategoryOutput
-            .scan(into: [ChildDetail]()) { details, action in
-                switch action {
-                case .right(let interest):
-                    self.check2.append(true)
-                    details.append(interest)
-                    self.viewModel.input.confirmButtonValid.accept(true)
-                    self.particiCVSelectedId.append(interest.id)
-                    self.particiCVSelectedId.sort()
-                    //선택 id 저장 (처음에 right일 경우)
-                    self.particiDidSelectedId.append(interest.id)
-                case .notYet(let normal):
-                    self.check2.append(false)
-                    details.append(normal)
-                    self.particiCVSelectedId.append(normal.id)
-                    self.particiCVSelectedId.sort()
-                case .clear(_):
-                    for i in 0..<(self.check2.count) { self.check2[i] = false }
-                }
-            }
-            .asObservable()
-            .observe(on: MainScheduler.instance)
-            .bind(to: self.participationCategoryCollectionView.rx.items(cellIdentifier: "participationCollectionView", cellType: FilterCollectionViewCell.self)) {
-                (index: Int, element: ChildDetail, cell) in
-                if(self.check2[index]) {
-                    cell.tagLabel.text = element.name
-                    cell.contentView.backgroundColor = UIColor(hexString: "5B43EF")
-                    cell.tagLabel.textColor = .white
-                } else {
-                    cell.tagLabel.text = element.name
-                    cell.contentView.backgroundColor = UIColor(hexString: "F0F0F0")
-                    cell.tagLabel.textColor = .black
-                }
-            }.disposed(by: disposeBag)
-        
-        
-        ///이용목적
-        viewModel.output.returnForWhat
-            .scan(into: [UserPurpose]()) { purposes, action in
-                switch action {
-                case .right(let right):
-                    self.forWhatCheck.append(true)
-                    purposes.append(right)
-                    //전체 id 저장
-                    self.forWhatCVSelectedId.append(right.id)
-                    self.forWhatCVSelectedId.sort()
-                    //선택 id 저장 (처음에 right일 경우)
-                    self.forWhatDidSelectedId.append(right.id)
-                    //버튼
-                    self.viewModel.input.confirmButtonValid.accept(true)
-                case .nope(let normal):
-                    self.forWhatCheck.append(false)
-                    purposes.append(normal)
-                    self.forWhatCVSelectedId.append(normal.id)
-                    self.forWhatCVSelectedId.sort()
-                case .clear(_):
-                    for i in 0..<(self.forWhatCheck.count) { self.forWhatCheck[i] = false }
-                }
-            }
-            .asObservable()
-            .observe(on: MainScheduler.instance)
-            .bind(to: self.forWhatCollectionView.rx.items(cellIdentifier: "forWhatCollectionView", cellType: FilterCollectionViewCell.self)) {
-                (index: Int, element: UserPurpose, cell) in
-                if(self.forWhatCheck[index]) {
-                    cell.tagLabel.text = element.name
-                    cell.contentView.backgroundColor = UIColor(hexString: "5B43EF")
-                    cell.tagLabel.textColor = .white
-                } else {
-                    cell.tagLabel.text = element.name
-                    cell.contentView.backgroundColor = UIColor(hexString: "F0F0F0")
-                    cell.tagLabel.textColor = .black
-                }
-            }.disposed(by: disposeBag)
+        ///RxDataSources
+//        categoryViewModel.firstLoadOutput
+//            .map { [CategoryDataSection(header: "일자리", items: [] }
+//            .bind(to: jobCategoryCollectionView.rx.items(dataSource: dataSource))
+//            .disposed(by: disposeBag)
         
         ///확인 버튼
         viewModel.output.confirmButtonValidOutput
