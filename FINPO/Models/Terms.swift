@@ -40,6 +40,15 @@ struct Terms {
         ]
         
         let terms3: [Terms] = [
+            .init(termsID: "3",
+                  title: "만 14세 이상입니다",
+                  contents: "",
+                  isMandatory: true,
+                  type: .main
+                 )
+        ]
+        
+        let terms4: [Terms] = [
             .init(termsID: nil,
                   title: "마케팅 정보 수신 동의",
                   contents: "blablabla",
@@ -61,6 +70,6 @@ struct Terms {
 //                type: .sub
 //            ),
         ]
-        return [terms1, terms2, terms3]
+        return [terms1, terms2, terms3, terms4]
     }
 }
