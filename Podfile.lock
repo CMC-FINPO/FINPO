@@ -6,6 +6,7 @@ PODS:
   - AppAuth/Core (1.5.0)
   - AppAuth/ExternalUserAgent (1.5.0):
     - AppAuth/Core
+  - Differentiator (5.0.0)
   - GoogleSignIn (6.2.2):
     - AppAuth (~> 1.5)
     - GTMAppAuth (~> 1.3)
@@ -40,9 +41,15 @@ PODS:
   - RxAlamofire/Core (6.1.1):
     - Alamofire (~> 5.4)
     - RxSwift (~> 6.0)
+  - RxBlocking (6.5.0):
+    - RxSwift (= 6.5.0)
   - RxCocoa (6.5.0):
     - RxRelay (= 6.5.0)
     - RxSwift (= 6.5.0)
+  - RxDataSources (5.0.0):
+    - Differentiator (~> 5.0)
+    - RxCocoa (~> 6.0)
+    - RxSwift (~> 6.0)
   - RxGesture (4.0.4):
     - RxCocoa (~> 6.0)
     - RxSwift (~> 6.0)
@@ -76,11 +83,13 @@ PODS:
   - RxRelay (6.5.0):
     - RxSwift (= 6.5.0)
   - RxSwift (6.5.0)
+  - RxTest (6.5.0):
+    - RxSwift (= 6.5.0)
   - SnapKit (5.6.0)
   - Then (3.0.0)
-  - TTGTagCollectionView (2.1.0)
 
 DEPENDENCIES:
+  - Alamofire (~> 5.1)
   - GoogleSignIn (= 6.2.2)
   - KakaoSDKAuth
   - KakaoSDKCommon
@@ -88,6 +97,8 @@ DEPENDENCIES:
   - KakaoSDKTalk
   - KakaoSDKTemplate
   - KakaoSDKUser
+  - RxBlocking
+  - RxDataSources
   - RxGesture
   - RxKakaoSDKAuth
   - RxKakaoSDKCommon
@@ -95,14 +106,15 @@ DEPENDENCIES:
   - RxKakaoSDKStory
   - RxKakaoSDKTalk
   - RxKakaoSDKUser
+  - RxTest
   - SnapKit (~> 5.6.0)
   - Then
-  - TTGTagCollectionView
 
 SPEC REPOS:
   trunk:
     - Alamofire
     - AppAuth
+    - Differentiator
     - GoogleSignIn
     - GTMAppAuth
     - GTMSessionFetcher
@@ -114,7 +126,9 @@ SPEC REPOS:
     - KakaoSDKTemplate
     - KakaoSDKUser
     - RxAlamofire
+    - RxBlocking
     - RxCocoa
+    - RxDataSources
     - RxGesture
     - RxKakaoSDKAuth
     - RxKakaoSDKCommon
@@ -124,13 +138,14 @@ SPEC REPOS:
     - RxKakaoSDKUser
     - RxRelay
     - RxSwift
+    - RxTest
     - SnapKit
     - Then
-    - TTGTagCollectionView
 
 SPEC CHECKSUMS:
   Alamofire: 87bd8c952f9a4454320fce00d9cc3de57bcadaf5
   AppAuth: 80317d99ac7ff2801a2f18ff86b48cd315ed465d
+  Differentiator: e8497ceab83c1b10ca233716d547b9af21b9344d
   GoogleSignIn: 3c68388ac221f379676e8f1cb115df3aaf73b93f
   GTMAppAuth: 4d8f864896f3646f0c33baf38a28362f4c601e15
   GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
@@ -142,7 +157,9 @@ SPEC CHECKSUMS:
   KakaoSDKTemplate: 8c666f742624834ac94151d70821f006af6f3e51
   KakaoSDKUser: 7969a38f9ccfd788140fa799b6bbaa223f62683e
   RxAlamofire: beb75a1c452d0de225651db4903f5d29d034a620
+  RxBlocking: 04b5fd28bb5ea49f7d64b80db8bbfe50d9cc1c7d
   RxCocoa: 94f817b71c07517321eb4f9ad299112ca8af743b
+  RxDataSources: aa47cc1ed6c500fa0dfecac5c979b723542d79cf
   RxGesture: f3efb47ed2d26a8082f7b660d4a59970e275a7f8
   RxKakaoSDKAuth: 9af5b70d22e6eeebbd4f06b89509b4cfb86eed40
   RxKakaoSDKCommon: 4090745c7ddf1b65588fc9f00af0468e384f9082
@@ -152,10 +169,10 @@ SPEC CHECKSUMS:
   RxKakaoSDKUser: f016671c27bac562eaa447cf4e04647cb171ac42
   RxRelay: 1de1523e604c72b6c68feadedd1af3b1b4d0ecbd
   RxSwift: 5710a9e6b17f3c3d6e40d6e559b9fa1e813b2ef8
+  RxTest: eb2d23adefc5a5ebf5779c7792fa3edfe6ebcc17
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
   Then: 844265ae87834bbe1147d91d5d41a404da2ec27d
-  TTGTagCollectionView: a2a8668c659b39e7a6ffd6590475ea53a7ae95f7
 
-PODFILE CHECKSUM: da82d07f62e156950607b87838712a1dab8ac33a
+PODFILE CHECKSUM: ec2e168f876b0946ffd7e5dd7a8459c72a175fa2
 
 COCOAPODS: 1.11.2

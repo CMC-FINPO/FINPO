@@ -147,7 +147,6 @@ class MyPageViewModel {
     
     func getProfileInfo() -> Observable<User> {
         return Observable.create { observer in
-//            let accessToken = UserDefaults.standard.string(forKey: "accessToken") ?? ""
             ///UserDefaults -> keychain
             let accessToken = KeyChain.read(key: KeyChain.accessToken) ?? ""
             let url = BaseURL.url.appending("user/me")

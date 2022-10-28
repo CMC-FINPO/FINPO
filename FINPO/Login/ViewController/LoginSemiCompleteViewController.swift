@@ -11,7 +11,7 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-class LoginSemiCompleteViewController: UIViewController {
+final class LoginSemiCompleteViewController: UIViewController {
     
     let disposeBag = DisposeBag()
     

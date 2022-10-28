@@ -10,6 +10,9 @@ import UIKit
 import SnapKit
 
 class FilterCollectionViewCell: UICollectionViewCell {
+    
+    var data: MyInterestSectionType?
+    
     lazy var tagLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "AppleSDGothicNeo-Semibold", size: 16)
@@ -36,6 +39,10 @@ class FilterCollectionViewCell: UICollectionViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
 
+    }
+    
+    func configureCell(data: MyInterestSectionType) {
+        self.data = data
     }
     
     override var isSelected: Bool {

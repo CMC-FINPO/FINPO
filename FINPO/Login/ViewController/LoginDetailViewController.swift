@@ -12,7 +12,7 @@ import RxRelay
 import RxSwift
 import RxCocoa
 
-class LoginDetailViewController: UIViewController {
+final class LoginDetailViewController: UIViewController {
     
     static var isCMAllow = false
     
@@ -254,6 +254,10 @@ extension LoginDetailViewController: UITableViewDelegate, UITableViewDataSource 
         if(indexPath.section == 2) {
             cell.moveToButton.isHidden = true
         }
+        if(indexPath.section == 3) {
+            cell.moveToButton.isHidden = true
+        }
+        
 
         cell.bind(viewModel.dataSource[indexPath.section][indexPath.row])
         cell.btnCheck.rx.tap.asDriver(onErrorRecover: { _ in return .never()})

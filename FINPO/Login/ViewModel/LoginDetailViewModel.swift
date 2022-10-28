@@ -9,7 +9,7 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-class LoginDetailViewModel {
+final class LoginDetailViewModel {
     
     let disposeBag = DisposeBag()
     var dataSource = [[Terms]]()

@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2EBA4152D5BE816777DE1C0D /* Pods_FINPO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8C359964EE7DD4BDB36F374 /* Pods_FINPO.framework */; };
-		A84962D89FDB101D3AF40A45 /* Pods_FINPO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CBBBC53683444A104C13159C /* Pods_FINPO.framework */; };
+		30F4E32A5221EBA701078609 /* Pods_FINPOTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FF90F753D3EAC97F8EE8ED4 /* Pods_FINPOTests.framework */; };
+		B74859B1B0CA46AD4BD80FB4 /* Pods_FINPO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D09619CDB1E49BC71B1F5C1E /* Pods_FINPO.framework */; };
 		DD1BFFB62863013600ACAAE1 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1BFFB52863013600ACAAE1 /* HomeViewController.swift */; };
 		DD1BFFB9286307BD00ACAAE1 /* HomeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1BFFB8286307BD00ACAAE1 /* HomeTableViewCell.swift */; };
 		DD1BFFBB2863143D00ACAAE1 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1BFFBA2863143D00ACAAE1 /* HomeViewModel.swift */; };
@@ -26,6 +26,12 @@
 		DD1E995F28B8DA5A00C80272 /* DynamicHeightTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1E995E28B8DA5A00C80272 /* DynamicHeightTableView.swift */; };
 		DD1E996128BB23CC00C80272 /* ComponentsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1E996028BB23CC00C80272 /* ComponentsManager.swift */; };
 		DD1EC9712861B23000B58F10 /* SignOutAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1EC9702861B23000B58F10 /* SignOutAPI.swift */; };
+		DD25B48528F7D00C00D81263 /* MypageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDC82B3928F309BD0029CDF4 /* MypageStore.swift */; };
+		DD25B48628F7D04400D81263 /* CommunityboardResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1E994C28B28E8300C80272 /* CommunityboardResponseModel.swift */; };
+		DD25B48D28F7F09400D81263 /* TermsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD25B48C28F7F09400D81263 /* TermsCell.swift */; };
+		DD25B4B428F93FAD00D81263 /* InterestCategoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD25B4B328F93FAD00D81263 /* InterestCategoryViewModel.swift */; };
+		DD25B4B628F93FE700D81263 /* InterestCategoryDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD25B4B528F93FE700D81263 /* InterestCategoryDomain.swift */; };
+		DD25B4BA28F9518400D81263 /* CategoryDataSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD25B4B928F9518400D81263 /* CategoryDataSection.swift */; };
 		DD25F3EC28F2BFD300E4127E /* GalleryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD25F3EB28F2BFD300E4127E /* GalleryViewController.swift */; };
 		DD2EA46628487F730004D707 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2EA46528487F730004D707 /* AppDelegate.swift */; };
 		DD2EA46828487F730004D707 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2EA46728487F730004D707 /* SceneDelegate.swift */; };
@@ -101,7 +107,6 @@
 		DD90E9A5284CF78700B19B8C /* Reactive.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD90E9A4284CF78700B19B8C /* Reactive.swift */; };
 		DD90E9A7284CF78D00B19B8C /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD90E9A6284CF78D00B19B8C /* UIButton.swift */; };
 		DD90E9AF284D199D00B19B8C /* TermsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = DD90E9AD284D199D00B19B8C /* TermsCell.xib */; };
-		DD90E9B0284D199D00B19B8C /* TermsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD90E9AE284D199D00B19B8C /* TermsCell.swift */; };
 		DD90E9B4284DD0F300B19B8C /* LoginBasicInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD90E9B3284DD0F300B19B8C /* LoginBasicInfoViewController.swift */; };
 		DD90E9B8284DDFA200B19B8C /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD90E9B7284DDFA200B19B8C /* User.swift */; };
 		DD92046628D16DE60084F24B /* CacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD92046528D16DE60084F24B /* CacheManager.swift */; };
@@ -172,9 +177,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		270C28813D04C9316FCC87A8 /* Pods-FINPO.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FINPO.release.xcconfig"; path = "Target Support Files/Pods-FINPO/Pods-FINPO.release.xcconfig"; sourceTree = "<group>"; };
-		BFCA014EE683AACD32E6826C /* Pods-FINPO.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FINPO.debug.xcconfig"; path = "Target Support Files/Pods-FINPO/Pods-FINPO.debug.xcconfig"; sourceTree = "<group>"; };
-		CBBBC53683444A104C13159C /* Pods_FINPO.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FINPO.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7FF90F753D3EAC97F8EE8ED4 /* Pods_FINPOTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FINPOTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C9EDDBBEDFEF0960B5917B07 /* Pods-FINPOTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FINPOTests.debug.xcconfig"; path = "Target Support Files/Pods-FINPOTests/Pods-FINPOTests.debug.xcconfig"; sourceTree = "<group>"; };
+		D09619CDB1E49BC71B1F5C1E /* Pods_FINPO.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FINPO.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		DA93B2FA7150801F98E06F69 /* Pods-FINPOTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FINPOTests.release.xcconfig"; path = "Target Support Files/Pods-FINPOTests/Pods-FINPOTests.release.xcconfig"; sourceTree = "<group>"; };
 		DD1BFFB52863013600ACAAE1 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		DD1BFFB8286307BD00ACAAE1 /* HomeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTableViewCell.swift; sourceTree = "<group>"; };
 		DD1BFFBA2863143D00ACAAE1 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
@@ -192,6 +198,10 @@
 		DD1E995E28B8DA5A00C80272 /* DynamicHeightTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicHeightTableView.swift; sourceTree = "<group>"; };
 		DD1E996028BB23CC00C80272 /* ComponentsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentsManager.swift; sourceTree = "<group>"; };
 		DD1EC9702861B23000B58F10 /* SignOutAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignOutAPI.swift; sourceTree = "<group>"; };
+		DD25B48C28F7F09400D81263 /* TermsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermsCell.swift; sourceTree = "<group>"; };
+		DD25B4B328F93FAD00D81263 /* InterestCategoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterestCategoryViewModel.swift; sourceTree = "<group>"; };
+		DD25B4B528F93FE700D81263 /* InterestCategoryDomain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterestCategoryDomain.swift; sourceTree = "<group>"; };
+		DD25B4B928F9518400D81263 /* CategoryDataSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryDataSection.swift; sourceTree = "<group>"; };
 		DD25F3EB28F2BFD300E4127E /* GalleryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryViewController.swift; sourceTree = "<group>"; };
 		DD2EA46228487F730004D707 /* FINPO.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FINPO.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD2EA46528487F730004D707 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -268,7 +278,6 @@
 		DD90E9A4284CF78700B19B8C /* Reactive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reactive.swift; sourceTree = "<group>"; };
 		DD90E9A6284CF78D00B19B8C /* UIButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButton.swift; sourceTree = "<group>"; };
 		DD90E9AD284D199D00B19B8C /* TermsCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TermsCell.xib; sourceTree = "<group>"; };
-		DD90E9AE284D199D00B19B8C /* TermsCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TermsCell.swift; path = "../../../../../Upper Intermediate/TermsExample/CellTest/Views/TermsCell.swift"; sourceTree = "<group>"; };
 		DD90E9B3284DD0F300B19B8C /* LoginBasicInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginBasicInfoViewController.swift; sourceTree = "<group>"; };
 		DD90E9B7284DDFA200B19B8C /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		DD92046528D16DE60084F24B /* CacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheManager.swift; sourceTree = "<group>"; };
@@ -327,7 +336,8 @@
 		DDFD6EED2856489000A1706F /* HomeTapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTapViewController.swift; sourceTree = "<group>"; };
 		DDFD6EF02856494600A1706F /* MyPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPageViewController.swift; sourceTree = "<group>"; };
 		DDFD6EF52856555700A1706F /* MyPageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPageViewModel.swift; sourceTree = "<group>"; };
-		E8C359964EE7DD4BDB36F374 /* Pods_FINPO.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FINPO.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		EEE15676DAF89D92D575B9C3 /* Pods-FINPO.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FINPO.release.xcconfig"; path = "Target Support Files/Pods-FINPO/Pods-FINPO.release.xcconfig"; sourceTree = "<group>"; };
+		F811C2E445DCDB0E9B65A2F4 /* Pods-FINPO.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FINPO.debug.xcconfig"; path = "Target Support Files/Pods-FINPO/Pods-FINPO.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -337,8 +347,7 @@
 			files = (
 				DD5A18DD286DE16F00903616 /* FirebaseMessaging in Frameworks */,
 				DDBFEEA628571689003E9662 /* Kingfisher in Frameworks */,
-				A84962D89FDB101D3AF40A45 /* Pods_FINPO.framework in Frameworks */,
-				2EBA4152D5BE816777DE1C0D /* Pods_FINPO.framework in Frameworks */,
+				B74859B1B0CA46AD4BD80FB4 /* Pods_FINPO.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -346,51 +355,282 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				30F4E32A5221EBA701078609 /* Pods_FINPOTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		31718119D93A97BDE60B464A /* Frameworks */ = {
+		21FF94D44DE58D4DD2E4DFDD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				CBBBC53683444A104C13159C /* Pods_FINPO.framework */,
+				D09619CDB1E49BC71B1F5C1E /* Pods_FINPO.framework */,
+				7FF90F753D3EAC97F8EE8ED4 /* Pods_FINPOTests.framework */,
 			);
 			name = Frameworks;
-			path = ../..;
 			sourceTree = "<group>";
 		};
 		5013C2BEC30C08049C4D7B18 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				BFCA014EE683AACD32E6826C /* Pods-FINPO.debug.xcconfig */,
-				270C28813D04C9316FCC87A8 /* Pods-FINPO.release.xcconfig */,
+				F811C2E445DCDB0E9B65A2F4 /* Pods-FINPO.debug.xcconfig */,
+				EEE15676DAF89D92D575B9C3 /* Pods-FINPO.release.xcconfig */,
+				C9EDDBBEDFEF0960B5917B07 /* Pods-FINPOTests.debug.xcconfig */,
+				DA93B2FA7150801F98E06F69 /* Pods-FINPOTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		AEB9F9A826FC9085FD61748F /* Frameworks */ = {
+		DD08232728FD9939005A7923 /* InterestCategorySetting */ = {
 			isa = PBXGroup;
 			children = (
-				E8C359964EE7DD4BDB36F374 /* Pods_FINPO.framework */,
+				DD50F7A9287DCA1200ADEB09 /* InterestCategoryViewController.swift */,
+				DD25B4B328F93FAD00D81263 /* InterestCategoryViewModel.swift */,
+				DD25B4B528F93FE700D81263 /* InterestCategoryDomain.swift */,
+				DD25B4B928F9518400D81263 /* CategoryDataSection.swift */,
 			);
-			name = Frameworks;
+			path = InterestCategorySetting;
+			sourceTree = "<group>";
+		};
+		DD08232828FD9956005A7923 /* RegionEdit */ = {
+			isa = PBXGroup;
+			children = (
+				DD5A18FF2875ADF800903616 /* EditRegionViewController.swift */,
+				DD5A18FB2875AD7B00903616 /* InterestRegionViewController.swift */,
+				DD5A18FD2875AD9600903616 /* MyRegionViewController.swift */,
+			);
+			path = RegionEdit;
+			sourceTree = "<group>";
+		};
+		DD08232928FD996B005A7923 /* ParticipationPolicy */ = {
+			isa = PBXGroup;
+			children = (
+				DD5A19062876C83C00903616 /* ParticipationViewController.swift */,
+				DD5A190B2876D85200903616 /* ParticipationTableViewCell.swift */,
+				DDAF7C46289A98D300D1F1FD /* ParticipationCollectionViewCell.swift */,
+			);
+			path = ParticipationPolicy;
 			sourceTree = "<group>";
 		};
 		DD1BFFB72863013900ACAAE1 /* Home */ = {
 			isa = PBXGroup;
 			children = (
-				DD1BFFB52863013600ACAAE1 /* HomeViewController.swift */,
-				DD1BFFBA2863143D00ACAAE1 /* HomeViewModel.swift */,
-				DD1BFFB8286307BD00ACAAE1 /* HomeTableViewCell.swift */,
-				DDE61608289A84AD0067040B /* HomeCollectionViewCell.swift */,
-				DDECAE99286AB0E3001C48D3 /* FilterViewController.swift */,
-				DDECAE9F286B564B001C48D3 /* FilterRegionViewController.swift */,
-				DD5A18D3286D389F00903616 /* FilterCollectionViewCell.swift */,
+				DD25B48E28F7F0DB00D81263 /* ViewController */,
+				DD25B48F28F7F0E700D81263 /* ViewModel */,
+				DD25B49028F7F0EE00D81263 /* Cell */,
 				DD5A18EA2870281700903616 /* PolicyDetailView */,
 			);
 			path = Home;
+			sourceTree = "<group>";
+		};
+		DD25B48728F7F03200D81263 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				DD2EA46928487F730004D707 /* LoginViewController.swift */,
+				DDAC8EC12848A36C0092CB25 /* LoginDetailViewController.swift */,
+				DD90E9B3284DD0F300B19B8C /* LoginBasicInfoViewController.swift */,
+				DDFD6EE1284F2A8800A1706F /* LoginRegionViewController.swift */,
+				DDFD6EE72852F48400A1706F /* LoginInterestViewController.swift */,
+				DDFD6EEB2855B34600A1706F /* LoginSemiCompleteViewController.swift */,
+				DDBFEEC7285E25E8003E9662 /* AddPurposeViewController.swift */,
+				DDBFEEC3285B4F08003E9662 /* AddRegionViewController.swift */,
+				DDECAE9628674BCF001C48D3 /* LoginSuccessViewController.swift */,
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		DD25B48828F7F05100D81263 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				DDAC8EBE284884F80092CB25 /* LoginViewModel.swift */,
+				DD90E999284B434600B19B8C /* LoginDetailViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		DD25B48928F7F05A00D81263 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				DDBFEEC1285AEDE3003E9662 /* TagCollectionViewCell.swift */,
+				DDFD6EE3284F840F00A1706F /* MainRegionTableViewCell.swift */,
+				DDFD6EE528506C1000A1706F /* SubRegionTableViewCell.swift */,
+				DDFD6EE92854B2B000A1706F /* InterestCollectionViewCell.swift */,
+				DDECAE942866C28B001C48D3 /* AddPurposeCollectionViewCell.swift */,
+				DD90E9AD284D199D00B19B8C /* TermsCell.xib */,
+				DD25B48C28F7F09400D81263 /* TermsCell.swift */,
+			);
+			path = Cell;
+			sourceTree = "<group>";
+		};
+		DD25B48E28F7F0DB00D81263 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				DD1BFFB52863013600ACAAE1 /* HomeViewController.swift */,
+				DDECAE99286AB0E3001C48D3 /* FilterViewController.swift */,
+				DDECAE9F286B564B001C48D3 /* FilterRegionViewController.swift */,
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		DD25B48F28F7F0E700D81263 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				DD1BFFBA2863143D00ACAAE1 /* HomeViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		DD25B49028F7F0EE00D81263 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				DD1BFFB8286307BD00ACAAE1 /* HomeTableViewCell.swift */,
+				DDE61608289A84AD0067040B /* HomeCollectionViewCell.swift */,
+				DD5A18D3286D389F00903616 /* FilterCollectionViewCell.swift */,
+			);
+			path = Cell;
+			sourceTree = "<group>";
+		};
+		DD25B49128F7F0FD00D81263 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				DD5A18E0286F321500903616 /* HomeDetailViewController.swift */,
+				DD5A18E2286FEAEA00903616 /* ServiceInfoViewController.swift */,
+				DD5A18E4286FEB0300903616 /* ApplyInfoViewController.swift */,
+				DD5A18F32873484400903616 /* MemoViewController.swift */,
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		DD25B49228F7F10600D81263 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				DD5A18EB2871C1C400903616 /* PolicyTypeCollectionViewCell.swift */,
+				DD5A18ED2871D25F00903616 /* ServiceTypeCollectionViewCell.swift */,
+				DD60A0BB288715B2004E9015 /* ServiceTypeTableViewCell.swift */,
+			);
+			path = Cell;
+			sourceTree = "<group>";
+		};
+		DD25B49328F7F12500D81263 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				DD4D493428856C2A00E25AB6 /* CommunityMainViewController.swift */,
+				DD1E995428B4DF4400C80272 /* CommunityDetailViewController.swift */,
+				DD6C9A3528E31E7C00D40507 /* CommunityWritingViewController.swift */,
+				DD25F3EB28F2BFD300E4127E /* GalleryViewController.swift */,
+				DD44B06A28EEBBBB000D0DC4 /* BoardEditViewController.swift */,
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		DD25B49428F7F13000D81263 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				DDE615CB2894054C0067040B /* CommunityViewModel.swift */,
+				DD1E995628B5322B00C80272 /* CommunityDetailViewModel.swift */,
+				DD6C9A3728E3E7B900D40507 /* CommunityWritingViewModel.swift */,
+				DD44B06C28EEBC92000D0DC4 /* BoardEditViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		DD25B49528F7F13B00D81263 /* CustomView */ = {
+			isa = PBXGroup;
+			children = (
+				DD6C99AB28DEBFF600D40507 /* NestCommentView.swift */,
+			);
+			path = CustomView;
+			sourceTree = "<group>";
+		};
+		DD25B49628F7F14100D81263 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				DD1E995A28B66A1D00C80272 /* CommunityCollectionViewCell.swift */,
+			);
+			path = Cell;
+			sourceTree = "<group>";
+		};
+		DD25B49728F7F14F00D81263 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				DD9F9BEA28EB00A8006AC588 /* EditCommentViewController.swift */,
+				DD9F9BF328EC128B006AC588 /* ReportViewController.swift */,
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		DD25B49828F7F15800D81263 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				DD9F9BEC28EB00DE006AC588 /* EditCommentViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		DD25B49928F7F16A00D81263 /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				DD9F9BEE28EB0143006AC588 /* EditStore.swift */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		DD25B49A28F7F17300D81263 /* CustomView */ = {
+			isa = PBXGroup;
+			children = (
+				DD6C99AD28E0024800D40507 /* CommentMoreView.swift */,
+			);
+			path = CustomView;
+			sourceTree = "<group>";
+		};
+		DD25B49B28F7F1DF00D81263 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				DDB1CCA1285EE1F800B42EDC /* MyPageSettingViewController.swift */,
+				DD60C1D9287F130B003B201E /* CategoryAlarmViewController.swift */,
+				DD60C1DF28811611003B201E /* RegionAlarmViewController.swift */,
+				DD60C1E12881320F003B201E /* EditUserInfoViewController.swift */,
+				DD60A0BD2887D122004E9015 /* OpenSourceViewController.swift */,
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		DD25B49C28F7F1EA00D81263 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				DD60C1DB287F2BD3003B201E /* CategoryAlarmViewModel.swift */,
+				DD60C1E328813278003B201E /* EditUserInfoViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		DD25B49D28F7F1F600D81263 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				DDB1CCA3285EED3600B42EDC /* SettingTableViewCell.swift */,
+				DD60A0C32887D71B004E9015 /* OpenSourceTableViewCell.swift */,
+			);
+			path = Cell;
+			sourceTree = "<group>";
+		};
+		DD25B49E28F7F20300D81263 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				DDBFEEA728578FD2003E9662 /* UnderlineSegmentedControl.swift */,
+				DDBFEEA9285792DD003E9662 /* WriteMySelfViewController.swift */,
+				DDBFEEAB285792EC003E9662 /* CommentMySelfViewController.swift */,
+				DDBFEEAD285792F7003E9662 /* LikeMySelfViewController.swift */,
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		DD25B49F28F7F20D00D81263 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				DDC82B3728F307180029CDF4 /* SegmentedViewModel.swift */,
+			);
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 		DD2EA45928487F730004D707 = {
@@ -401,7 +641,7 @@
 				DDC9116628F6F9590039AF11 /* FINPOTests */,
 				DD2EA46328487F730004D707 /* Products */,
 				5013C2BEC30C08049C4D7B18 /* Pods */,
-				AEB9F9A826FC9085FD61748F /* Frameworks */,
+				21FF94D44DE58D4DD2E4DFDD /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -417,6 +657,8 @@
 		DD2EA46428487F730004D707 /* FINPO */ = {
 			isa = PBXGroup;
 			children = (
+				DD2EA47328487F770004D707 /* Info.plist */,
+				DD2EA46E28487F770004D707 /* Assets.xcassets */,
 				DDE6160A289A8DCD0067040B /* GoogleService-Info.plist */,
 				DDECAE982867650C001C48D3 /* FINPO.entitlements */,
 				DDBFEEB42858599E003E9662 /* Launch Screen */,
@@ -426,8 +668,6 @@
 				DD90E9A8284CF79100B19B8C /* CommonExtension */,
 				DDAC8EC0284884FE0092CB25 /* Login */,
 				DD90E99F284CEE8B00B19B8C /* Models */,
-				DD2EA46E28487F770004D707 /* Assets.xcassets */,
-				DD2EA47328487F770004D707 /* Info.plist */,
 				DDFD6EEF2856489200A1706F /* Home */,
 				DDBFEEB92859E166003E9662 /* OAuth */,
 				DDBFEEBE2859F387003E9662 /* API */,
@@ -439,66 +679,23 @@
 		DD4D493328856B8800E25AB6 /* Community */ = {
 			isa = PBXGroup;
 			children = (
-				DD4D493428856C2A00E25AB6 /* CommunityMainViewController.swift */,
-				DDE615CB2894054C0067040B /* CommunityViewModel.swift */,
-				DD1E995428B4DF4400C80272 /* CommunityDetailViewController.swift */,
-				DD1E995628B5322B00C80272 /* CommunityDetailViewModel.swift */,
-				DD1E995A28B66A1D00C80272 /* CommunityCollectionViewCell.swift */,
-				DD6C99AB28DEBFF600D40507 /* NestCommentView.swift */,
-				DD6C9A3528E31E7C00D40507 /* CommunityWritingViewController.swift */,
-				DD6C9A3728E3E7B900D40507 /* CommunityWritingViewModel.swift */,
-				DD25F3EB28F2BFD300E4127E /* GalleryViewController.swift */,
+				DD25B49328F7F12500D81263 /* ViewController */,
+				DD25B49428F7F13000D81263 /* ViewModel */,
+				DD25B49628F7F14100D81263 /* Cell */,
+				DD25B49528F7F13B00D81263 /* CustomView */,
 				DD9F9BF028EB32A8006AC588 /* BoardCommentEditing */,
 				DD9F9BE928EB0050006AC588 /* BoardSearching */,
-				DD44B06A28EEBBBB000D0DC4 /* BoardEditViewController.swift */,
-				DD44B06C28EEBC92000D0DC4 /* BoardEditViewModel.swift */,
 			);
 			path = Community;
-			sourceTree = "<group>";
-		};
-		DD50F7AB287DCA1600ADEB09 /* 관심사 설정 */ = {
-			isa = PBXGroup;
-			children = (
-				DD50F7A9287DCA1200ADEB09 /* InterestCategoryViewController.swift */,
-			);
-			name = "관심사 설정";
-			path = "관심사 설정";
 			sourceTree = "<group>";
 		};
 		DD5A18EA2870281700903616 /* PolicyDetailView */ = {
 			isa = PBXGroup;
 			children = (
-				DD5A18E0286F321500903616 /* HomeDetailViewController.swift */,
-				DD5A18E2286FEAEA00903616 /* ServiceInfoViewController.swift */,
-				DD5A18E4286FEB0300903616 /* ApplyInfoViewController.swift */,
-				DD5A18EB2871C1C400903616 /* PolicyTypeCollectionViewCell.swift */,
-				DD5A18ED2871D25F00903616 /* ServiceTypeCollectionViewCell.swift */,
-				DD5A18F32873484400903616 /* MemoViewController.swift */,
-				DD60A0BB288715B2004E9015 /* ServiceTypeTableViewCell.swift */,
+				DD25B49128F7F0FD00D81263 /* ViewController */,
+				DD25B49228F7F10600D81263 /* Cell */,
 			);
 			path = PolicyDetailView;
-			sourceTree = "<group>";
-		};
-		DD5A19012875ADFD00903616 /* 지역 수정 */ = {
-			isa = PBXGroup;
-			children = (
-				DD5A18FF2875ADF800903616 /* EditRegionViewController.swift */,
-				DD5A18FB2875AD7B00903616 /* InterestRegionViewController.swift */,
-				DD5A18FD2875AD9600903616 /* MyRegionViewController.swift */,
-			);
-			name = "지역 수정";
-			path = "지역 수정";
-			sourceTree = "<group>";
-		};
-		DD5A19082876CDF000903616 /* 참여 정책 */ = {
-			isa = PBXGroup;
-			children = (
-				DD5A19062876C83C00903616 /* ParticipationViewController.swift */,
-				DD5A190B2876D85200903616 /* ParticipationTableViewCell.swift */,
-				DDAF7C46289A98D300D1F1FD /* ParticipationCollectionViewCell.swift */,
-			);
-			name = "참여 정책";
-			path = "참여 정책";
 			sourceTree = "<group>";
 		};
 		DD6125702879D0F6002FBF4D /* Bookmark */ = {
@@ -543,7 +740,6 @@
 				DD1E995028B368E900C80272 /* BoolResponseModel.swift */,
 				DD1E995828B5335100C80272 /* CommunityDetailBoardResponseModel.swift */,
 				DD1E995C28B681BC00C80272 /* CommunityCommentResponseModel.swift */,
-				DD1E996028BB23CC00C80272 /* ComponentsManager.swift */,
 				DD81D0AB28BDC707000780D6 /* PostCommentResponseModel.swift */,
 				DD6C9A3928E3F92500D40507 /* BoardImageResponseModel.swift */,
 				DD9F9BF128EBF37B006AC588 /* EditCommentResponseModel.swift */,
@@ -562,6 +758,7 @@
 				DDBFEEC5285B5134003E9662 /* LeftAlignedCollectionViewFlowLayout.swift */,
 				DD1E995228B4DC8100C80272 /* DynamicHeightCollectionView.swift */,
 				DD1E995E28B8DA5A00C80272 /* DynamicHeightTableView.swift */,
+				DD1E996028BB23CC00C80272 /* ComponentsManager.swift */,
 			);
 			path = CommonExtension;
 			sourceTree = "<group>";
@@ -570,6 +767,7 @@
 			isa = PBXGroup;
 			children = (
 				DD92046528D16DE60084F24B /* CacheManager.swift */,
+				DDE615CD2897A4890067040B /* KeyChain.swift */,
 			);
 			path = Memories;
 			sourceTree = "<group>";
@@ -587,11 +785,10 @@
 		DD9F9BF028EB32A8006AC588 /* BoardCommentEditing */ = {
 			isa = PBXGroup;
 			children = (
-				DD6C99AD28E0024800D40507 /* CommentMoreView.swift */,
-				DD9F9BEA28EB00A8006AC588 /* EditCommentViewController.swift */,
-				DD9F9BEC28EB00DE006AC588 /* EditCommentViewModel.swift */,
-				DD9F9BEE28EB0143006AC588 /* EditStore.swift */,
-				DD9F9BF328EC128B006AC588 /* ReportViewController.swift */,
+				DD25B49728F7F14F00D81263 /* ViewController */,
+				DD25B49828F7F15800D81263 /* ViewModel */,
+				DD25B49928F7F16A00D81263 /* Domain */,
+				DD25B49A28F7F17300D81263 /* CustomView */,
 			);
 			path = BoardCommentEditing;
 			sourceTree = "<group>";
@@ -599,24 +796,9 @@
 		DDAC8EC0284884FE0092CB25 /* Login */ = {
 			isa = PBXGroup;
 			children = (
-				DD2EA46928487F730004D707 /* LoginViewController.swift */,
-				DDAC8EBE284884F80092CB25 /* LoginViewModel.swift */,
-				DDAC8EC12848A36C0092CB25 /* LoginDetailViewController.swift */,
-				DD90E999284B434600B19B8C /* LoginDetailViewModel.swift */,
-				DD90E9B3284DD0F300B19B8C /* LoginBasicInfoViewController.swift */,
-				DDFD6EE1284F2A8800A1706F /* LoginRegionViewController.swift */,
-				DDBFEEC1285AEDE3003E9662 /* TagCollectionViewCell.swift */,
-				DDFD6EE3284F840F00A1706F /* MainRegionTableViewCell.swift */,
-				DDFD6EE528506C1000A1706F /* SubRegionTableViewCell.swift */,
-				DDFD6EE72852F48400A1706F /* LoginInterestViewController.swift */,
-				DDFD6EE92854B2B000A1706F /* InterestCollectionViewCell.swift */,
-				DDFD6EEB2855B34600A1706F /* LoginSemiCompleteViewController.swift */,
-				DDBFEEC7285E25E8003E9662 /* AddPurposeViewController.swift */,
-				DDECAE942866C28B001C48D3 /* AddPurposeCollectionViewCell.swift */,
-				DDBFEEC3285B4F08003E9662 /* AddRegionViewController.swift */,
-				DDECAE9628674BCF001C48D3 /* LoginSuccessViewController.swift */,
-				DD90E9AE284D199D00B19B8C /* TermsCell.swift */,
-				DD90E9AD284D199D00B19B8C /* TermsCell.xib */,
+				DD25B48728F7F03200D81263 /* ViewController */,
+				DD25B48828F7F05100D81263 /* ViewModel */,
+				DD25B48928F7F05A00D81263 /* Cell */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -624,15 +806,9 @@
 		DDB1CCA5285F4A1C00B42EDC /* Setting */ = {
 			isa = PBXGroup;
 			children = (
-				DDB1CCA1285EE1F800B42EDC /* MyPageSettingViewController.swift */,
-				DDB1CCA3285EED3600B42EDC /* SettingTableViewCell.swift */,
-				DD60C1D9287F130B003B201E /* CategoryAlarmViewController.swift */,
-				DD60C1DB287F2BD3003B201E /* CategoryAlarmViewModel.swift */,
-				DD60C1DF28811611003B201E /* RegionAlarmViewController.swift */,
-				DD60C1E12881320F003B201E /* EditUserInfoViewController.swift */,
-				DD60C1E328813278003B201E /* EditUserInfoViewModel.swift */,
-				DD60A0BD2887D122004E9015 /* OpenSourceViewController.swift */,
-				DD60A0C32887D71B004E9015 /* OpenSourceTableViewCell.swift */,
+				DD25B49B28F7F1DF00D81263 /* ViewController */,
+				DD25B49C28F7F1EA00D81263 /* ViewModel */,
+				DD25B49D28F7F1F600D81263 /* Cell */,
 			);
 			path = Setting;
 			sourceTree = "<group>";
@@ -649,12 +825,8 @@
 		DDBFEEAF285792FB003E9662 /* SegmentedControl */ = {
 			isa = PBXGroup;
 			children = (
-				DDBFEEA728578FD2003E9662 /* UnderlineSegmentedControl.swift */,
-				DDBFEEA9285792DD003E9662 /* WriteMySelfViewController.swift */,
-				DDBFEEAB285792EC003E9662 /* CommentMySelfViewController.swift */,
-				DDBFEEAD285792F7003E9662 /* LikeMySelfViewController.swift */,
-				DDC82B3728F307180029CDF4 /* SegmentedViewModel.swift */,
-				DDB1CCA6285F5C5B00B42EDC /* BoardTableViewCell.swift */,
+				DD25B49E28F7F20300D81263 /* ViewController */,
+				DD25B49F28F7F20D00D81263 /* ViewModel */,
 				DDC9115D28F314660039AF11 /* Domain */,
 				DDC9116028F314D10039AF11 /* Repository */,
 			);
@@ -699,9 +871,8 @@
 				DD4D492F288478BB00E25AB6 /* DeleteParticipationAPI.swift */,
 				DD60A0BF2887D1E2004E9015 /* OpenAPI.swift */,
 				DDAF7C8128A6585100D1F1FD /* SocialLoginAPI.swift */,
-				31718119D93A97BDE60B464A /* Frameworks */,
-				DDB419C028636289005868ED /* Event Logger */,
 				DD1E994E28B32A5C00C80272 /* ApiManager.swift */,
+				DDB419C028636289005868ED /* Event Logger */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -748,12 +919,12 @@
 			children = (
 				DDFD6EF02856494600A1706F /* MyPageViewController.swift */,
 				DDFD6EF52856555700A1706F /* MyPageViewModel.swift */,
-				DDE615CD2897A4890067040B /* KeyChain.swift */,
-				DD5A19082876CDF000903616 /* 참여 정책 */,
-				DD5A19012875ADFD00903616 /* 지역 수정 */,
+				DD08232928FD996B005A7923 /* ParticipationPolicy */,
+				DD08232828FD9956005A7923 /* RegionEdit */,
 				DDB1CCA5285F4A1C00B42EDC /* Setting */,
 				DDBFEEAF285792FB003E9662 /* SegmentedControl */,
-				DD50F7AB287DCA1600ADEB09 /* 관심사 설정 */,
+				DDB1CCA6285F5C5B00B42EDC /* BoardTableViewCell.swift */,
+				DD08232728FD9939005A7923 /* InterestCategorySetting */,
 			);
 			path = MyPage;
 			sourceTree = "<group>";
@@ -765,11 +936,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DD2EA47628487F770004D707 /* Build configuration list for PBXNativeTarget "FINPO" */;
 			buildPhases = (
-				7864191E476408BD3F2483CB /* [CP] Check Pods Manifest.lock */,
+				3B9EE716642772E6ECAC00AA /* [CP] Check Pods Manifest.lock */,
 				DD2EA45E28487F730004D707 /* Sources */,
 				DD2EA45F28487F730004D707 /* Frameworks */,
 				DD2EA46028487F730004D707 /* Resources */,
-				7DE69A9DFBB8A3003665DBCF /* [CP] Embed Pods Frameworks */,
+				9E64919FB99758F73EB5ECB5 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -788,9 +959,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DDC9116D28F6F95A0039AF11 /* Build configuration list for PBXNativeTarget "FINPOTests" */;
 			buildPhases = (
+				193A09DF7D72C58100F91724 /* [CP] Check Pods Manifest.lock */,
 				DDC9116128F6F9590039AF11 /* Sources */,
 				DDC9116228F6F9590039AF11 /* Frameworks */,
 				DDC9116328F6F9590039AF11 /* Resources */,
+				E9D974E03FF363FB6CE573B2 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -868,7 +1041,29 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		7864191E476408BD3F2483CB /* [CP] Check Pods Manifest.lock */ = {
+		193A09DF7D72C58100F91724 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-FINPOTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		3B9EE716642772E6ECAC00AA /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -890,7 +1085,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		7DE69A9DFBB8A3003665DBCF /* [CP] Embed Pods Frameworks */ = {
+		9E64919FB99758F73EB5ECB5 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -905,6 +1100,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FINPO/Pods-FINPO-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E9D974E03FF363FB6CE573B2 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-FINPOTests/Pods-FINPOTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-FINPOTests/Pods-FINPOTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FINPOTests/Pods-FINPOTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -951,8 +1163,8 @@
 				DDFD6EE0284DFC3200A1706F /* UIKitExtension.swift in Sources */,
 				DD1BFFB62863013600ACAAE1 /* HomeViewController.swift in Sources */,
 				DD90E9B4284DD0F300B19B8C /* LoginBasicInfoViewController.swift in Sources */,
-				DD90E9B0284D199D00B19B8C /* TermsCell.swift in Sources */,
 				DDAC8EC22848A36C0092CB25 /* LoginDetailViewController.swift in Sources */,
+				DD25B4B428F93FAD00D81263 /* InterestCategoryViewModel.swift in Sources */,
 				DD60C1E22881320F003B201E /* EditUserInfoViewController.swift in Sources */,
 				DD4D493528856C2A00E25AB6 /* CommunityMainViewController.swift in Sources */,
 				DD5A190A2876D0A200903616 /* UserParticipatedModel.swift in Sources */,
@@ -986,6 +1198,7 @@
 				DDFD6EE628506C1000A1706F /* SubRegionTableViewCell.swift in Sources */,
 				DDFD6EEE2856489000A1706F /* HomeTapViewController.swift in Sources */,
 				DDE61609289A84AD0067040B /* HomeCollectionViewCell.swift in Sources */,
+				DD25B4B628F93FE700D81263 /* InterestCategoryDomain.swift in Sources */,
 				DD5A18EE2871D25F00903616 /* ServiceTypeCollectionViewCell.swift in Sources */,
 				DD60C1E428813278003B201E /* EditUserInfoViewModel.swift in Sources */,
 				DD9F9BED28EB00DE006AC588 /* EditCommentViewModel.swift in Sources */,
@@ -994,6 +1207,7 @@
 				DD61257D287C3CAE002FBF4D /* AlarmViewModel.swift in Sources */,
 				DD44B06B28EEBBBB000D0DC4 /* BoardEditViewController.swift in Sources */,
 				DDE8058328E99A5F000A2650 /* SearchingStore.swift in Sources */,
+				DD25B4BA28F9518400D81263 /* CategoryDataSection.swift in Sources */,
 				DD90E9A5284CF78700B19B8C /* Reactive.swift in Sources */,
 				DD1E996128BB23CC00C80272 /* ComponentsManager.swift in Sources */,
 				DD5A18D2286CAE3A00903616 /* BaseURL.swift in Sources */,
@@ -1011,6 +1225,7 @@
 				DDC82B3828F307180029CDF4 /* SegmentedViewModel.swift in Sources */,
 				DD81D0AC28BDC707000780D6 /* PostCommentResponseModel.swift in Sources */,
 				DDBFEEC8285E25E8003E9662 /* AddPurposeViewController.swift in Sources */,
+				DD25B48D28F7F09400D81263 /* TermsCell.swift in Sources */,
 				DD50F7AA287DCA1200ADEB09 /* InterestCategoryViewController.swift in Sources */,
 				DDECAEA0286B564B001C48D3 /* FilterRegionViewController.swift in Sources */,
 				DDFD6EF62856555700A1706F /* MyPageViewModel.swift in Sources */,
@@ -1062,6 +1277,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DD25B48628F7D04400D81263 /* CommunityboardResponseModel.swift in Sources */,
+				DD25B48528F7D00C00D81263 /* MypageStore.swift in Sources */,
 				DDC9116828F6F9590039AF11 /* FINPOTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1204,7 +1421,7 @@
 		};
 		DD2EA47728487F770004D707 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = BFCA014EE683AACD32E6826C /* Pods-FINPO.debug.xcconfig */;
+			baseConfigurationReference = F811C2E445DCDB0E9B65A2F4 /* Pods-FINPO.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -1238,7 +1455,7 @@
 		};
 		DD2EA47828487F770004D707 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 270C28813D04C9316FCC87A8 /* Pods-FINPO.release.xcconfig */;
+			baseConfigurationReference = EEE15676DAF89D92D575B9C3 /* Pods-FINPO.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -1272,6 +1489,7 @@
 		};
 		DDC9116B28F6F95A0039AF11 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C9EDDBBEDFEF0960B5917B07 /* Pods-FINPOTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -1291,6 +1509,7 @@
 		};
 		DDC9116C28F6F95A0039AF11 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DA93B2FA7150801F98E06F69 /* Pods-FINPOTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;

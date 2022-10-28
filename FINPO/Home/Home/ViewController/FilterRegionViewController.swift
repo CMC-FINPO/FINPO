@@ -11,11 +11,10 @@ import RxSwift
 import RxCocoa
 import SnapKit
 
-class FilterRegionViewController: UIViewController {
+final class FilterRegionViewController: UIViewController {
     let vc = FilterViewController()
     
     let disposeBag = DisposeBag()
-//    let viewModel = HomeViewModel.instance
     var viewModel = HomeViewModel()
     let tableViewModel = LoginViewModel()
     var isSelected: Bool = true
@@ -136,12 +135,12 @@ class FilterRegionViewController: UIViewController {
         
         let views = UIView(frame: CGRect(x: 5, y: 5, width: size.width, height: size.height))
         views.layer.borderWidth = 1
-        views.layer.borderColor = UIColor(hexString: "A2A2A2").cgColor
+        views.layer.borderColor = UIColor.G04.cgColor
         views.bounds = views.frame.insetBy(dx: -5, dy: -5)
         views.layer.cornerRadius = 3
         let titleLabel = UILabel()
         titleLabel.font = UIFont(name: "AppleSDGothicNeo-SemiBold", size: 14)
-        titleLabel.textColor = UIColor(hexString: "A2A2A2")
+        titleLabel.textColor = UIColor.G04
         titleLabel.text = "선택한 곳이 없어요..😅"
 
         self.regionTagCollectionView.addSubview(views)
@@ -175,7 +174,7 @@ class FilterRegionViewController: UIViewController {
     private var regionCenterLabel: UILabel = {
         let label = UILabel()
         label.text = "지역 선택"
-        label.textColor = UIColor(hexString: "000000")
+        label.textColor = UIColor.B01
         label.font = UIFont(name: "AppleSDGothicNeo-Semibold", size: 18)
         return label
     }()
@@ -189,7 +188,7 @@ class FilterRegionViewController: UIViewController {
     private var regionTitleLabel: UILabel = {
         let label = UILabel()
         label.text = "지역 선택"
-        label.textColor = UIColor(hexString: "494949")
+        label.textColor = UIColor.G01
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
         return label
     }()
@@ -211,7 +210,7 @@ class FilterRegionViewController: UIViewController {
     private var mainRegionTableView: UITableView = {
         let tv = UITableView()
         tv.rowHeight = CGFloat(60)
-        tv.backgroundColor = UIColor(hexString: "F9F9F9")
+        tv.backgroundColor = UIColor.G09
         tv.bounces = false
         tv.layer.masksToBounds = true
         tv.separatorInset.left = 0
@@ -221,7 +220,7 @@ class FilterRegionViewController: UIViewController {
     private var localRegionTableView: UITableView = {
         let tv = UITableView()
         tv.rowHeight = CGFloat(40)
-        tv.backgroundColor = UIColor(hexString: "F9F9F9")
+        tv.backgroundColor = UIColor.G09
         tv.bounces = false
         tv.showsHorizontalScrollIndicator = false
         tv.layoutIfNeeded()
@@ -233,8 +232,8 @@ class FilterRegionViewController: UIViewController {
         let button = UIButton()
         button.titleLabel?.font = UIFont(name: "AppleSDGothicNeo-SemiBold", size: 18)
         button.setTitle("선택 완료", for: .normal)
-        button.setTitleColor(UIColor(hexString: "616161"), for: .normal)
-        button.backgroundColor = UIColor(hexString: "F0F0F0")
+        button.setTitleColor(UIColor.G02, for: .normal)
+        button.backgroundColor = UIColor.G08
         button.layer.cornerRadius = 5
         button.isEnabled = false
         button.layer.masksToBounds = true
@@ -443,7 +442,7 @@ class FilterRegionViewController: UIViewController {
                 } else {
                     cell.tagLabel.text = (element.region.parent?.name ?? "") + ( element.region.name)
                 }
-                cell.layer.borderColor = UIColor(hexString: "5B43EF").cgColor
+                cell.layer.borderColor = UIColor.P01.cgColor
                 cell.layer.borderWidth = 1
                 cell.layer.cornerRadius = 3
                 //여기서 최근 regionId, subregion title 저장
@@ -482,12 +481,12 @@ class FilterRegionViewController: UIViewController {
                 guard let self = self else { return }
                 if valid {
                     self.confirmButton.isEnabled = valid
-                    self.confirmButton.backgroundColor = UIColor(hexString: "5B43EF")
-                    self.confirmButton.setTitleColor(UIColor(hexString: "FFFFFF"), for: .normal)
+                    self.confirmButton.backgroundColor = UIColor.P01
+                    self.confirmButton.setTitleColor(UIColor.W01, for: .normal)
                 } else {
                     self.confirmButton.isEnabled = valid
-                    self.confirmButton.backgroundColor = UIColor(hexString: "F0F0F0")
-                    self.confirmButton.setTitleColor(UIColor(hexString: "616161"), for: .normal)
+                    self.confirmButton.backgroundColor = UIColor.G08
+                    self.confirmButton.setTitleColor(UIColor.G02, for: .normal)
                 }
             }).disposed(by: disposeBag)
     }

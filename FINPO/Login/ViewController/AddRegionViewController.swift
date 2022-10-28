@@ -12,7 +12,7 @@ import RxCocoa
 import SnapKit
 import CoreMedia
 
-class AddRegionViewController: UIViewController {
+final class AddRegionViewController: UIViewController {
     
     var user = User.instance
     let viewModel = LoginViewModel()

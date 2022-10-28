@@ -11,7 +11,7 @@ import RxSwift
 import RxCocoa
 import SnapKit
 
-class HomeViewController: UIViewController {
+final class HomeViewController: UIViewController {
     
     var user = User.instance
     
@@ -74,10 +74,10 @@ class HomeViewController: UIViewController {
     
     private var searchTextField: UITextField = {
         let tf = UITextField()
-        tf.backgroundColor = UIColor(hexString: "FFFFFF")
+        tf.backgroundColor = UIColor.W01
         tf.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 18)
         tf.addLeftImageAndPadding(image: UIImage(named: "search") ?? UIImage())
-        tf.layer.borderColor = UIColor(hexString: "EBEBEB").cgColor
+        tf.layer.borderColor = UIColor.G07.cgColor
         tf.layer.borderWidth = 2
         tf.layer.cornerRadius = 5
         return tf
@@ -85,7 +85,7 @@ class HomeViewController: UIViewController {
     
     private var policyCountLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(hexString: "000000")
+        label.textColor = UIColor.B01
         label.font = UIFont(name: "AppleSDGothicNeo-Semibold", size: 18)
         return label
     }()
@@ -128,7 +128,7 @@ class HomeViewController: UIViewController {
     }()
     
     fileprivate func setAttribute() {
-        view.backgroundColor = UIColor(hexString: "F0F0F0")
+        view.backgroundColor = UIColor.G08
         setLogo()
         searchTextField.delegate = self
         
@@ -147,13 +147,13 @@ class HomeViewController: UIViewController {
         //change textfield placeholder text color
         searchTextField.attributedPlaceholder = NSAttributedString(
             string: "청년정책을 검색해보세요",
-            attributes: [NSAttributedString.Key.foregroundColor : UIColor(hexString: "C4C4C5")])
+            attributes: [NSAttributedString.Key.foregroundColor : UIColor.G05])
         self.searchTableView.delegate = self
     }
     
     public func setLabelTextColor(sender: UILabel, count: Int) {
         let attributedText = NSMutableAttributedString(string: self.policyCountLabel.text!)
-        attributedText.addAttribute(.foregroundColor, value: UIColor(hexString: "5B43EF"), range: (self.policyCountLabel.text! as NSString).range(of: "\(count)"))
+        attributedText.addAttribute(.foregroundColor, value: UIColor.P01, range: (self.policyCountLabel.text! as NSString).range(of: "\(count)"))
         self.policyCountLabel.attributedText = attributedText
     }
     

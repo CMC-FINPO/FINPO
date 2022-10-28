@@ -11,7 +11,7 @@ import RxSwift
 import RxCocoa
 import SnapKit
 
-class LoginBasicInfoViewController: UIViewController {
+final class LoginBasicInfoViewController: UIViewController {
     
     let disposeBag = DisposeBag()
     let viewModel = LoginViewModel()

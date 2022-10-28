@@ -17,7 +17,7 @@ import GoogleSignIn
 import KakaoSDKAuth
 
 
-class LoginViewController: UIViewController {
+final class LoginViewController: UIViewController {
     let user = User.instance
     let disposeBag = DisposeBag()
     let viewModel = LoginViewModel()

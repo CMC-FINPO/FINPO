@@ -11,7 +11,7 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-class AddPurposeViewController: UIViewController {
+final class AddPurposeViewController: UIViewController {
     
     let disposeBag = DisposeBag()
     let viewModel = LoginViewModel()

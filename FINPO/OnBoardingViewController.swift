@@ -64,7 +64,7 @@ class OnBoardingViewController: UIViewController {
     private var skipButton: UIButton = {
         let button = UIButton()
         button.setTitle("Skip", for: .normal)
-        button.setTitleColor(UIColor(hexString: "999999"), for: .normal)
+        button.setTitleColor(UIColor.G03, for: .normal)
         button.titleLabel?.font = UIFont(name: "AppleSDGothicNeo-Semibold", size: 16)
         button.backgroundColor = .clear
         button.isEnabled = true
@@ -75,8 +75,8 @@ class OnBoardingViewController: UIViewController {
     private var confirmButton: UIButton = {
         let button = UIButton()
         button.setTitle("시작하기", for: .normal)
-        button.setTitleColor(UIColor(hexString: "616161"), for: .normal)
-        button.backgroundColor = UIColor(hexString: "F0F0F0")
+        button.setTitleColor(UIColor.G02, for: .normal)
+        button.backgroundColor = UIColor.G08
         button.layer.cornerRadius = 5
         button.isEnabled = false
         button.layer.masksToBounds = true
@@ -99,8 +99,8 @@ class OnBoardingViewController: UIViewController {
         }
         
         pageControl.numberOfPages = imageNames.count
-        pageControl.pageIndicatorTintColor = UIColor(hexString: "D9D9D9")
-        pageControl.currentPageIndicatorTintColor = UIColor(hexString: "5B43EF")
+        pageControl.pageIndicatorTintColor = UIColor.G06
+        pageControl.currentPageIndicatorTintColor = UIColor.P01
         
         scrollView.frame = UIScreen.main.bounds
         scrollView.contentSize = CGSize(width: UIScreen.main.bounds.width * CGFloat(imageNames.count), height: UIScreen.main.bounds.height)
@@ -181,14 +181,14 @@ extension OnBoardingViewController: UIScrollViewDelegate {
         if(pageControl.currentPage == 3) {
             DispatchQueue.main.async {
                 self.confirmButton.isEnabled = true
-                self.confirmButton.backgroundColor = UIColor(hexString: "5B43EF")
-                self.confirmButton.setTitleColor(UIColor(hexString: "FFFFFF"), for: .normal)
+                self.confirmButton.backgroundColor = UIColor.P01
+                self.confirmButton.setTitleColor(UIColor.W01, for: .normal)
             }
         } else {
             DispatchQueue.main.async {
                 self.confirmButton.isEnabled = false
-                self.confirmButton.backgroundColor = UIColor(hexString: "F0F0F0")
-                self.confirmButton.setTitleColor(UIColor(hexString: "616161"), for: .normal)
+                self.confirmButton.backgroundColor = UIColor.G08
+                self.confirmButton.setTitleColor(UIColor.G02, for: .normal)
             }
         }
     }

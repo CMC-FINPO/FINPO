@@ -13,7 +13,7 @@ import SnapKit
 import CoreMIDI
 
 
-class LoginRegionViewController: UIViewController {
+final class LoginRegionViewController: UIViewController {
 
     var user = User.instance
     

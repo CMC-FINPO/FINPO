@@ -12,7 +12,7 @@ import RxSwift
 import RxCocoa
 import Alamofire
 
-class LoginInterestViewController: UIViewController, UICollectionViewDelegate {
+final class LoginInterestViewController: UIViewController, UICollectionViewDelegate {
     
     let disposeBag = DisposeBag()
     let viewModel = LoginViewModel()

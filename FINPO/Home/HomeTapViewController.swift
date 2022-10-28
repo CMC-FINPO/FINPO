@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-class HomeTapViewController: UITabBarController {    
+final class HomeTapViewController: UITabBarController {    
     private var homeViewController: UIViewController = {
         let vc = UINavigationController(rootViewController: HomeViewController())
         let tabBarItem = UITabBarItem(
@@ -19,8 +19,8 @@ class HomeTapViewController: UITabBarController {
         ///탭바 타이틀 컬러 변경
         let tabBarAppearance = UITabBarAppearance()
         let tabBarItemAppearance = UITabBarItemAppearance()
-        tabBarItemAppearance.normal.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor(hexString:"A2A2A2")]
-        tabBarItemAppearance.selected.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor(hexString:"5B43EF")]
+        tabBarItemAppearance.normal.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.G04]
+        tabBarItemAppearance.selected.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.P01]
         
         tabBarAppearance.stackedLayoutAppearance = tabBarItemAppearance
         tabBarItem.standardAppearance = tabBarAppearance
@@ -38,8 +38,8 @@ class HomeTapViewController: UITabBarController {
         )
         let tabBarAppearance = UITabBarAppearance()
         let tabBarItemAppearance = UITabBarItemAppearance()
-        tabBarItemAppearance.normal.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor(hexString:"A2A2A2")]
-        tabBarItemAppearance.selected.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor(hexString:"5B43EF")]
+        tabBarItemAppearance.normal.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.G04]
+        tabBarItemAppearance.selected.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.P01]
 
         tabBarAppearance.stackedLayoutAppearance = tabBarItemAppearance
         tabBarItem.standardAppearance = tabBarAppearance
@@ -58,8 +58,8 @@ class HomeTapViewController: UITabBarController {
         
         let tabBarAppearance = UITabBarAppearance()
         let tabBarItemAppearance = UITabBarItemAppearance()
-        tabBarItemAppearance.normal.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor(hexString:"A2A2A2")]
-        tabBarItemAppearance.selected.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor(hexString:"5B43EF")]
+        tabBarItemAppearance.normal.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.G04]
+        tabBarItemAppearance.selected.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.P01]
 
         tabBarAppearance.stackedLayoutAppearance = tabBarItemAppearance
         tabBarItem.standardAppearance = tabBarAppearance
@@ -78,8 +78,8 @@ class HomeTapViewController: UITabBarController {
         
         let tabBarAppearance = UITabBarAppearance()
         let tabBarItemAppearance = UITabBarItemAppearance()
-        tabBarItemAppearance.normal.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor(hexString:"A2A2A2")]
-        tabBarItemAppearance.selected.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor(hexString:"5B43EF")]
+        tabBarItemAppearance.normal.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.G04]
+        tabBarItemAppearance.selected.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.P01]
 
         tabBarAppearance.stackedLayoutAppearance = tabBarItemAppearance
         tabBarItem.standardAppearance = tabBarAppearance

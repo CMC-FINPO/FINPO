@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 import SnapKit
 
-class LoginSuccessViewController: UIViewController {
+final class LoginSuccessViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         

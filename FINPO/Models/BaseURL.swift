@@ -8,8 +8,8 @@
 import Foundation
 
 struct BaseURL {
-//    static var url: String = "https://api.finpo.kr/"
-    static var url: String = "https://dev.finpo.kr/"
+//    static var url: String = "https://api.finpo.kr/" //배포서버
+    static var url: String = "https://dev.finpo.kr/" //개발서버
     //문의
     static var ask: String = "https://forms.gle/29dvEJfe6S2GK6xh8"
     //이용약관

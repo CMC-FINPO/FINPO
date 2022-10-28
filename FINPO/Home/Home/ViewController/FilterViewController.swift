@@ -11,7 +11,7 @@ import RxSwift
 import RxCocoa
 import SnapKit
 
-class FilterViewController: UIViewController, UIViewControllerTransitioningDelegate {
+final class FilterViewController: UIViewController, UIViewControllerTransitioningDelegate {
 
     let disposeBag = DisposeBag()
     let viewModel = HomeViewModel()
@@ -90,14 +90,13 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
     private var regionTitleLabel: UILabel = {
         let label = UILabel()
         label.text = "지역 선택"
-        label.textColor = UIColor(hexString: "494949")
+        label.textColor = UIColor.G01
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
         return label
     }()
     
     private var regionTagCollectionView: UICollectionView = {
         let flow = LeftAlignedCollectionViewFlowLayout()
-//        let flow = UICollectionViewFlowLayout()
         flow.minimumLineSpacing = 3
         flow.minimumInteritemSpacing = 3
         flow.sectionInset = UIEdgeInsets(top: 5, left: 2, bottom: 5, right: 2)
@@ -112,10 +111,10 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
     
     private var guideForAddRegionView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(hexString: "F0F0F0")
+        view.backgroundColor = UIColor.G08
         let titleLabel = UILabel()
         titleLabel.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 18)
-        titleLabel.textColor = UIColor(hexString: "C4C4C5")
+        titleLabel.textColor = UIColor.G05
         titleLabel.text = "추가 할 지역 선택하기"
         view.addSubview(titleLabel)
         titleLabel.snp.makeConstraints {
@@ -141,7 +140,7 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         let label = UILabel()
         label.text = "일자리"
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
-        label.textColor = UIColor(hexString: "000000")
+        label.textColor = UIColor.B01
         return label
     }()
     
@@ -162,7 +161,7 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         let label = UILabel()
         label.text = "생활안정"
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
-        label.textColor = UIColor(hexString: "000000")
+        label.textColor = UIColor.B01
         return label
     }()
     
@@ -183,7 +182,7 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         let label = UILabel()
         label.text = "교육 문화"
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
-        label.textColor = UIColor(hexString: "000000")
+        label.textColor = UIColor.B01
         return label
     }()
     
@@ -205,7 +204,7 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         let label = UILabel()
         label.text = "참여 공간"
         label.font = UIFont(name: "AppleSDGothicNeo-Medium", size: 14)
-        label.textColor = UIColor(hexString: "000000")
+        label.textColor = UIColor.B01
         return label
     }()
     
@@ -227,8 +226,8 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         let button = UIButton()
         button.titleLabel?.font = UIFont(name: "AppleSDGothicNeo-SemiBold", size: 18)
         button.setTitle("선택 완료", for: .normal)
-        button.setTitleColor(UIColor(hexString: "616161"), for: .normal)
-        button.backgroundColor = UIColor(hexString: "F0F0F0")
+        button.setTitleColor(UIColor.G02, for: .normal)
+        button.backgroundColor = UIColor.G08
         button.layer.cornerRadius = 5
         button.isEnabled = false
         button.layer.masksToBounds = true
@@ -241,12 +240,12 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         navigationController?.navigationBar.topItem?.backButtonTitle = ""
         self.navigationItem.title = "필터"
         let rightBarButtonItem = UIBarButtonItem(title: "모두 초기화", style: .plain, target: self, action: #selector(resetFilter))
-        rightBarButtonItem.tintColor = UIColor(hexString: "999999")
+        rightBarButtonItem.tintColor = UIColor.G03
         let attributes = [NSAttributedString.Key.font: UIFont(name: "AppleSDGothicNeo-Medium", size: 14)!]
         rightBarButtonItem.setTitleTextAttributes(attributes, for: .normal)
         rightBarButtonItem.setTitleTextAttributes(attributes, for: .selected)
         self.navigationItem.rightBarButtonItem = rightBarButtonItem
-        self.navigationController?.navigationBar.tintColor = UIColor(hexString: "000000")
+        self.navigationController?.navigationBar.tintColor = UIColor.B01
         
         ///collectionview
         regionTagCollectionView.delegate = self
@@ -591,7 +590,7 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
                 } else {
                     cell.tagLabel.text = (element.region.parent?.name ?? "") + ( element.region.name)
                 }
-                cell.layer.borderColor = UIColor(hexString: "5B43EF").cgColor
+                cell.layer.borderColor = UIColor.P01.cgColor
                 cell.layer.borderWidth = 1
                 cell.layer.cornerRadius = 3
  
@@ -687,12 +686,12 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
             .drive(onNext: { valid in
                 if valid {
                     self.confirmButton.isEnabled = true
-                    self.confirmButton.backgroundColor = UIColor(hexString: "5B43EF")
-                    self.confirmButton.setTitleColor(UIColor(hexString: "FFFFFF"), for: .normal)
+                    self.confirmButton.backgroundColor = UIColor.P01
+                    self.confirmButton.setTitleColor(UIColor.W01, for: .normal)
                 } else {
                     self.confirmButton.isEnabled = false
-                    self.confirmButton.backgroundColor = UIColor(hexString: "F0F0F0")
-                    self.confirmButton.setTitleColor(UIColor(hexString: "616161"), for: .normal)
+                    self.confirmButton.backgroundColor = UIColor.G08
+                    self.confirmButton.setTitleColor(UIColor.G02, for: .normal)
                 }
             }).disposed(by: disposeBag)
         
@@ -709,12 +708,12 @@ class FilterViewController: UIViewController, UIViewControllerTransitioningDeleg
         
         let views = UIView(frame: CGRect(x: 5, y: 5, width: size.width, height: size.height))
         views.layer.borderWidth = 1
-        views.layer.borderColor = UIColor(hexString: "A2A2A2").cgColor
+        views.layer.borderColor = UIColor.G04.cgColor
         views.bounds = views.frame.insetBy(dx: -5, dy: -5)
         views.layer.cornerRadius = 3
         let titleLabel = UILabel()
         titleLabel.font = UIFont(name: "AppleSDGothicNeo-SemiBold", size: 14)
-        titleLabel.textColor = UIColor(hexString: "A2A2A2")
+        titleLabel.textColor = UIColor.G04
         titleLabel.text = "선택한 곳이 없어요..😅"
 
         self.regionTagCollectionView.addSubview(views)
