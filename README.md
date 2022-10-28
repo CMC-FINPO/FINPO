@@ -31,3 +31,32 @@
 |커뮤니티 신고|커뮤니티 차단|커뮤니티 이미지 갤러리|
 |------|---|---|
 |![커뮤니티 신고](https://user-images.githubusercontent.com/67154245/198507883-6fc0e177-9819-43a5-9191-1549093bf05c.gif)|![커뮤니티 이용자 차단](https://user-images.githubusercontent.com/67154245/198507910-f45be091-32e9-427d-9990-35207d78609f.gif)|![커뮤니티 이미지 갤러리](https://user-images.githubusercontent.com/67154245/198508007-64bef07c-134c-43b8-957a-76695d4b9f46.gif)|
+
+
+
+
+-------------
+
+
+> ## ⚙️ 기술 스택
+> > XCode 13.3
+> >
+> > Swift
+> > 
+> > UIKit
+> > 
+> > RxSwift
+> > 
+> > MVVM
+> > 
+> > Alamofire, Kingfisher
+> > 
+> > NSCache, FileManager
+> > 
+> > FCM
+> > 
+> > UserDefaults, KeyChain
+> > 
+> > Snapkit
+> > 
+> > Notification
