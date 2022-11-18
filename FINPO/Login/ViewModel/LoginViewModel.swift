@@ -604,11 +604,9 @@ final class LoginViewModel {
                 //소셜 액세스 토큰
                 self.user.accessTokenFromSocial = authentication.accessToken
                 self.user.profileImg = user.profile?.imageURL(withDimension: 200)!
-                print("구글 프로필 사진 옵셔널: \(self.user.profileImg)")
                 self.input.nickNameObserver.accept(user.profile?.name ?? "")
                 KeyChain.create(key: KeyChain.socialType, token: "google")
                 LoginViewModel.socialType = "google"
-                print("구글 로그인 성공! 액세스 토큰: \(authentication.accessToken)")
                 UserDefaults.standard.setValue(authentication.accessToken, forKey: "SocialAccessToken")
                 observer.onNext(true)
             }
@@ -620,9 +618,6 @@ final class LoginViewModel {
     
     private func checkNicknameValid(nickName: String) -> Observable<Bool> {
         return Observable.create { observer in
-            print("네트워크 닉네임호출 닉네임: \(self.user.nickname)")
-//            let encodedNickname = self.user.nickname.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
-            
             let encodedNickname = nickName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
             
             let url = BaseURL.url.appending("user/check-duplicate?nickname=\(encodedNickname)")
@@ -822,7 +817,6 @@ final class LoginViewModel {
                 "profileImg": self.user.profileImg ?? ""
             ]
             
-            print("세미 사인업 파라미터: \(parameter)")
             let header: HTTPHeaders = [
                 "Content-Type":"application/x-www-form-urlencoded;charset=UTF-8;boundary=6o2knFse3p53ty9dmcQvWAIx1zInP11uCfbm",
                 "Authorization":"Bearer ".appending((self.user.accessTokenFromSocial))
@@ -860,9 +854,7 @@ final class LoginViewModel {
                             let accessToken = jsonData?["accessToken"] as? String ?? ""
                             let refreshToken = jsonData?["refreshToken"] as? String ?? ""
                             let accessTokenExpiresIn = jsonData?["accessTokenExpiresIn"] as? Int ?? Int()
-                            print("accessTokenExpiresIn 값: \(accessTokenExpiresIn)")
                             let accessTokenExpireDate = Date(milliseconds: Int64(accessTokenExpiresIn) )
-                            print("accessTokenExpireDate 값: \(accessTokenExpireDate)")
                             ///UserDefaults -> keychain 적용
                             KeyChain.create(key: KeyChain.accessToken, token: accessToken)
                             KeyChain.create(key: KeyChain.refreshToken, token: refreshToken)
@@ -877,7 +869,6 @@ final class LoginViewModel {
                     } catch { print("알 수 없는 에러 발생") }
                     
                 default:
-                    print("실패!!: \(response.error)")
                     observer.onError(viewModelError.alreadyExistElement)
                 }
             }
@@ -902,7 +893,6 @@ final class LoginViewModel {
                     do {
                         let jsonData = try JSONSerialization.data(withJSONObject: statusData, options: [])
                         var json = try JSONDecoder().decode(UserStatusAPIResponse.self, from: jsonData)
-                        print("스태이터스 리스폰스 성공")
                         for _ in 0..<json.data.count {
                             json.data.sort {
                                 $0.id < $1.id
@@ -936,7 +926,6 @@ final class LoginViewModel {
                     do {
                         let jsonData = try JSONSerialization.data(withJSONObject: purposeData, options: [])
                         var json = try JSONDecoder().decode(UserPurposeAPIResponse.self, from: jsonData)
-                        print("유저 이용목적 리스폰스 성공")
                         for _ in 0..<json.data.count {
                             json.data.sort {
                                 $0.id < $1.id
@@ -978,7 +967,6 @@ final class LoginViewModel {
                                 let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
                                 let result = json?["data"] as? [String: Any]
                                 let statusId = result?["statusId"] as? Int
-                                print("스테이터스 Id: \(statusId)")
                                 self.user.status = statusId ?? Int()
                                 print(self.user.status)
                                 observer.onNext(true)

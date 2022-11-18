@@ -47,20 +47,20 @@ final class WriteMySelfViewController: UIViewController {
         setOutputBind()
     }
         
-    fileprivate func setAttribute() {
+    private func setAttribute() {
         view.backgroundColor = .white
         
 
     }
     
-    fileprivate func setLayout() {
+    private func setLayout() {
         view.addSubview(boardTableView)
         boardTableView.snp.makeConstraints {
             $0.edges.equalToSuperview()
         }
     }
     
-    fileprivate func setInputBind() {
+    private func setInputBind() {
         let firstLoad = rx.viewWillAppear
             .map { _ in () }
         
@@ -88,7 +88,7 @@ final class WriteMySelfViewController: UIViewController {
             }).disposed(by: disposeBag)
     }
     
-    fileprivate func setOutputBind() {
+    private func setOutputBind() {
         
         viewModel.mywritingResult 
             .scan(into: [CommunityContentModel]()) { data, from in

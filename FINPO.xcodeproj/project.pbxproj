@@ -657,13 +657,12 @@
 		DD2EA46428487F730004D707 /* FINPO */ = {
 			isa = PBXGroup;
 			children = (
-				DD2EA47328487F770004D707 /* Info.plist */,
-				DD2EA46E28487F770004D707 /* Assets.xcassets */,
-				DDE6160A289A8DCD0067040B /* GoogleService-Info.plist */,
 				DDECAE982867650C001C48D3 /* FINPO.entitlements */,
+				DD2EA47328487F770004D707 /* Info.plist */,
+				DDE6160A289A8DCD0067040B /* GoogleService-Info.plist */,
+				DD2EA46E28487F770004D707 /* Assets.xcassets */,
 				DDBFEEB42858599E003E9662 /* Launch Screen */,
-				DD2EA46528487F730004D707 /* AppDelegate.swift */,
-				DD2EA46728487F730004D707 /* SceneDelegate.swift */,
+				DD5348E229270FBF00B6E490 /* Application */,
 				DD351A96288AC9DE0097A63F /* OnBoardingViewController.swift */,
 				DD90E9A8284CF79100B19B8C /* CommonExtension */,
 				DDAC8EC0284884FE0092CB25 /* Login */,
@@ -687,6 +686,15 @@
 				DD9F9BE928EB0050006AC588 /* BoardSearching */,
 			);
 			path = Community;
+			sourceTree = "<group>";
+		};
+		DD5348E229270FBF00B6E490 /* Application */ = {
+			isa = PBXGroup;
+			children = (
+				DD2EA46528487F730004D707 /* AppDelegate.swift */,
+				DD2EA46728487F730004D707 /* SceneDelegate.swift */,
+			);
+			path = Application;
 			sourceTree = "<group>";
 		};
 		DD5A18EA2870281700903616 /* PolicyDetailView */ = {

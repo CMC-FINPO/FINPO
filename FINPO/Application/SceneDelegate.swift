@@ -29,12 +29,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let tokenValidationResult = ApiManager.checkTokenValidation()
             
             if(tokenValidationResult) {
-                print("여기로 들옴")
                 let rootVC = HomeTapViewController()
                 window?.rootViewController = rootVC
                 window?.makeKeyAndVisible()
             } else {
-                print("갱신실패")
                 let rootVC = LoginViewController()
                 let navVC = UINavigationController(rootViewController: rootVC)
                 window?.rootViewController = navVC
