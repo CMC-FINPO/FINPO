@@ -396,7 +396,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		DD08232728FD9939005A7923 /* InterestCategorySetting */ = {
+		DD08232728FD9939005A7923 /* InterestCategorySettingScene */ = {
 			isa = PBXGroup;
 			children = (
 				DD50F7A9287DCA1200ADEB09 /* InterestCategoryViewController.swift */,
@@ -404,27 +404,27 @@
 				DD25B4B528F93FE700D81263 /* InterestCategoryDomain.swift */,
 				DD25B4B928F9518400D81263 /* CategoryDataSection.swift */,
 			);
-			path = InterestCategorySetting;
+			path = InterestCategorySettingScene;
 			sourceTree = "<group>";
 		};
-		DD08232828FD9956005A7923 /* RegionEdit */ = {
+		DD08232828FD9956005A7923 /* RegionEditScene */ = {
 			isa = PBXGroup;
 			children = (
 				DD5A18FF2875ADF800903616 /* EditRegionViewController.swift */,
 				DD5A18FB2875AD7B00903616 /* InterestRegionViewController.swift */,
 				DD5A18FD2875AD9600903616 /* MyRegionViewController.swift */,
 			);
-			path = RegionEdit;
+			path = RegionEditScene;
 			sourceTree = "<group>";
 		};
-		DD08232928FD996B005A7923 /* ParticipationPolicy */ = {
+		DD08232928FD996B005A7923 /* ParticipationPolicyScene */ = {
 			isa = PBXGroup;
 			children = (
 				DD5A19062876C83C00903616 /* ParticipationViewController.swift */,
 				DD5A190B2876D85200903616 /* ParticipationTableViewCell.swift */,
 				DDAF7C46289A98D300D1F1FD /* ParticipationCollectionViewCell.swift */,
 			);
-			path = ParticipationPolicy;
+			path = ParticipationPolicyScene;
 			sourceTree = "<group>";
 		};
 		DD25B48728F7F03200D81263 /* ViewController */ = {
@@ -601,13 +601,13 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
-		DD25B49D28F7F1F600D81263 /* Cell */ = {
+		DD25B49D28F7F1F600D81263 /* View */ = {
 			isa = PBXGroup;
 			children = (
 				DDB1CCA3285EED3600B42EDC /* SettingTableViewCell.swift */,
 				DD60A0C32887D71B004E9015 /* OpenSourceTableViewCell.swift */,
 			);
-			path = Cell;
+			path = View;
 			sourceTree = "<group>";
 		};
 		DD25B49E28F7F20300D81263 /* ViewController */ = {
@@ -668,16 +668,16 @@
 			path = FINPO;
 			sourceTree = "<group>";
 		};
-		DD4D493328856B8800E25AB6 /* Community */ = {
+		DD4D493328856B8800E25AB6 /* CommunityScene */ = {
 			isa = PBXGroup;
 			children = (
 				DD25B49628F7F14100D81263 /* View */,
 				DD25B49328F7F12500D81263 /* ViewController */,
 				DD25B49428F7F13000D81263 /* ViewModel */,
-				DD9F9BF028EB32A8006AC588 /* BoardCommentEditing */,
-				DD9F9BE928EB0050006AC588 /* BoardSearching */,
+				DD9F9BF028EB32A8006AC588 /* BoardCommentEditingScene */,
+				DD9F9BE928EB0050006AC588 /* BoardSearchingScene */,
 			);
-			path = Community;
+			path = CommunityScene;
 			sourceTree = "<group>";
 		};
 		DD5348E229270FBF00B6E490 /* Application */ = {
@@ -693,12 +693,12 @@
 			isa = PBXGroup;
 			children = (
 				DD5348E52927146F00B6E490 /* LoginScene */,
-				DD5348E7292714E100B6E490 /* Home */,
+				DD5348E7292714E100B6E490 /* HomeScene */,
+				DDFD6EF22856494900A1706F /* MyPageScene */,
+				DD6125702879D0F6002FBF4D /* BookmarkScene */,
+				DD4D493328856B8800E25AB6 /* CommunityScene */,
+				DD61257B287C3946002FBF4D /* AlarmScene */,
 				DD5348E82927150C00B6E490 /* OnboardingScene */,
-				DDFD6EF22856494900A1706F /* MyPage */,
-				DD6125702879D0F6002FBF4D /* Bookmark */,
-				DD4D493328856B8800E25AB6 /* Community */,
-				DD61257B287C3946002FBF4D /* Alarm */,
 			);
 			path = Presentation;
 			sourceTree = "<group>";
@@ -713,7 +713,7 @@
 			path = LoginScene;
 			sourceTree = "<group>";
 		};
-		DD5348E7292714E100B6E490 /* Home */ = {
+		DD5348E7292714E100B6E490 /* HomeScene */ = {
 			isa = PBXGroup;
 			children = (
 				DDFD6EED2856489000A1706F /* HomeTapViewController.swift */,
@@ -722,7 +722,7 @@
 				DD25B48E28F7F0DB00D81263 /* ViewController */,
 				DD25B48F28F7F0E700D81263 /* ViewModel */,
 			);
-			path = Home;
+			path = HomeScene;
 			sourceTree = "<group>";
 		};
 		DD5348E82927150C00B6E490 /* OnboardingScene */ = {
@@ -888,33 +888,57 @@
 			path = Network;
 			sourceTree = "<group>";
 		};
+		DD53490C2927458E00B6E490 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				DDB1CCA6285F5C5B00B42EDC /* BoardTableViewCell.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		DD53490D2927459600B6E490 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				DDFD6EF02856494600A1706F /* MyPageViewController.swift */,
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		DD53490E2927459D00B6E490 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				DDFD6EF52856555700A1706F /* MyPageViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
 		DD5A18EA2870281700903616 /* PolicyDetailView */ = {
 			isa = PBXGroup;
 			children = (
-				DD25B49128F7F0FD00D81263 /* ViewController */,
 				DD25B49228F7F10600D81263 /* View */,
+				DD25B49128F7F0FD00D81263 /* ViewController */,
 			);
 			path = PolicyDetailView;
 			sourceTree = "<group>";
 		};
-		DD6125702879D0F6002FBF4D /* Bookmark */ = {
+		DD6125702879D0F6002FBF4D /* BookmarkScene */ = {
 			isa = PBXGroup;
 			children = (
 				DD61256E2879D0F2002FBF4D /* BookmarkViewController.swift */,
 				DD6125712879D953002FBF4D /* BookmarkViewModel.swift */,
 				DD612575287B0451002FBF4D /* BookmarkCollectionViewCell.swift */,
 			);
-			path = Bookmark;
+			path = BookmarkScene;
 			sourceTree = "<group>";
 		};
-		DD61257B287C3946002FBF4D /* Alarm */ = {
+		DD61257B287C3946002FBF4D /* AlarmScene */ = {
 			isa = PBXGroup;
 			children = (
+				DD5348EB2927168700B6E490 /* View */,
 				DD5348E92927167300B6E490 /* ViewController */,
 				DD5348EA2927167D00B6E490 /* ViewModel */,
-				DD5348EB2927168700B6E490 /* View */,
 			);
-			path = Alarm;
+			path = AlarmScene;
 			sourceTree = "<group>";
 		};
 		DD90E99F284CEE8B00B19B8C /* Model */ = {
@@ -959,17 +983,17 @@
 			path = Util;
 			sourceTree = "<group>";
 		};
-		DD9F9BE928EB0050006AC588 /* BoardSearching */ = {
+		DD9F9BE928EB0050006AC588 /* BoardSearchingScene */ = {
 			isa = PBXGroup;
 			children = (
 				DDE8057E28E98501000A2650 /* CommunitySearchViewController.swift */,
 				DDE8058028E98617000A2650 /* CommunitySearchViewModel.swift */,
 				DDE8058228E99A5F000A2650 /* SearchingStore.swift */,
 			);
-			path = BoardSearching;
+			path = BoardSearchingScene;
 			sourceTree = "<group>";
 		};
-		DD9F9BF028EB32A8006AC588 /* BoardCommentEditing */ = {
+		DD9F9BF028EB32A8006AC588 /* BoardCommentEditingScene */ = {
 			isa = PBXGroup;
 			children = (
 				DD25B49728F7F14F00D81263 /* ViewController */,
@@ -977,17 +1001,17 @@
 				DD25B49928F7F16A00D81263 /* Domain */,
 				DD25B49A28F7F17300D81263 /* CustomView */,
 			);
-			path = BoardCommentEditing;
+			path = BoardCommentEditingScene;
 			sourceTree = "<group>";
 		};
-		DDB1CCA5285F4A1C00B42EDC /* Setting */ = {
+		DDB1CCA5285F4A1C00B42EDC /* SettingScene */ = {
 			isa = PBXGroup;
 			children = (
 				DD25B49B28F7F1DF00D81263 /* ViewController */,
 				DD25B49C28F7F1EA00D81263 /* ViewModel */,
-				DD25B49D28F7F1F600D81263 /* Cell */,
+				DD25B49D28F7F1F600D81263 /* View */,
 			);
-			path = Setting;
+			path = SettingScene;
 			sourceTree = "<group>";
 		};
 		DDB419C028636289005868ED /* Event Logger */ = {
@@ -1068,19 +1092,19 @@
 			path = FINPOTests;
 			sourceTree = "<group>";
 		};
-		DDFD6EF22856494900A1706F /* MyPage */ = {
+		DDFD6EF22856494900A1706F /* MyPageScene */ = {
 			isa = PBXGroup;
 			children = (
-				DDFD6EF02856494600A1706F /* MyPageViewController.swift */,
-				DDFD6EF52856555700A1706F /* MyPageViewModel.swift */,
-				DD08232928FD996B005A7923 /* ParticipationPolicy */,
-				DD08232828FD9956005A7923 /* RegionEdit */,
-				DDB1CCA5285F4A1C00B42EDC /* Setting */,
+				DD53490C2927458E00B6E490 /* View */,
+				DD53490D2927459600B6E490 /* ViewController */,
+				DD53490E2927459D00B6E490 /* ViewModel */,
+				DD08232928FD996B005A7923 /* ParticipationPolicyScene */,
+				DD08232828FD9956005A7923 /* RegionEditScene */,
+				DDB1CCA5285F4A1C00B42EDC /* SettingScene */,
 				DDBFEEAF285792FB003E9662 /* SegmentedControl */,
-				DDB1CCA6285F5C5B00B42EDC /* BoardTableViewCell.swift */,
-				DD08232728FD9939005A7923 /* InterestCategorySetting */,
+				DD08232728FD9939005A7923 /* InterestCategorySettingScene */,
 			);
-			path = MyPage;
+			path = MyPageScene;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
