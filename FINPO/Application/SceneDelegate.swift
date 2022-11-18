@@ -7,7 +7,7 @@
 
 import UIKit
 import KakaoSDKAuth
-import RxKakaoSDKAuth
+//import RxKakaoSDKAuth
 import KakaoSDKCommon
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -72,14 +72,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     //add kakao login
-    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        if let url = URLContexts.first?.url {
-            if (AuthApi.isKakaoTalkLoginUrl(url)) {
-                _ = AuthController.rx.handleOpenUrl(url: url)
-//                _ = AuthController.handleOpenUrl(url: url)
-            }
-        }
-    }
+//    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+//        if let url = URLContexts.first?.url {
+//            if (AuthApi.isKakaoTalkLoginUrl(url)) {
+//                _ = AuthController.rx.handleOpenUrl(url: url)
+////                _ = AuthController.handleOpenUrl(url: url)
+//            }
+//        }
+//    }
 
     func sceneDidDisconnect(_ scene: UIScene) {
        

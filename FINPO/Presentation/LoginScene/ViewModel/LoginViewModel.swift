@@ -14,24 +14,11 @@ import Alamofire
 import KakaoSDKUser
 import AuthenticationServices
 import KakaoSDKCommon
-import RxKakaoSDKCommon
+//import RxKakaoSDKCommon
 import KakaoSDKAuth
-import RxKakaoSDKAuth
-import RxKakaoSDKUser
+//import RxKakaoSDKAuth
+//import RxKakaoSDKUser
 import GoogleSignIn
-
-//추가지역 선택 시 사용될 행위
-enum RegionActionType {
-    case add(region: UniouRegion)
-    case delete(index: Int)
-    case first(userDetail: UserDataModel)
-}
-
-enum SocialLoginType {
-    case kakao
-    case google(GIDGoogleUser)
-    case apple(String)
-}
 
 final class LoginViewModel {
     

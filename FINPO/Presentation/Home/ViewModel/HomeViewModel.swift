@@ -37,12 +37,6 @@ class HomeViewModel {
         case notMyPolicy
     }
     
-    enum TagLoadAction {
-        case isFirstLoad([DataDetail])
-        case delete(at: Int)
-        case add(DataDetail)
-        case deleteAll
-    }
     
     ///나의 관심 카테고리인지 확인하는 액션
     enum isMyInterestCategory {

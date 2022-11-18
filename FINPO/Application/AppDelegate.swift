@@ -7,7 +7,7 @@
 
 import UIKit
 import KakaoSDKCommon
-import RxKakaoSDKAuth
+//import RxKakaoSDKAuth
 import KakaoSDKAuth
 import GoogleSignIn
 import AuthenticationServices
