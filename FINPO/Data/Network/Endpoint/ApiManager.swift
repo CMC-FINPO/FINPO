@@ -11,10 +11,6 @@ import RxSwift
 import UIKit
 
 struct ApiManager {
-//    static func getData<T: Decodable>(with param: Encodable? = nil, from url: String, to model: NSDictionary?, completion: @escaping(_ data: T?, _ error: String?) -> ()) {
-//
-//    }
-    
     static func createHeader(token: String) -> HTTPHeaders {
         let header: HTTPHeaders = [
             "Content-Type": "application/json;charset=UTF-8",

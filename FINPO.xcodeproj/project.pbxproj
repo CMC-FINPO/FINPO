@@ -53,6 +53,7 @@
 		DD5348FE292727FF00B6E490 /* KakaoSDKAuth in Frameworks */ = {isa = PBXBuildFile; productRef = DD5348FD292727FF00B6E490 /* KakaoSDKAuth */; };
 		DD534900292727FF00B6E490 /* KakaoSDKCommon in Frameworks */ = {isa = PBXBuildFile; productRef = DD5348FF292727FF00B6E490 /* KakaoSDKCommon */; };
 		DD534902292727FF00B6E490 /* KakaoSDKUser in Frameworks */ = {isa = PBXBuildFile; productRef = DD534901292727FF00B6E490 /* KakaoSDKUser */; };
+		DD5349102927576F00B6E490 /* DefaultEditStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD53490F2927576F00B6E490 /* DefaultEditStore.swift */; };
 		DD5A18D2286CAE3A00903616 /* APP.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5A18D1286CAE3A00903616 /* APP.swift */; };
 		DD5A18D4286D389F00903616 /* FilterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5A18D3286D389F00903616 /* FilterCollectionViewCell.swift */; };
 		DD5A18D6286D568500903616 /* CategoryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5A18D5286D568500903616 /* CategoryModel.swift */; };
@@ -118,7 +119,7 @@
 		DD92046628D16DE60084F24B /* CacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD92046528D16DE60084F24B /* CacheManager.swift */; };
 		DD9F9BEB28EB00A8006AC588 /* EditCommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD9F9BEA28EB00A8006AC588 /* EditCommentViewController.swift */; };
 		DD9F9BED28EB00DE006AC588 /* EditCommentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD9F9BEC28EB00DE006AC588 /* EditCommentViewModel.swift */; };
-		DD9F9BEF28EB0143006AC588 /* EditStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD9F9BEE28EB0143006AC588 /* EditStore.swift */; };
+		DD9F9BEF28EB0143006AC588 /* EditFetchable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD9F9BEE28EB0143006AC588 /* EditFetchable.swift */; };
 		DD9F9BF228EBF37B006AC588 /* EditCommentResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD9F9BF128EBF37B006AC588 /* EditCommentResponseModel.swift */; };
 		DD9F9BF428EC128B006AC588 /* ReportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD9F9BF328EC128B006AC588 /* ReportViewController.swift */; };
 		DDAC8EBF284884F80092CB25 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAC8EBE284884F80092CB25 /* LoginViewModel.swift */; };
@@ -232,6 +233,7 @@
 		DD5348F32927187700B6E490 /* RegionActionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegionActionType.swift; sourceTree = "<group>"; };
 		DD5348F5292718DB00B6E490 /* SearchModeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchModeType.swift; sourceTree = "<group>"; };
 		DD5348F92927194900B6E490 /* TagLoadType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagLoadType.swift; sourceTree = "<group>"; };
+		DD53490F2927576F00B6E490 /* DefaultEditStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultEditStore.swift; sourceTree = "<group>"; };
 		DD5A18D1286CAE3A00903616 /* APP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APP.swift; sourceTree = "<group>"; };
 		DD5A18D3286D389F00903616 /* FilterCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCollectionViewCell.swift; sourceTree = "<group>"; };
 		DD5A18D5286D568500903616 /* CategoryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryModel.swift; sourceTree = "<group>"; };
@@ -296,7 +298,7 @@
 		DD92046528D16DE60084F24B /* CacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheManager.swift; sourceTree = "<group>"; };
 		DD9F9BEA28EB00A8006AC588 /* EditCommentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCommentViewController.swift; sourceTree = "<group>"; };
 		DD9F9BEC28EB00DE006AC588 /* EditCommentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCommentViewModel.swift; sourceTree = "<group>"; };
-		DD9F9BEE28EB0143006AC588 /* EditStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditStore.swift; sourceTree = "<group>"; };
+		DD9F9BEE28EB0143006AC588 /* EditFetchable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditFetchable.swift; sourceTree = "<group>"; };
 		DD9F9BF128EBF37B006AC588 /* EditCommentResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCommentResponseModel.swift; sourceTree = "<group>"; };
 		DD9F9BF328EC128B006AC588 /* ReportViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportViewController.swift; sourceTree = "<group>"; };
 		DDAC8EBE284884F80092CB25 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
@@ -562,14 +564,6 @@
 				DD9F9BEC28EB00DE006AC588 /* EditCommentViewModel.swift */,
 			);
 			path = ViewModel;
-			sourceTree = "<group>";
-		};
-		DD25B49928F7F16A00D81263 /* Domain */ = {
-			isa = PBXGroup;
-			children = (
-				DD9F9BEE28EB0143006AC588 /* EditStore.swift */,
-			);
-			path = Domain;
 			sourceTree = "<group>";
 		};
 		DD25B49A28F7F17300D81263 /* CustomView */ = {
@@ -852,6 +846,7 @@
 		DD53490729272B4E00B6E490 /* Repository */ = {
 			isa = PBXGroup;
 			children = (
+				DD53490F2927576F00B6E490 /* DefaultEditStore.swift */,
 			);
 			path = Repository;
 			sourceTree = "<group>";
@@ -859,6 +854,7 @@
 		DD53490829272B9200B6E490 /* Repository */ = {
 			isa = PBXGroup;
 			children = (
+				DD9F9BEE28EB0143006AC588 /* EditFetchable.swift */,
 			);
 			path = Repository;
 			sourceTree = "<group>";
@@ -998,7 +994,6 @@
 			children = (
 				DD25B49728F7F14F00D81263 /* ViewController */,
 				DD25B49828F7F15800D81263 /* ViewModel */,
-				DD25B49928F7F16A00D81263 /* Domain */,
 				DD25B49A28F7F17300D81263 /* CustomView */,
 			);
 			path = BoardCommentEditingScene;
@@ -1407,7 +1402,7 @@
 				DD1E994F28B32A5C00C80272 /* ApiManager.swift in Sources */,
 				DD6125722879D953002FBF4D /* BookmarkViewModel.swift in Sources */,
 				DD6C9A3828E3E7B900D40507 /* CommunityWritingViewModel.swift in Sources */,
-				DD9F9BEF28EB0143006AC588 /* EditStore.swift in Sources */,
+				DD9F9BEF28EB0143006AC588 /* EditFetchable.swift in Sources */,
 				DDC82B3828F307180029CDF4 /* SegmentedViewModel.swift in Sources */,
 				DD81D0AC28BDC707000780D6 /* PostCommentResponseModel.swift in Sources */,
 				DDBFEEC8285E25E8003E9662 /* AddPurposeViewController.swift in Sources */,
@@ -1450,6 +1445,7 @@
 				DDECAE9A286AB0E3001C48D3 /* FilterViewController.swift in Sources */,
 				DD5A18E1286F321500903616 /* HomeDetailViewController.swift in Sources */,
 				DD90E9A7284CF78D00B19B8C /* UIButton.swift in Sources */,
+				DD5349102927576F00B6E490 /* DefaultEditStore.swift in Sources */,
 				DDFD6EE2284F2A8800A1706F /* LoginRegionViewController.swift in Sources */,
 				DD2EA46828487F730004D707 /* SceneDelegate.swift in Sources */,
 				DD60C1D8287EF36F003B201E /* UserResponseModel.swift in Sources */,
