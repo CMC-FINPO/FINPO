@@ -40,7 +40,10 @@ class EditCommentViewModel: EditCommentViewModelType {
     
     var reportOutput: Observable<Bool>
     
-    init(domain: EditFetchable = EditStore()) {
+    init(domain: CommentEditUseCase =
+         DefaultEidtUseCase(
+            commentEditRepository: DefaultCommentEditRepository(
+                commentEditNetworkService: CommentEditNetworkService()))) {
         let data = PublishSubject<isNest>()
         let text = PublishSubject<String>()
         let confirm = PublishSubject<Void>()

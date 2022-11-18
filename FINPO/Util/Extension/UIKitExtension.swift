@@ -513,7 +513,7 @@ extension UIViewController {
     func commentDeleteAlert(id: Int) {
         let alertVC = UIAlertController(title: "글을 삭제하시겠습니까?", message: nil, preferredStyle: .alert)
         alertVC.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
-            let domain = EditStore()
+            let domain = DefaultCommentEditRepository(commentEditNetworkService: CommentEditNetworkService())
             domain.deleteComment(id: id)
         }))
         alertVC.addAction((UIAlertAction(title: "취소", style: .destructive, handler: nil)))
@@ -529,7 +529,7 @@ extension UIViewController {
     func showBlockAlert(id: SortIsBoard) {
         let alertVC = UIAlertController(title: "해당 유저를 차단하시겠습니까?", message: nil, preferredStyle: .alert)
         alertVC.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
-            let domain = EditStore()
+            let domain = DefaultCommentEditRepository(commentEditNetworkService: CommentEditNetworkService())
             domain.blockUser(commentId: id)
         }))
         alertVC.addAction((UIAlertAction(title: "취소", style: .destructive, handler: nil)))
@@ -539,7 +539,7 @@ extension UIViewController {
     func deleteBoard(id: Int) {
         let alertVC = UIAlertController(title: "게시글을 삭제하시겠습니까?", message: nil, preferredStyle: .alert)
         alertVC.addAction(UIAlertAction(title: "확인", style: .default, handler: { _ in
-            let domain = EditStore()
+            let domain = DefaultCommentEditRepository(commentEditNetworkService: CommentEditNetworkService())
             domain.deleteBoard(pageId: id)
             self.navigationController?.popViewController(animated: true)
         }))

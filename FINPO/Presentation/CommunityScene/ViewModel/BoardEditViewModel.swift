@@ -38,7 +38,7 @@ class BoardEditViewModel: BoardEditViewModelType {
     var uploadResult: Observable<Bool>
     var activated: Observable<Bool>
     
-    init(domain: EditFetchable = EditStore()) {
+    init(domain: CommentEditRepository = DefaultCommentEditRepository(commentEditNetworkService: CommentEditNetworkService())) {
         let pageId = PublishSubject<Int>()
         let getData = PublishSubject<Int>()
         let getOriginTexts = PublishSubject<String>()

@@ -25,7 +25,7 @@ struct UploadResponse: Codable {
     let data: CommunityDetailBoardResponseModel
 }
 
-protocol EditFetchable {
+protocol CommentEditRepository {
     func editComment(commentId: Int, content: String) -> Observable<Response>
     
     func deleteComment(id: Int)
