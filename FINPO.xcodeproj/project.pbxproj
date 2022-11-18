@@ -7,8 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		30F4E32A5221EBA701078609 /* Pods_FINPOTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FF90F753D3EAC97F8EE8ED4 /* Pods_FINPOTests.framework */; };
-		B74859B1B0CA46AD4BD80FB4 /* Pods_FINPO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D09619CDB1E49BC71B1F5C1E /* Pods_FINPO.framework */; };
+		414AA1E246B8F707993FA311 /* Pods_FINPO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C6E978D77B4F8885C61BE0C5 /* Pods_FINPO.framework */; };
 		DD1BFFB62863013600ACAAE1 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1BFFB52863013600ACAAE1 /* HomeViewController.swift */; };
 		DD1BFFB9286307BD00ACAAE1 /* HomeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1BFFB8286307BD00ACAAE1 /* HomeTableViewCell.swift */; };
 		DD1BFFBB2863143D00ACAAE1 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1BFFBA2863143D00ACAAE1 /* HomeViewModel.swift */; };
@@ -47,7 +46,14 @@
 		DD50F7AA287DCA1200ADEB09 /* InterestCategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD50F7A9287DCA1200ADEB09 /* InterestCategoryViewController.swift */; };
 		DD50F7AD287DD5C600ADEB09 /* MyInterestCategoryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD50F7AC287DD5C600ADEB09 /* MyInterestCategoryModel.swift */; };
 		DD50F7AF287E762D00ADEB09 /* LowCategoryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD50F7AE287E762D00ADEB09 /* LowCategoryModel.swift */; };
-		DD5A18D2286CAE3A00903616 /* BaseURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5A18D1286CAE3A00903616 /* BaseURL.swift */; };
+		DD5348F22927180600B6E490 /* SocialLoginType.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5348F12927180600B6E490 /* SocialLoginType.swift */; };
+		DD5348F42927187700B6E490 /* RegionActionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5348F32927187700B6E490 /* RegionActionType.swift */; };
+		DD5348F6292718DB00B6E490 /* SearchModeType.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5348F5292718DB00B6E490 /* SearchModeType.swift */; };
+		DD5348FA2927194900B6E490 /* TagLoadType.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5348F92927194900B6E490 /* TagLoadType.swift */; };
+		DD5348FE292727FF00B6E490 /* KakaoSDKAuth in Frameworks */ = {isa = PBXBuildFile; productRef = DD5348FD292727FF00B6E490 /* KakaoSDKAuth */; };
+		DD534900292727FF00B6E490 /* KakaoSDKCommon in Frameworks */ = {isa = PBXBuildFile; productRef = DD5348FF292727FF00B6E490 /* KakaoSDKCommon */; };
+		DD534902292727FF00B6E490 /* KakaoSDKUser in Frameworks */ = {isa = PBXBuildFile; productRef = DD534901292727FF00B6E490 /* KakaoSDKUser */; };
+		DD5A18D2286CAE3A00903616 /* APP.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5A18D1286CAE3A00903616 /* APP.swift */; };
 		DD5A18D4286D389F00903616 /* FilterCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5A18D3286D389F00903616 /* FilterCollectionViewCell.swift */; };
 		DD5A18D6286D568500903616 /* CategoryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5A18D5286D568500903616 /* CategoryModel.swift */; };
 		DD5A18D8286D577300903616 /* CallCategoryAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5A18D7286D577300903616 /* CallCategoryAPI.swift */; };
@@ -164,6 +170,7 @@
 		DDFD6EEE2856489000A1706F /* HomeTapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDFD6EED2856489000A1706F /* HomeTapViewController.swift */; };
 		DDFD6EF12856494600A1706F /* MyPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDFD6EF02856494600A1706F /* MyPageViewController.swift */; };
 		DDFD6EF62856555700A1706F /* MyPageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDFD6EF52856555700A1706F /* MyPageViewModel.swift */; };
+		FC134EFD32D79B412DB9DAB8 /* Pods_FINPOTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD5AF3C97A726DBEC9EE8B09 /* Pods_FINPOTests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -177,10 +184,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		7FF90F753D3EAC97F8EE8ED4 /* Pods_FINPOTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FINPOTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		C9EDDBBEDFEF0960B5917B07 /* Pods-FINPOTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FINPOTests.debug.xcconfig"; path = "Target Support Files/Pods-FINPOTests/Pods-FINPOTests.debug.xcconfig"; sourceTree = "<group>"; };
-		D09619CDB1E49BC71B1F5C1E /* Pods_FINPO.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FINPO.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		DA93B2FA7150801F98E06F69 /* Pods-FINPOTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FINPOTests.release.xcconfig"; path = "Target Support Files/Pods-FINPOTests/Pods-FINPOTests.release.xcconfig"; sourceTree = "<group>"; };
+		3B78ED8971AD03C27F57B268 /* Pods-FINPOTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FINPOTests.debug.xcconfig"; path = "Target Support Files/Pods-FINPOTests/Pods-FINPOTests.debug.xcconfig"; sourceTree = "<group>"; };
+		498298CDA257E0D8C8103BD1 /* Pods-FINPO.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FINPO.debug.xcconfig"; path = "Target Support Files/Pods-FINPO/Pods-FINPO.debug.xcconfig"; sourceTree = "<group>"; };
+		5458439F49AA69314086E1EF /* Pods-FINPO.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FINPO.release.xcconfig"; path = "Target Support Files/Pods-FINPO/Pods-FINPO.release.xcconfig"; sourceTree = "<group>"; };
+		9E9FE8E4E99DF2EEA824F971 /* Pods-FINPOTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FINPOTests.release.xcconfig"; path = "Target Support Files/Pods-FINPOTests/Pods-FINPOTests.release.xcconfig"; sourceTree = "<group>"; };
+		BD5AF3C97A726DBEC9EE8B09 /* Pods_FINPOTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FINPOTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C6E978D77B4F8885C61BE0C5 /* Pods_FINPO.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FINPO.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD1BFFB52863013600ACAAE1 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		DD1BFFB8286307BD00ACAAE1 /* HomeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTableViewCell.swift; sourceTree = "<group>"; };
 		DD1BFFBA2863143D00ACAAE1 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
@@ -219,7 +228,11 @@
 		DD50F7A9287DCA1200ADEB09 /* InterestCategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterestCategoryViewController.swift; sourceTree = "<group>"; };
 		DD50F7AC287DD5C600ADEB09 /* MyInterestCategoryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyInterestCategoryModel.swift; sourceTree = "<group>"; };
 		DD50F7AE287E762D00ADEB09 /* LowCategoryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LowCategoryModel.swift; sourceTree = "<group>"; };
-		DD5A18D1286CAE3A00903616 /* BaseURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseURL.swift; sourceTree = "<group>"; };
+		DD5348F12927180600B6E490 /* SocialLoginType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialLoginType.swift; sourceTree = "<group>"; };
+		DD5348F32927187700B6E490 /* RegionActionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegionActionType.swift; sourceTree = "<group>"; };
+		DD5348F5292718DB00B6E490 /* SearchModeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchModeType.swift; sourceTree = "<group>"; };
+		DD5348F92927194900B6E490 /* TagLoadType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagLoadType.swift; sourceTree = "<group>"; };
+		DD5A18D1286CAE3A00903616 /* APP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APP.swift; sourceTree = "<group>"; };
 		DD5A18D3286D389F00903616 /* FilterCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterCollectionViewCell.swift; sourceTree = "<group>"; };
 		DD5A18D5286D568500903616 /* CategoryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryModel.swift; sourceTree = "<group>"; };
 		DD5A18D7286D577300903616 /* CallCategoryAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallCategoryAPI.swift; sourceTree = "<group>"; };
@@ -336,8 +349,6 @@
 		DDFD6EED2856489000A1706F /* HomeTapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTapViewController.swift; sourceTree = "<group>"; };
 		DDFD6EF02856494600A1706F /* MyPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPageViewController.swift; sourceTree = "<group>"; };
 		DDFD6EF52856555700A1706F /* MyPageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPageViewModel.swift; sourceTree = "<group>"; };
-		EEE15676DAF89D92D575B9C3 /* Pods-FINPO.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FINPO.release.xcconfig"; path = "Target Support Files/Pods-FINPO/Pods-FINPO.release.xcconfig"; sourceTree = "<group>"; };
-		F811C2E445DCDB0E9B65A2F4 /* Pods-FINPO.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FINPO.debug.xcconfig"; path = "Target Support Files/Pods-FINPO/Pods-FINPO.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -347,7 +358,10 @@
 			files = (
 				DD5A18DD286DE16F00903616 /* FirebaseMessaging in Frameworks */,
 				DDBFEEA628571689003E9662 /* Kingfisher in Frameworks */,
-				B74859B1B0CA46AD4BD80FB4 /* Pods_FINPO.framework in Frameworks */,
+				DD534902292727FF00B6E490 /* KakaoSDKUser in Frameworks */,
+				414AA1E246B8F707993FA311 /* Pods_FINPO.framework in Frameworks */,
+				DD534900292727FF00B6E490 /* KakaoSDKCommon in Frameworks */,
+				DD5348FE292727FF00B6E490 /* KakaoSDKAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -355,31 +369,31 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				30F4E32A5221EBA701078609 /* Pods_FINPOTests.framework in Frameworks */,
+				FC134EFD32D79B412DB9DAB8 /* Pods_FINPOTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		21FF94D44DE58D4DD2E4DFDD /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				D09619CDB1E49BC71B1F5C1E /* Pods_FINPO.framework */,
-				7FF90F753D3EAC97F8EE8ED4 /* Pods_FINPOTests.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		5013C2BEC30C08049C4D7B18 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				F811C2E445DCDB0E9B65A2F4 /* Pods-FINPO.debug.xcconfig */,
-				EEE15676DAF89D92D575B9C3 /* Pods-FINPO.release.xcconfig */,
-				C9EDDBBEDFEF0960B5917B07 /* Pods-FINPOTests.debug.xcconfig */,
-				DA93B2FA7150801F98E06F69 /* Pods-FINPOTests.release.xcconfig */,
+				498298CDA257E0D8C8103BD1 /* Pods-FINPO.debug.xcconfig */,
+				5458439F49AA69314086E1EF /* Pods-FINPO.release.xcconfig */,
+				3B78ED8971AD03C27F57B268 /* Pods-FINPOTests.debug.xcconfig */,
+				9E9FE8E4E99DF2EEA824F971 /* Pods-FINPOTests.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		6524B6105065C8130BF94260 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C6E978D77B4F8885C61BE0C5 /* Pods_FINPO.framework */,
+				BD5AF3C97A726DBEC9EE8B09 /* Pods_FINPOTests.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		DD08232728FD9939005A7923 /* InterestCategorySetting */ = {
@@ -413,17 +427,6 @@
 			path = ParticipationPolicy;
 			sourceTree = "<group>";
 		};
-		DD1BFFB72863013900ACAAE1 /* Home */ = {
-			isa = PBXGroup;
-			children = (
-				DD25B48E28F7F0DB00D81263 /* ViewController */,
-				DD25B48F28F7F0E700D81263 /* ViewModel */,
-				DD25B49028F7F0EE00D81263 /* Cell */,
-				DD5A18EA2870281700903616 /* PolicyDetailView */,
-			);
-			path = Home;
-			sourceTree = "<group>";
-		};
 		DD25B48728F7F03200D81263 /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
@@ -449,7 +452,7 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
-		DD25B48928F7F05A00D81263 /* Cell */ = {
+		DD25B48928F7F05A00D81263 /* View */ = {
 			isa = PBXGroup;
 			children = (
 				DDBFEEC1285AEDE3003E9662 /* TagCollectionViewCell.swift */,
@@ -460,7 +463,7 @@
 				DD90E9AD284D199D00B19B8C /* TermsCell.xib */,
 				DD25B48C28F7F09400D81263 /* TermsCell.swift */,
 			);
-			path = Cell;
+			path = View;
 			sourceTree = "<group>";
 		};
 		DD25B48E28F7F0DB00D81263 /* ViewController */ = {
@@ -481,14 +484,14 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
-		DD25B49028F7F0EE00D81263 /* Cell */ = {
+		DD25B49028F7F0EE00D81263 /* View */ = {
 			isa = PBXGroup;
 			children = (
 				DD1BFFB8286307BD00ACAAE1 /* HomeTableViewCell.swift */,
 				DDE61608289A84AD0067040B /* HomeCollectionViewCell.swift */,
 				DD5A18D3286D389F00903616 /* FilterCollectionViewCell.swift */,
 			);
-			path = Cell;
+			path = View;
 			sourceTree = "<group>";
 		};
 		DD25B49128F7F0FD00D81263 /* ViewController */ = {
@@ -502,14 +505,14 @@
 			path = ViewController;
 			sourceTree = "<group>";
 		};
-		DD25B49228F7F10600D81263 /* Cell */ = {
+		DD25B49228F7F10600D81263 /* View */ = {
 			isa = PBXGroup;
 			children = (
 				DD5A18EB2871C1C400903616 /* PolicyTypeCollectionViewCell.swift */,
 				DD5A18ED2871D25F00903616 /* ServiceTypeCollectionViewCell.swift */,
 				DD60A0BB288715B2004E9015 /* ServiceTypeTableViewCell.swift */,
 			);
-			path = Cell;
+			path = View;
 			sourceTree = "<group>";
 		};
 		DD25B49328F7F12500D81263 /* ViewController */ = {
@@ -535,20 +538,13 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
-		DD25B49528F7F13B00D81263 /* CustomView */ = {
-			isa = PBXGroup;
-			children = (
-				DD6C99AB28DEBFF600D40507 /* NestCommentView.swift */,
-			);
-			path = CustomView;
-			sourceTree = "<group>";
-		};
-		DD25B49628F7F14100D81263 /* Cell */ = {
+		DD25B49628F7F14100D81263 /* View */ = {
 			isa = PBXGroup;
 			children = (
 				DD1E995A28B66A1D00C80272 /* CommunityCollectionViewCell.swift */,
+				DD6C99AB28DEBFF600D40507 /* NestCommentView.swift */,
 			);
-			path = Cell;
+			path = View;
 			sourceTree = "<group>";
 		};
 		DD25B49728F7F14F00D81263 /* ViewController */ = {
@@ -641,7 +637,7 @@
 				DDC9116628F6F9590039AF11 /* FINPOTests */,
 				DD2EA46328487F730004D707 /* Products */,
 				5013C2BEC30C08049C4D7B18 /* Pods */,
-				21FF94D44DE58D4DD2E4DFDD /* Frameworks */,
+				6524B6105065C8130BF94260 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -657,20 +653,17 @@
 		DD2EA46428487F730004D707 /* FINPO */ = {
 			isa = PBXGroup;
 			children = (
+				DD5348FB29271A1000B6E490 /* Secret */,
 				DDECAE982867650C001C48D3 /* FINPO.entitlements */,
 				DD2EA47328487F770004D707 /* Info.plist */,
 				DDE6160A289A8DCD0067040B /* GoogleService-Info.plist */,
-				DD2EA46E28487F770004D707 /* Assets.xcassets */,
-				DDBFEEB42858599E003E9662 /* Launch Screen */,
 				DD5348E229270FBF00B6E490 /* Application */,
-				DD351A96288AC9DE0097A63F /* OnBoardingViewController.swift */,
-				DD90E9A8284CF79100B19B8C /* CommonExtension */,
-				DDAC8EC0284884FE0092CB25 /* Login */,
-				DD90E99F284CEE8B00B19B8C /* Models */,
-				DDFD6EEF2856489200A1706F /* Home */,
-				DDBFEEB92859E166003E9662 /* OAuth */,
-				DDBFEEBE2859F387003E9662 /* API */,
-				DD92046728D16DEA0084F24B /* Memories */,
+				DD5348EE2927171800B6E490 /* Resource */,
+				DD53490B29272BE800B6E490 /* Network */,
+				DD53490329272ACB00B6E490 /* Data */,
+				DD5348EF2927175900B6E490 /* Domain */,
+				DD5348E42927144E00B6E490 /* Presentation */,
+				DD90E9A8284CF79100B19B8C /* Util */,
 			);
 			path = FINPO;
 			sourceTree = "<group>";
@@ -678,10 +671,9 @@
 		DD4D493328856B8800E25AB6 /* Community */ = {
 			isa = PBXGroup;
 			children = (
+				DD25B49628F7F14100D81263 /* View */,
 				DD25B49328F7F12500D81263 /* ViewController */,
 				DD25B49428F7F13000D81263 /* ViewModel */,
-				DD25B49628F7F14100D81263 /* Cell */,
-				DD25B49528F7F13B00D81263 /* CustomView */,
 				DD9F9BF028EB32A8006AC588 /* BoardCommentEditing */,
 				DD9F9BE928EB0050006AC588 /* BoardSearching */,
 			);
@@ -697,11 +689,210 @@
 			path = Application;
 			sourceTree = "<group>";
 		};
+		DD5348E42927144E00B6E490 /* Presentation */ = {
+			isa = PBXGroup;
+			children = (
+				DD5348E52927146F00B6E490 /* LoginScene */,
+				DD5348E7292714E100B6E490 /* Home */,
+				DD5348E82927150C00B6E490 /* OnboardingScene */,
+				DDFD6EF22856494900A1706F /* MyPage */,
+				DD6125702879D0F6002FBF4D /* Bookmark */,
+				DD4D493328856B8800E25AB6 /* Community */,
+				DD61257B287C3946002FBF4D /* Alarm */,
+			);
+			path = Presentation;
+			sourceTree = "<group>";
+		};
+		DD5348E52927146F00B6E490 /* LoginScene */ = {
+			isa = PBXGroup;
+			children = (
+				DD25B48928F7F05A00D81263 /* View */,
+				DD25B48728F7F03200D81263 /* ViewController */,
+				DD25B48828F7F05100D81263 /* ViewModel */,
+			);
+			path = LoginScene;
+			sourceTree = "<group>";
+		};
+		DD5348E7292714E100B6E490 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				DDFD6EED2856489000A1706F /* HomeTapViewController.swift */,
+				DD5A18EA2870281700903616 /* PolicyDetailView */,
+				DD25B49028F7F0EE00D81263 /* View */,
+				DD25B48E28F7F0DB00D81263 /* ViewController */,
+				DD25B48F28F7F0E700D81263 /* ViewModel */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		DD5348E82927150C00B6E490 /* OnboardingScene */ = {
+			isa = PBXGroup;
+			children = (
+				DD351A96288AC9DE0097A63F /* OnBoardingViewController.swift */,
+			);
+			path = OnboardingScene;
+			sourceTree = "<group>";
+		};
+		DD5348E92927167300B6E490 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				DD612579287C3942002FBF4D /* AlarmViewController.swift */,
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		DD5348EA2927167D00B6E490 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				DD61257C287C3CAE002FBF4D /* AlarmViewModel.swift */,
+			);
+			name = ViewModel;
+			sourceTree = "<group>";
+		};
+		DD5348EB2927168700B6E490 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				DD612582287C3FFF002FBF4D /* AlarmTableViewCell.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		DD5348EC292716D700B6E490 /* Rx++ */ = {
+			isa = PBXGroup;
+			children = (
+				DD90E9A4284CF78700B19B8C /* Reactive.swift */,
+			);
+			path = "Rx++";
+			sourceTree = "<group>";
+		};
+		DD5348ED292716F600B6E490 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				DD5348EC292716D700B6E490 /* Rx++ */,
+				DD90E9A6284CF78D00B19B8C /* UIButton.swift */,
+				DDFD6EDF284DFC3200A1706F /* UIKitExtension.swift */,
+				DD1E996028BB23CC00C80272 /* ComponentsManager.swift */,
+			);
+			path = Extension;
+			sourceTree = "<group>";
+		};
+		DD5348EE2927171800B6E490 /* Resource */ = {
+			isa = PBXGroup;
+			children = (
+				DD2EA46E28487F770004D707 /* Assets.xcassets */,
+				DDBFEEB42858599E003E9662 /* Launch Screen */,
+			);
+			path = Resource;
+			sourceTree = "<group>";
+		};
+		DD5348EF2927175900B6E490 /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				DD90E99F284CEE8B00B19B8C /* Model */,
+				DD53490829272B9200B6E490 /* Repository */,
+				DD53490929272B9B00B6E490 /* UseCases */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		DD5348F0292717D300B6E490 /* Enum */ = {
+			isa = PBXGroup;
+			children = (
+				DD5348F12927180600B6E490 /* SocialLoginType.swift */,
+				DD5348F32927187700B6E490 /* RegionActionType.swift */,
+				DD5348F5292718DB00B6E490 /* SearchModeType.swift */,
+				DD5348F92927194900B6E490 /* TagLoadType.swift */,
+			);
+			path = Enum;
+			sourceTree = "<group>";
+		};
+		DD5348FB29271A1000B6E490 /* Secret */ = {
+			isa = PBXGroup;
+			children = (
+				DD5A18D1286CAE3A00903616 /* APP.swift */,
+			);
+			path = Secret;
+			sourceTree = "<group>";
+		};
+		DD53490329272ACB00B6E490 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				DD53490629272B2700B6E490 /* Storage */,
+				DD53490529272B1B00B6E490 /* Network */,
+				DD53490729272B4E00B6E490 /* Repository */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		DD53490429272ADA00B6E490 /* DTO */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = DTO;
+			sourceTree = "<group>";
+		};
+		DD53490529272B1B00B6E490 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				DD53490429272ADA00B6E490 /* DTO */,
+				DDBFEEBE2859F387003E9662 /* Endpoint */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		DD53490629272B2700B6E490 /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				DD92046528D16DE60084F24B /* CacheManager.swift */,
+				DDE615CD2897A4890067040B /* KeyChain.swift */,
+			);
+			path = Storage;
+			sourceTree = "<group>";
+		};
+		DD53490729272B4E00B6E490 /* Repository */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Repository;
+			sourceTree = "<group>";
+		};
+		DD53490829272B9200B6E490 /* Repository */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Repository;
+			sourceTree = "<group>";
+		};
+		DD53490929272B9B00B6E490 /* UseCases */ = {
+			isa = PBXGroup;
+			children = (
+				DD53490A29272BBB00B6E490 /* Auth */,
+			);
+			path = UseCases;
+			sourceTree = "<group>";
+		};
+		DD53490A29272BBB00B6E490 /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				DDBFEEB72859E162003E9662 /* MyAuthenticationCredential.swift */,
+				DDBFEEBA2859E675003E9662 /* MyAuthenticator.swift */,
+				DD5A18EF28728F2C00903616 /* MyRequestInterceptor.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		DD53490B29272BE800B6E490 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
 		DD5A18EA2870281700903616 /* PolicyDetailView */ = {
 			isa = PBXGroup;
 			children = (
 				DD25B49128F7F0FD00D81263 /* ViewController */,
-				DD25B49228F7F10600D81263 /* Cell */,
+				DD25B49228F7F10600D81263 /* View */,
 			);
 			path = PolicyDetailView;
 			sourceTree = "<group>";
@@ -719,17 +910,17 @@
 		DD61257B287C3946002FBF4D /* Alarm */ = {
 			isa = PBXGroup;
 			children = (
-				DD612579287C3942002FBF4D /* AlarmViewController.swift */,
-				DD61257C287C3CAE002FBF4D /* AlarmViewModel.swift */,
-				DD612582287C3FFF002FBF4D /* AlarmTableViewCell.swift */,
+				DD5348E92927167300B6E490 /* ViewController */,
+				DD5348EA2927167D00B6E490 /* ViewModel */,
+				DD5348EB2927168700B6E490 /* View */,
 			);
 			path = Alarm;
 			sourceTree = "<group>";
 		};
-		DD90E99F284CEE8B00B19B8C /* Models */ = {
+		DD90E99F284CEE8B00B19B8C /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				DD5A18D1286CAE3A00903616 /* BaseURL.swift */,
+				DD5348F0292717D300B6E490 /* Enum */,
 				DD90E99D284CEE8600B19B8C /* Terms.swift */,
 				DD90E9B7284DDFA200B19B8C /* User.swift */,
 				DD1BFFBE2863316200ACAAE1 /* SearchModel.swift */,
@@ -753,31 +944,19 @@
 				DD9F9BF128EBF37B006AC588 /* EditCommentResponseModel.swift */,
 				DD44B06E28F1949F000D0DC4 /* PersonalMenu.swift */,
 			);
-			path = Models;
+			path = Model;
 			sourceTree = "<group>";
 		};
-		DD90E9A8284CF79100B19B8C /* CommonExtension */ = {
+		DD90E9A8284CF79100B19B8C /* Util */ = {
 			isa = PBXGroup;
 			children = (
-				DD90E9A4284CF78700B19B8C /* Reactive.swift */,
-				DD90E9A6284CF78D00B19B8C /* UIButton.swift */,
-				DDFD6EDF284DFC3200A1706F /* UIKitExtension.swift */,
+				DD5348ED292716F600B6E490 /* Extension */,
 				DDBFEEBF285A21FE003E9662 /* PaddingLabel.swift */,
 				DDBFEEC5285B5134003E9662 /* LeftAlignedCollectionViewFlowLayout.swift */,
 				DD1E995228B4DC8100C80272 /* DynamicHeightCollectionView.swift */,
 				DD1E995E28B8DA5A00C80272 /* DynamicHeightTableView.swift */,
-				DD1E996028BB23CC00C80272 /* ComponentsManager.swift */,
 			);
-			path = CommonExtension;
-			sourceTree = "<group>";
-		};
-		DD92046728D16DEA0084F24B /* Memories */ = {
-			isa = PBXGroup;
-			children = (
-				DD92046528D16DE60084F24B /* CacheManager.swift */,
-				DDE615CD2897A4890067040B /* KeyChain.swift */,
-			);
-			path = Memories;
+			path = Util;
 			sourceTree = "<group>";
 		};
 		DD9F9BE928EB0050006AC588 /* BoardSearching */ = {
@@ -799,16 +978,6 @@
 				DD25B49A28F7F17300D81263 /* CustomView */,
 			);
 			path = BoardCommentEditing;
-			sourceTree = "<group>";
-		};
-		DDAC8EC0284884FE0092CB25 /* Login */ = {
-			isa = PBXGroup;
-			children = (
-				DD25B48728F7F03200D81263 /* ViewController */,
-				DD25B48828F7F05100D81263 /* ViewModel */,
-				DD25B48928F7F05A00D81263 /* Cell */,
-			);
-			path = Login;
 			sourceTree = "<group>";
 		};
 		DDB1CCA5285F4A1C00B42EDC /* Setting */ = {
@@ -850,17 +1019,7 @@
 			path = "Launch Screen";
 			sourceTree = "<group>";
 		};
-		DDBFEEB92859E166003E9662 /* OAuth */ = {
-			isa = PBXGroup;
-			children = (
-				DDBFEEB72859E162003E9662 /* MyAuthenticationCredential.swift */,
-				DDBFEEBA2859E675003E9662 /* MyAuthenticator.swift */,
-				DD5A18EF28728F2C00903616 /* MyRequestInterceptor.swift */,
-			);
-			path = OAuth;
-			sourceTree = "<group>";
-		};
-		DDBFEEBE2859F387003E9662 /* API */ = {
+		DDBFEEBE2859F387003E9662 /* Endpoint */ = {
 			isa = PBXGroup;
 			children = (
 				DD1EC9702861B23000B58F10 /* SignOutAPI.swift */,
@@ -882,7 +1041,7 @@
 				DD1E994E28B32A5C00C80272 /* ApiManager.swift */,
 				DDB419C028636289005868ED /* Event Logger */,
 			);
-			path = API;
+			path = Endpoint;
 			sourceTree = "<group>";
 		};
 		DDC9115D28F314660039AF11 /* Domain */ = {
@@ -909,19 +1068,6 @@
 			path = FINPOTests;
 			sourceTree = "<group>";
 		};
-		DDFD6EEF2856489200A1706F /* Home */ = {
-			isa = PBXGroup;
-			children = (
-				DDFD6EED2856489000A1706F /* HomeTapViewController.swift */,
-				DD1BFFB72863013900ACAAE1 /* Home */,
-				DD4D493328856B8800E25AB6 /* Community */,
-				DDFD6EF22856494900A1706F /* MyPage */,
-				DD6125702879D0F6002FBF4D /* Bookmark */,
-				DD61257B287C3946002FBF4D /* Alarm */,
-			);
-			path = Home;
-			sourceTree = "<group>";
-		};
 		DDFD6EF22856494900A1706F /* MyPage */ = {
 			isa = PBXGroup;
 			children = (
@@ -944,11 +1090,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DD2EA47628487F770004D707 /* Build configuration list for PBXNativeTarget "FINPO" */;
 			buildPhases = (
-				3B9EE716642772E6ECAC00AA /* [CP] Check Pods Manifest.lock */,
+				246B8BE27943C2B089779990 /* [CP] Check Pods Manifest.lock */,
 				DD2EA45E28487F730004D707 /* Sources */,
 				DD2EA45F28487F730004D707 /* Frameworks */,
 				DD2EA46028487F730004D707 /* Resources */,
-				9E64919FB99758F73EB5ECB5 /* [CP] Embed Pods Frameworks */,
+				49F925EB424E5A9E5DEE740A /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -958,6 +1104,9 @@
 			packageProductDependencies = (
 				DDBFEEA528571689003E9662 /* Kingfisher */,
 				DD5A18DC286DE16F00903616 /* FirebaseMessaging */,
+				DD5348FD292727FF00B6E490 /* KakaoSDKAuth */,
+				DD5348FF292727FF00B6E490 /* KakaoSDKCommon */,
+				DD534901292727FF00B6E490 /* KakaoSDKUser */,
 			);
 			productName = FINPO;
 			productReference = DD2EA46228487F730004D707 /* FINPO.app */;
@@ -967,11 +1116,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DDC9116D28F6F95A0039AF11 /* Build configuration list for PBXNativeTarget "FINPOTests" */;
 			buildPhases = (
-				193A09DF7D72C58100F91724 /* [CP] Check Pods Manifest.lock */,
+				E51681AF8895D55EBDFB66BE /* [CP] Check Pods Manifest.lock */,
 				DDC9116128F6F9590039AF11 /* Sources */,
 				DDC9116228F6F9590039AF11 /* Frameworks */,
 				DDC9116328F6F9590039AF11 /* Resources */,
-				E9D974E03FF363FB6CE573B2 /* [CP] Embed Pods Frameworks */,
+				E115666EA5C04E8B4CF7F6AA /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1014,6 +1163,7 @@
 			packageReferences = (
 				DDBFEEA428571689003E9662 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				DD5A18DB286DE16F00903616 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				DD5348FC292727FE00B6E490 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
 			);
 			productRefGroup = DD2EA46328487F730004D707 /* Products */;
 			projectDirPath = "";
@@ -1049,29 +1199,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		193A09DF7D72C58100F91724 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-FINPOTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		3B9EE716642772E6ECAC00AA /* [CP] Check Pods Manifest.lock */ = {
+		246B8BE27943C2B089779990 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1093,7 +1221,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		9E64919FB99758F73EB5ECB5 /* [CP] Embed Pods Frameworks */ = {
+		49F925EB424E5A9E5DEE740A /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1110,7 +1238,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FINPO/Pods-FINPO-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		E9D974E03FF363FB6CE573B2 /* [CP] Embed Pods Frameworks */ = {
+		E115666EA5C04E8B4CF7F6AA /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1125,6 +1253,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FINPOTests/Pods-FINPOTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E51681AF8895D55EBDFB66BE /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-FINPOTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -1155,6 +1305,7 @@
 				DD5A18F82874309400903616 /* BookMarkAPI.swift in Sources */,
 				DD1BFFB9286307BD00ACAAE1 /* HomeTableViewCell.swift in Sources */,
 				DD60C1E62882D945003B201E /* MyPolicyTestModel.swift in Sources */,
+				DD5348F42927187700B6E490 /* RegionActionType.swift in Sources */,
 				DDBFEEAA285792DD003E9662 /* WriteMySelfViewController.swift in Sources */,
 				DDBFEEC0285A21FE003E9662 /* PaddingLabel.swift in Sources */,
 				DDB1CCA7285F5C5B00B42EDC /* BoardTableViewCell.swift in Sources */,
@@ -1181,6 +1332,7 @@
 				DD60A0BE2887D122004E9015 /* OpenSourceViewController.swift in Sources */,
 				DD1E995128B368E900C80272 /* BoolResponseModel.swift in Sources */,
 				DD9F9BF428EC128B006AC588 /* ReportViewController.swift in Sources */,
+				DD5348F6292718DB00B6E490 /* SearchModeType.swift in Sources */,
 				DDBFEEBB2859E675003E9662 /* MyAuthenticator.swift in Sources */,
 				DDBFEEC6285B5134003E9662 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */,
 				DD60A0C42887D71B004E9015 /* OpenSourceTableViewCell.swift in Sources */,
@@ -1189,6 +1341,7 @@
 				DD5A18E3286FEAEA00903616 /* ServiceInfoViewController.swift in Sources */,
 				DD5A18F228731C7700903616 /* AddParticipatedAPI.swift in Sources */,
 				DD5A18E5286FEB0300903616 /* ApplyInfoViewController.swift in Sources */,
+				DD5348F22927180600B6E490 /* SocialLoginType.swift in Sources */,
 				DD61257A287C3942002FBF4D /* AlarmViewController.swift in Sources */,
 				DDBFEEB82859E162003E9662 /* MyAuthenticationCredential.swift in Sources */,
 				DD6C99AC28DEBFF600D40507 /* NestCommentView.swift in Sources */,
@@ -1201,6 +1354,7 @@
 				DD6C9A3A28E3F92500D40507 /* BoardImageResponseModel.swift in Sources */,
 				DD612583287C3FFF002FBF4D /* AlarmTableViewCell.swift in Sources */,
 				DD1BFFBB2863143D00ACAAE1 /* HomeViewModel.swift in Sources */,
+				DD5348FA2927194900B6E490 /* TagLoadType.swift in Sources */,
 				DD612578287C0CA3002FBF4D /* FCMAPI.swift in Sources */,
 				DDB1CCA2285EE1F800B42EDC /* MyPageSettingViewController.swift in Sources */,
 				DDFD6EE628506C1000A1706F /* SubRegionTableViewCell.swift in Sources */,
@@ -1218,7 +1372,7 @@
 				DD25B4BA28F9518400D81263 /* CategoryDataSection.swift in Sources */,
 				DD90E9A5284CF78700B19B8C /* Reactive.swift in Sources */,
 				DD1E996128BB23CC00C80272 /* ComponentsManager.swift in Sources */,
-				DD5A18D2286CAE3A00903616 /* BaseURL.swift in Sources */,
+				DD5A18D2286CAE3A00903616 /* APP.swift in Sources */,
 				DDFD6EE4284F840F00A1706F /* MainRegionTableViewCell.swift in Sources */,
 				DD60C1DA287F130B003B201E /* CategoryAlarmViewController.swift in Sources */,
 				DD2EA46A28487F730004D707 /* LoginViewController.swift in Sources */,
@@ -1429,7 +1583,7 @@
 		};
 		DD2EA47728487F770004D707 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F811C2E445DCDB0E9B65A2F4 /* Pods-FINPO.debug.xcconfig */;
+			baseConfigurationReference = 498298CDA257E0D8C8103BD1 /* Pods-FINPO.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -1463,7 +1617,7 @@
 		};
 		DD2EA47828487F770004D707 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EEE15676DAF89D92D575B9C3 /* Pods-FINPO.release.xcconfig */;
+			baseConfigurationReference = 5458439F49AA69314086E1EF /* Pods-FINPO.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -1497,7 +1651,7 @@
 		};
 		DDC9116B28F6F95A0039AF11 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C9EDDBBEDFEF0960B5917B07 /* Pods-FINPOTests.debug.xcconfig */;
+			baseConfigurationReference = 3B78ED8971AD03C27F57B268 /* Pods-FINPOTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -1517,7 +1671,7 @@
 		};
 		DDC9116C28F6F95A0039AF11 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = DA93B2FA7150801F98E06F69 /* Pods-FINPOTests.release.xcconfig */;
+			baseConfigurationReference = 9E9FE8E4E99DF2EEA824F971 /* Pods-FINPOTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -1568,6 +1722,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		DD5348FC292727FE00B6E490 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kakao/kakao-ios-sdk";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		DD5A18DB286DE16F00903616 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
@@ -1587,6 +1749,21 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		DD5348FD292727FF00B6E490 /* KakaoSDKAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DD5348FC292727FE00B6E490 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDKAuth;
+		};
+		DD5348FF292727FF00B6E490 /* KakaoSDKCommon */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DD5348FC292727FE00B6E490 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDKCommon;
+		};
+		DD534901292727FF00B6E490 /* KakaoSDKUser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DD5348FC292727FE00B6E490 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDKUser;
+		};
 		DD5A18DC286DE16F00903616 /* FirebaseMessaging */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = DD5A18DB286DE16F00903616 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

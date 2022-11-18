@@ -9,7 +9,7 @@ import Foundation
 import RxSwift
 import RxCocoa
 import Alamofire
-import RxAlamofire
+//import RxAlamofire
 
 class MyPageViewModel {
     let disposeBag = DisposeBag()
@@ -17,12 +17,6 @@ class MyPageViewModel {
     let user = User.instance
     let input = INPUT()
     var output = OUTPUT()
-    
-    ///참여 정책 조회 및 삭제 액션
-    enum IsSearchModeOrDeleteModeAction {
-        case searchMode(UserParticipatedModel)
-        case deleteMode(UserParticipatedModel)
-    }
     
     ///INPUT
     struct INPUT {
