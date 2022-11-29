@@ -1,0 +1,85 @@
+PODS:
+  - Alamofire (5.6.2)
+  - AppAuth (1.6.0):
+    - AppAuth/Core (= 1.6.0)
+    - AppAuth/ExternalUserAgent (= 1.6.0)
+  - AppAuth/Core (1.6.0)
+  - AppAuth/ExternalUserAgent (1.6.0):
+    - AppAuth/Core
+  - Differentiator (5.0.0)
+  - GoogleSignIn (6.2.2):
+    - AppAuth (~> 1.5)
+    - GTMAppAuth (~> 1.3)
+    - GTMSessionFetcher/Core (~> 1.1)
+  - GTMAppAuth (1.3.1):
+    - AppAuth/Core (~> 1.6)
+    - GTMSessionFetcher/Core (< 3.0, >= 1.5)
+  - GTMSessionFetcher/Core (1.7.2)
+  - RxBlocking (6.5.0):
+    - RxSwift (= 6.5.0)
+  - RxCocoa (6.5.0):
+    - RxRelay (= 6.5.0)
+    - RxSwift (= 6.5.0)
+  - RxDataSources (5.0.0):
+    - Differentiator (~> 5.0)
+    - RxCocoa (~> 6.0)
+    - RxSwift (~> 6.0)
+  - RxGesture (4.0.4):
+    - RxCocoa (~> 6.0)
+    - RxSwift (~> 6.0)
+  - RxRelay (6.5.0):
+    - RxSwift (= 6.5.0)
+  - RxSwift (6.5.0)
+  - RxTest (6.5.0):
+    - RxSwift (= 6.5.0)
+  - SnapKit (5.6.0)
+  - Then (3.0.0)
+
+DEPENDENCIES:
+  - Alamofire (~> 5.1)
+  - GoogleSignIn (= 6.2.2)
+  - RxBlocking
+  - RxDataSources
+  - RxGesture
+  - RxTest
+  - SnapKit (~> 5.6.0)
+  - Then
+
+SPEC REPOS:
+  trunk:
+    - Alamofire
+    - AppAuth
+    - Differentiator
+    - GoogleSignIn
+    - GTMAppAuth
+    - GTMSessionFetcher
+    - RxBlocking
+    - RxCocoa
+    - RxDataSources
+    - RxGesture
+    - RxRelay
+    - RxSwift
+    - RxTest
+    - SnapKit
+    - Then
+
+SPEC CHECKSUMS:
+  Alamofire: d368e1ff8a298e6dde360e35a3e68e6c610e7204
+  AppAuth: 8fca6b5563a5baef2c04bee27538025e4ceb2add
+  Differentiator: e8497ceab83c1b10ca233716d547b9af21b9344d
+  GoogleSignIn: 3c68388ac221f379676e8f1cb115df3aaf73b93f
+  GTMAppAuth: 0ff230db599948a9ad7470ca667337803b3fc4dd
+  GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
+  RxBlocking: 04b5fd28bb5ea49f7d64b80db8bbfe50d9cc1c7d
+  RxCocoa: 94f817b71c07517321eb4f9ad299112ca8af743b
+  RxDataSources: aa47cc1ed6c500fa0dfecac5c979b723542d79cf
+  RxGesture: f3efb47ed2d26a8082f7b660d4a59970e275a7f8
+  RxRelay: 1de1523e604c72b6c68feadedd1af3b1b4d0ecbd
+  RxSwift: 5710a9e6b17f3c3d6e40d6e559b9fa1e813b2ef8
+  RxTest: eb2d23adefc5a5ebf5779c7792fa3edfe6ebcc17
+  SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
+  Then: 844265ae87834bbe1147d91d5d41a404da2ec27d
+
+PODFILE CHECKSUM: 3c9f20425c8c5e26ec1b642d229a7969f5149494
+
+COCOAPODS: 1.11.3
